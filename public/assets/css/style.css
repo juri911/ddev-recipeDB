@@ -76,42 +76,6 @@ a.link:hover {
     color: #1d4ed8;
 }
 
-/* Buttons */
-.btn {
-    display: inline-flex;
-    align-items: center;
-    gap: .5rem;
-    border: 1px solid var(--rh-border);
-    border-radius: .375rem;
-    padding: .375rem .75rem;
-    font-size: .875rem;
-}
-
-.btn-primary {
-    background: var(--rh-primary);
-    color: #fff;
-    border-color: var(--rh-primary);
-}
-
-.btn-primary:hover {
-    filter: brightness(0.95);
-}
-
-/* Simple fade-in for sections */
-.fade-in {
-    animation: rhFadeIn .25s ease-in;
-}
-
-@keyframes rhFadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
 /* Drawer helpers (optional) */
 .drawer-panel {
     transform: translateX(100%);

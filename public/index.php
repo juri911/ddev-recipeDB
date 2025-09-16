@@ -33,13 +33,14 @@ include __DIR__ . '/includes/header.php';
 
 <?php
 // Function to display notification messages with auto-close timeout
-function displayNotification($message, $isLogin = true, $timeout = 5000) {
+function displayNotification($message, $isLogin = true, $timeout = 5000)
+{
     $zIndex = $isLogin ? 'z-50' : '';
     $notificationId = 'notification_' . uniqid(); // Unique ID for each notification
-    
+
     echo '<div id="' . $notificationId . '" class="fixed inset-x-0 top-4 z-50 flex items-start justify-center ' . $zIndex . '">
-        <div class="max-w-sm w-full shadow-lg rounded px-4 py-3 relative bg-green-400 border-l-4 border-green-700 text-white transition-opacity duration-300">
-            <div class="p-2">
+        <div class="lg:max-w-xl w-[80%] shadow-lg rounded px-4 py-3 relative bg-green-400 border-l-4 border-green-700 text-white transition-opacity duration-300">
+            <div class="p-2 my-auto">
                 <div class="flex items-start">
                     <div class="ml-3 w-0 flex-1 pt-0.5">
                         <p class="text-sm leading-5 font-medium">' . htmlspecialchars($message) . '</p>
@@ -54,6 +55,29 @@ function displayNotification($message, $isLogin = true, $timeout = 5000) {
                     </div>
                 </div>
             </div>
+            <div class="w-full h-[4px] bg-stone-200 rounded">
+                <div class="prog-status"></div>
+            </div>
+            <style>
+            .prog-status {
+  height: 4px;
+  width: 0%;
+  border-radius: 20px;
+  background: red;
+  animation: 5s linear load infinite;
+}
+@keyframes load {
+  50% {
+    width: 50%;
+    background: oklch(70.7% 0.165 254.624);
+  }
+  100% {
+    width: 100%;
+    background: oklch(79.2% 0.209 151.711);
+  }
+}
+
+            </style>
         </div>
     </div>
     
@@ -83,166 +107,195 @@ if (isset($_GET['message'])) {
 
 // Display logout message
 if (isset($_GET['message'])) {
-    displayNotification($_GET['message'], false, 4000); // 4 seconds timeout
+    displayNotification($_GET['message'], false, 5000); // 4 seconds timeout
 }
 ?>
-    <?php foreach ($recipes as $r): ?>
-        <article class="border rounded-lg">
-            <div class="px-4 py-3 flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <img src="<?php echo htmlspecialchars($r['author_avatar_path'] ?? SITE_URL . 'images/default_avatar.png'); ?>"
-                        class="h-16 w-16 rounded-full object-cover bg-gray-200" alt="Avatar" />
-                    <div>
-                        <a class="text-sm font-semibold"
-                            href="<?php echo htmlspecialchars(profile_url(['id' => $r['user_id'], 'name' => $r['author_name']])); ?>">
-                            <?php echo htmlspecialchars($r['author_name']); ?>
-                        </a>
-                        <?php if (!empty($r['user_titel'])): ?>
-                            <div class="text-xs text-gray-400"><?php echo htmlspecialchars($r['user_titel']); ?></div>
-                        <?php endif; ?>
-                        <div class="text-xs text-gray-500"><?php echo date('d.m.Y H:i', strtotime($r['created_at'])); ?>
+
+
+<!-- card wrapper -->
+<section class="container-fluid mx-auto mt-5">
+    <div class="grid md:grid-cols-2 grid-cols-1 gap-6 max-w-6xl mx-auto">
+        <?php foreach ($recipes as $r): ?>
+            <!-- Card 1 -->
+            <div class="border-b-[2px] border-black overflow-hidden shadow-xl/30">
+                <!-- Card Header -->
+                <div class="flex items-center justify-between p-4">
+                    <div class="flex items-center">
+                        <div
+                            class="h-10 w-10 rounded-full overflow-hidden outline-2 outline-offset-2 outline-[#2d7ef7] hover:scale-125 transition duration-300">
+                            <img src="<?php echo htmlspecialchars($r['author_avatar_path'] ?? SITE_URL . 'images/default_avatar.png'); ?>"
+                                class="h-full w-full object-cover" alt="Avatar" />
+                        </div>
+                        <div class="ml-3">
+                            <a class="font-semibold text-[#2d7ef7] relative after:absolute after:bg-[#2d7ef7] after:h-[2px] after:w-0 after:left-1/2 after:-translate-x-1/2 after:bottom-0 hover:after:w-full after:transition-all after:duration-300"
+                                href="<?php echo htmlspecialchars(profile_url(['id' => $r['user_id'], 'name' => $r['author_name']])); ?>">
+                                <?php echo htmlspecialchars($r['author_name']); ?>
+                            </a>
+                            <?php if (!empty($r['user_titel'])): ?>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                    <?php echo htmlspecialchars($r['user_titel']); ?>
+                                </p>
+                            <?php endif; ?>
                         </div>
                     </div>
-                </div>
-                <?php if ($user && $user['id'] === (int) $r['user_id']): ?>
-                    <div class="relative">
-                        <button type="button" class="p-2 text-gray-600 hover:text-gray-800 cursor-pointer"
-                            aria-haspopup="dialog" aria-controls="recipe-actions-<?php echo (int) $r['id']; ?>"
-                            onclick="openModal('recipe-actions-<?php echo (int) $r['id']; ?>')">
-                            <i class="fas fa-ellipsis-v"></i>
-                        </button>
-                    </div>
 
-                    <div id="recipe-actions-<?php echo (int) $r['id']; ?>" class="fixed inset-0 z-50 hidden" role="dialog"
-                        aria-modal="true">
-                        <div class="inset-0 bg-black/50 w-full h-full  items-center justify-center"
-                            onclick="closeModal('recipe-actions-<?php echo (int) $r['id']; ?>')">
-                            <div class="flex justify-center items-center h-full">
-                                <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+                    <?php if ($user && $user['id'] === (int) $r['user_id']): ?>
+                        <div class="ml-auto">
+                            <button type="button"
+                                class="p-2 text-[var(--rh-primary)] hover:text-[var(--rh-text)] cursor-pointer"
+                                aria-haspopup="dialog" aria-controls="recipe-actions-<?php echo (int) $r['id']; ?>"
+                                onclick="openModal('recipe-actions-<?php echo (int) $r['id']; ?>')">
+                                <i class="fas fa-ellipsis-v fa-xl"></i>
+                            </button>
+                        </div>
 
-                                    <div class="flex justify-between items-center mb-4">
-                                        <h3 class="font-semibold">Aktionen</h3>
-                                        <button id="close-notifications" class="text-gray-500 hover:text-gray-700">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                    <div class="space-y-2">
-                                        <a class="block w-full px-3 py-2 rounded bg-blue-600 text-white text-center text-sm"
-                                            href="/recipe_edit.php?id=<?php echo (int) $r['id']; ?>">Bearbeiten</a>
-                                        <form method="post" action="/recipe_delete.php"
-                                            onsubmit="return confirm('Rezept wirklich löschen?');">
-                                            <input type="hidden" name="id" value="<?php echo (int) $r['id']; ?>">
-                                            <input type="hidden" name="csrf_token"
-                                                value="<?php echo htmlspecialchars(csrf_token()); ?>">
-                                            <button
-                                                class="w-full px-3 py-2 rounded bg-red-600 text-white text-sm cursor-pointer">Löschen</button>
-                                        </form>
-                                        <button type="button" class="w-full px-3 py-2 rounded border text-sm cursor-pointer"
-                                            onclick="closeModal('recipe-actions-<?php echo (int) $r['id']; ?>')">Abbrechen</button>
+                        <div id="recipe-actions-<?php echo (int) $r['id']; ?>" class="fixed inset-0 z-50 hidden" role="dialog"
+                            aria-modal="true">
+                            <div class="inset-0 bg-black/50 w-full h-full  items-center justify-center"
+                                onclick="closeModal('recipe-actions-<?php echo (int) $r['id']; ?>')">
+                                <div class="flex justify-center items-center h-full">
+                                    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+
+                                        <div class="flex justify-between items-center mb-4">
+                                            <h3 class="font-semibold">Aktionen</h3>
+                                            <button id="close-notifications" class="text-gray-500 hover:text-gray-700">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                        <div class="space-y-2">
+                                            <a class="block w-full px-3 py-2 rounded bg-blue-600 text-white text-center text-sm"
+                                                href="/recipe_edit.php?id=<?php echo (int) $r['id']; ?>">Bearbeiten</a>
+                                            <form method="post" action="/recipe_delete.php"
+                                                onsubmit="return confirm('Rezept wirklich löschen?');">
+                                                <input type="hidden" name="id" value="<?php echo (int) $r['id']; ?>">
+                                                <input type="hidden" name="csrf_token"
+                                                    value="<?php echo htmlspecialchars(csrf_token()); ?>">
+                                                <button
+                                                    class="w-full px-3 py-2 rounded bg-red-600 text-white text-sm cursor-pointer">Löschen</button>
+                                            </form>
+                                            <button type="button" class="w-full px-3 py-2 rounded border text-sm cursor-pointer"
+                                                onclick="closeModal('recipe-actions-<?php echo (int) $r['id']; ?>')">Abbrechen</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                <?php endif; ?>
-            </div>
+                    <?php endif; ?>
+                </div>
 
-            <div class="border-t">
-                <?php if (!empty($r['images'])): ?>
-                    <div class="relative" data-slider>
-                        <div class="aspect-square overflow-hidden bg-black">
-                            <div class="flex h-full transition-transform duration-300" data-track
-                                style="transform: translateX(0%);">
-                                <?php foreach ($r['images'] as $idx => $img): ?>
-                                    <a href="<?php echo htmlspecialchars(recipe_url($r)); ?>"
-                                        class="min-w-full h-full block select-none" data-slide-index="<?php echo $idx; ?>">
-                                        <img src="/<?php echo htmlspecialchars($img['file_path']); ?>"
-                                            class="w-full h-full object-cover" alt="Bild" />
-                                    </a>
-                                <?php endforeach; ?>
+                <!-- Card Image -->
+                <div class="aspect-square relative group">
+
+                    <?php if (!empty($r['images'])): ?>
+                        <div class="relative" data-slider>
+                            <div class="aspect-square overflow-hidden bg-black">
+                                <div class="flex h-full transition-transform duration-300" data-track
+                                    style="transform: translateX(0%);">
+                                    <?php foreach ($r['images'] as $idx => $img): ?>
+                                        <a href="<?php echo htmlspecialchars(recipe_url($r)); ?>"
+                                            class="min-w-full h-full block select-none" data-slide-index="<?php echo $idx; ?>">
+                                            <img src="/<?php echo htmlspecialchars($img['file_path']); ?>"
+                                                class="w-full h-full object-cover" alt="Bild" />
+                                        </a>
+                                    <?php endforeach; ?>
+                                </div>
                             </div>
+                            <?php if (count($r['images']) > 1): ?>
+                                <button type="button"
+                                    class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2"
+                                    data-prev>
+                                    &#10094;
+                                </button>
+                                <button type="button"
+                                    class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2"
+                                    data-next>
+                                    &#10095;
+                                </button>
+                                <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 bg-black px-5 py-2 text-lg"
+                                    data-dots>
+                                </div>
+                            <?php endif; ?>
                         </div>
-                        <?php if (count($r['images']) > 1): ?>
-                            <button type="button"
-                                class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2"
-                                data-prev>
-                                &#10094;
-                            </button>
-                            <button type="button"
-                                class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2"
-                                data-next>
-                                &#10095;
-                            </button>
-                            <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 bg-black px-5 py-2 text-lg"
-                                data-dots></div>
-                        <?php endif; ?>
-                    </div>
-                <?php else: ?>
-                    <div class="aspect-square bg-gray-100 flex items-center justify-center text-gray-400">Kein Bild</div>
-                <?php endif; ?>
-            </div>
+                    <?php else: ?>
+                        <div class="aspect-square bg-gray-100 flex items-center justify-center text-gray-400">Kein Bild</div>
+                    <?php endif; ?>
 
-            <div class="p-4 space-y-3">
-                <div class="flex items-center gap-2">
-                    <div class="flex items-center gap-1">
-                    <button id="like-btn-<?php echo (int) $r['id']; ?>"
-                    onclick="likeRecipe(<?php echo (int) $r['id']; ?>)"
-                    class="like-btn text-2xl <?php echo $user ? '' : 'opacity-60 cursor-not-allowed'; ?> 
-                    <?php echo $user && is_liked((int) $r['id'], (int) $user['id']) ? 'text-red-500' : 'text-gray-400'; ?>">
-                    <i id="like-heart"
-                        class="icon-transition <?php echo $user && is_liked((int) $r['id'], (int) $user['id']) ? 'fas' : 'far'; ?> fa-heart"></i>
+                </div>
+
+                <!-- Card Actions -->
+                <div class="p-4">
+                    <div class="flex items-center">
+
+                        <button id="like-btn-<?php echo (int) $r['id']; ?>"
+                            onclick="likeRecipe(<?php echo (int) $r['id']; ?>)"
+                            class="like-btn pr-1 <?php echo $user ? '' : 'cursor-not-allowed'; ?> 
+                    <?php echo $user && is_liked((int) $r['id'], (int) $user['id']) ? 'text-red-600' : 'text-white'; ?>">
+                            <i id="like-heart"
+                                class="icon-transition  <?php echo $user && is_liked((int) $r['id'], (int) $user['id']) ? 'fas' : 'far'; ?> fa-heart fa-xl"></i>
                         </button>
                         <div id="like-count-wrapper-<?php echo (int) $r['id']; ?>"
                             class="text-[16px]<?php echo ((int) $r['likes_count'] === 0 ? ' hidden' : ''); ?>">
                             <span
                                 id="like-count-<?php echo (int) $r['id']; ?>"><?php echo (int) $r['likes_count']; ?></span>
                         </div>
+
+<?php if ($user): ?>
+                    <button id="favorite-btn-<?php echo (int) $r['id']; ?>"
+                        onclick="toggleFavorite(<?php echo (int) $r['id']; ?>)"
+                        class="favorite-btn ml-auto <?php echo is_favorited((int) $r['id'], (int) $user['id']) ? 'text-[#2d7ef7]' : 'text-white'; ?>">
+                        <i id="like-bookmark"
+                            class="icon-transition <?php echo is_favorited((int) $r['id'], (int) $user['id']) ? 'fas' : 'far'; ?> fa-bookmark fa-xl"></i>
+                    </button>
+                <?php endif; ?>
+
                     </div>
-                    <?php if ($user): ?>
-                        <button id="favorite-btn-<?php echo (int) $r['id']; ?>"
-                            onclick="toggleFavorite(<?php echo (int) $r['id']; ?>)"
-                            class="favorite-btn text-xl <?php echo is_favorited((int) $r['id'], (int) $user['id']) ? 'text-yellow-500' : 'text-gray-400'; ?>">
-                            <i id="like-bookmark"
-                                class="icon-transition <?php echo is_favorited((int) $r['id'], (int) $user['id']) ? 'fas' : 'far'; ?> fa-bookmark"></i>
-                        </button>
-                    <?php endif; ?>
-                    <div class="ml-auto text-sm text-gray-600 flex items-center gap-3 lg:flex  hidden">
-                        <span><i class="fas fa-cog mr-1"></i>Schwierigkeit: <strong><?php
-                        echo match ($r['difficulty']) {
-                            'easy' => 'Leicht',
-                            'medium' => 'Mittel',
-                            'hard' => 'Schwer',
-                            default => htmlspecialchars($r['difficulty'])
-                        };
-                        ?></strong></span>
-                        <span><i class="fas fa-clock mr-1"></i>Dauer: <strong>
+                </div>
+
+                <!-- Card Content -->
+                <div class="px-4 flex flex-col">
+                    <div class="flex items-end justify-between text-sm text-gray-500 pb-2 border-b-1 border-gray-100">
+                        <span>
+                            <i class="fas fa-clock mr-1"></i>Zubereitungszeit:
+                            <strong>
                                 <?php
                                 $duration_minutes = (int) $r['duration_minutes']; // Get the duration in minutes
                                 $hours = floor($duration_minutes / 60); // Calculate hours
                                 $minutes = $duration_minutes % 60; // Calculate remaining minutes
-                            
                                 echo sprintf("%d:%02d", $hours, $minutes); // Format as h:m (e.g., 2:05)
                                 ?>
-                                (Stunden/Minunten)
-                            </strong></span>
-                        <?php if (!empty($r['portions'])): ?>
-                            <span><i class="fas fa-users mr-1"></i>Portionen:
-                                <strong><?php echo (int) $r['portions']; ?></strong></span>
-                        <?php endif; ?>
-                        <?php if (!empty($r['category'])): ?>
-                            <span><i class="fas fa-tag mr-1"></i><?php echo htmlspecialchars($r['category']); ?></span>
-                        <?php endif; ?>
+                            </strong>
+                        </span>
+                
+                        <span>
+                            <i class="fas fa-cog mr-1"></i>Schwierigkeit:
+                            <strong>
+                                <?php
+                                echo match ($r['difficulty']) {
+                                    'easy' => 'Leicht',
+                                    'medium' => 'Mittel',
+                                    'hard' => 'Schwer',
+                                    default => htmlspecialchars($r['difficulty'])
+                                };
+                                ?>
+                            </strong>
+                        </span>
                     </div>
+                    <div class="flex flex-col">
+                        <h3 class="font-bold text-lg my-2">
+                           <a href="<?php echo htmlspecialchars(recipe_url($r)); ?>"><?php echo htmlspecialchars($r['title']); ?></a>
+                        </h3>
+                        <p class="mb-3 lg:line-clamp-3 hidden text-pretty hyphens-all">
+                           <?php echo nl2br(htmlspecialchars($r['description'])); ?>
+                        </p>
+                    </div>
+
                 </div>
-                <h2 class="text-lg font-semibold"><a
-                        href="<?php echo htmlspecialchars(recipe_url($r)); ?>"><?php echo htmlspecialchars($r['title']); ?></a>
-                </h2>
-                <p class="text-sm leading-6 whitespace-pre-line"><?php echo nl2br(htmlspecialchars($r['description'])); ?>
-                </p>
             </div>
-        </article>
-    <?php endforeach; ?>
-</div>
+        <?php endforeach; ?>
+    </div>
+</section>
+<!-- card wrapper end -->
+
 
 <div id="feed-sentinel" class="h-8"></div>
 
@@ -261,7 +314,7 @@ if (isset($_GET['message'])) {
 
 <!-- Page specific JavaScript -->
 <script>
-     function openModal(id) {
+    function openModal(id) {
         const el = document.getElementById(id);
         if (!el) return;
         el.classList.remove('hidden');
@@ -277,77 +330,77 @@ if (isset($_GET['message'])) {
         document.body.classList.remove('overflow-hidden');
     }
     const likeRecipe = async (recipeId) => {
-    // Prüfen ob User angemeldet ist
-    const isLoggedIn = <?php echo $user ? 'true' : 'false'; ?>;
-    
-    if (!isLoggedIn) {
-        // Nachricht anzeigen, dass Anmeldung erforderlich ist
-        showLoginRequiredMessage();
-        return;
-    }
+        // Prüfen ob User angemeldet ist
+        const isLoggedIn = <?php echo $user ? 'true' : 'false'; ?>;
 
-    const likeBtn = document.querySelector(`#like-btn-${recipeId}`);
-    const likeIcon = likeBtn.querySelector('#like-heart');
-    
-    // Animation beim Klick
-    likeIcon.classList.add('heart-animation');
-    
-    const res = await fetch('/like.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: 'recipe_id=' + encodeURIComponent(recipeId) + '&csrf_token=' + encodeURIComponent(document.querySelector('meta[name="csrf-token"]').content)
-    });
-    
-    const data = await res.json();
-    
-    if (data.ok) {
-        const likeCount = document.querySelector(`#like-count-${recipeId}`);
-        const likeWrapper = document.querySelector(`#like-count-wrapper-${recipeId}`);
-        
-        likeCount.textContent = data.likes;
-        
-        if (likeWrapper) {
-            if (Number(data.likes) > 0) 
-                likeWrapper.classList.remove('hidden');
-            else 
-                likeWrapper.classList.add('hidden');
+        if (!isLoggedIn) {
+            // Nachricht anzeigen, dass Anmeldung erforderlich ist
+            showLoginRequiredMessage();
+            return;
         }
-        
-        // Icon und Farbe ändern
-        if (data.liked) {
-            likeBtn.classList.remove('text-gray-400');
-            likeBtn.classList.add('text-red-500');
-            likeIcon.classList.remove('far');
-            likeIcon.classList.add('fas');
-        } else {
-            likeBtn.classList.remove('text-red-500');
-            likeBtn.classList.add('text-gray-400');
-            likeIcon.classList.remove('fas');
-            likeIcon.classList.add('far');
-        }
-        
-        // Animation entfernen
-        setTimeout(() => {
-            likeBtn.classList.remove('heart-animation');
-        }, 300);
-    } else if (data.redirect) {
-        window.location.href = data.redirect;
-    }
-};
 
-// Funktion zum Anzeigen der Anmelde-Nachricht
-function showLoginRequiredMessage() {
-    // Prüfen ob bereits eine Nachricht angezeigt wird
-    if (document.getElementById('login-required-message')) {
-        return;
-    }
-    
-    const messageHtml = `
+        const likeBtn = document.querySelector(`#like-btn-${recipeId}`);
+        const likeIcon = likeBtn.querySelector('#like-heart');
+
+        // Animation beim Klick
+        likeIcon.classList.add('heart-animation');
+
+        const res = await fetch('/like.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: 'recipe_id=' + encodeURIComponent(recipeId) + '&csrf_token=' + encodeURIComponent(document.querySelector('meta[name="csrf-token"]').content)
+        });
+
+        const data = await res.json();
+
+        if (data.ok) {
+            const likeCount = document.querySelector(`#like-count-${recipeId}`);
+            const likeWrapper = document.querySelector(`#like-count-wrapper-${recipeId}`);
+
+            likeCount.textContent = data.likes;
+
+            if (likeWrapper) {
+                if (Number(data.likes) > 0)
+                    likeWrapper.classList.remove('hidden');
+                else
+                    likeWrapper.classList.add('hidden');
+            }
+
+            // Icon und Farbe ändern
+            if (data.liked) {
+                likeBtn.classList.remove('text-white');
+                likeBtn.classList.add('text-red-600');
+                likeIcon.classList.remove('far');
+                likeIcon.classList.add('fas');
+            } else {
+                likeBtn.classList.remove('text-red-600');
+                likeBtn.classList.add('text-white');
+                likeIcon.classList.remove('fas');
+                likeIcon.classList.add('far');
+            }
+
+            // Animation entfernen
+            setTimeout(() => {
+                likeBtn.classList.remove('heart-animation');
+            }, 300);
+        } else if (data.redirect) {
+            window.location.href = data.redirect;
+        }
+    };
+
+    // Funktion zum Anzeigen der Anmelde-Nachricht
+    function showLoginRequiredMessage() {
+        // Prüfen ob bereits eine Nachricht angezeigt wird
+        if (document.getElementById('login-required-message')) {
+            return;
+        }
+
+        const messageHtml = `
         <div id="login-required-message" class="fixed inset-x-0 top-4 z-50 flex items-start justify-center">
-            <div class="lg:max-w-xl max-w-sm w-full shadow-lg rounded px-4 py-3 bg-[#2196F3] border-l-4 border-[#0e457c] text-white">
+            <div class="lg:max-w-xl w-[80%] shadow-lg rounded px-4 py-3 bg-[#2196F3] border-l-4 border-[#0e457c] text-white">
                 <div class="p-2">
                     <div class="flex items-start">
                         <div class="ml-3 w-0 flex-1 pt-0.5">
@@ -370,23 +423,46 @@ function showLoginRequiredMessage() {
                         </div>
                     </div>
                 </div>
+                            <div class="w-full h-[4px] bg-stone-200 rounded">
+                <div class="prog-status"></div>
+            </div>
+            <style>
+            .prog-status {
+  height: 4px;
+  width: 0%;
+  border-radius: 20px;
+  background: red;
+  animation: 5s linear load infinite;
+}
+@keyframes load {
+  50% {
+    width: 50%;
+    background: oklch(70.7% 0.165 254.624);
+  }
+  100% {
+    width: 100%;
+    background: #2196F3;
+  }
+}
+
+            </style>
             </div>
         </div>
     `;
-    
-    document.body.insertAdjacentHTML('afterbegin', messageHtml);
-    
-    // Nachricht nach 5 Sekunden automatisch entfernen
-    setTimeout(removeLoginRequiredMessage, 5000);
-}
 
-// Funktion zum Entfernen der Anmelde-Nachricht
-function removeLoginRequiredMessage() {
-    const message = document.getElementById('login-required-message');
-    if (message) {
-        message.remove();
+        document.body.insertAdjacentHTML('afterbegin', messageHtml);
+
+        // Nachricht nach 5 Sekunden automatisch entfernen
+        setTimeout(removeLoginRequiredMessage, 5000);
     }
-}
+
+    // Funktion zum Entfernen der Anmelde-Nachricht
+    function removeLoginRequiredMessage() {
+        const message = document.getElementById('login-required-message');
+        if (message) {
+            message.remove();
+        }
+    }
 
     const toggleFavorite = async (recipeId) => {
         const favoriteBtn = document.querySelector(`#favorite-btn-${recipeId}`);
@@ -410,13 +486,13 @@ function removeLoginRequiredMessage() {
 
             if (result.ok) {
                 if (result.favorited) {
-                    favoriteBtn.classList.remove('text-gray-400');
-                    favoriteBtn.classList.add('text-yellow-500');
+                    favoriteBtn.classList.remove('text-white');
+                    favoriteBtn.classList.add('text-[#2d7ef7]');
                     favoriteIcon.classList.remove('far');
                     favoriteIcon.classList.add('fas');
                 } else {
-                    favoriteBtn.classList.remove('text-yellow-500');
-                    favoriteBtn.classList.add('text-gray-400');
+                    favoriteBtn.classList.remove('text-[#2d7ef7]');
+                    favoriteBtn.classList.add('text-white');
                     favoriteIcon.classList.remove('fas');
                     favoriteIcon.classList.add('far');
                 }

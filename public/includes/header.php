@@ -466,12 +466,12 @@ $seo = [
 
     <div class="flex content-start w-full flex lg:hidden px-4 py-4">
         <a href="/"
-            class="flex items-center z-[9999] navbar-brand hover:scale-150 origin-left transition duration-300 ease-in-out">
+            class="flex items-center navbar-brand hover:scale-150 origin-left transition duration-300 ease-in-out">
             <svg fill="currentColor" width="160px" height="50px">
                 <use href="#logo"></use>
             </svg>
         </a>
     </div>
     <!-- Main Content Container -->
-    <main class="max-w-4xl mx-auto px-4 py-6 h-full">
+    <main class="min-h-screen w-full md:px-[50px] px-[10px] mt-[20px]">
       <!-- Flash Messages anzeigen -->
