@@ -1,0 +1,16 @@
+RewriteEngine On
+
+# Pretty URL für Profile mit Username: /profile/max-mustermann
+RewriteRule ^profile/([a-zA-Z0-9-]+)/?$ profile.php?user_name=$1 [QSA,L]
+
+# Fallback für alte Profile URLs mit ID: /profile/2-max-mustermann (für Rückwärtskompatibilität)
+RewriteRule ^profile/(\d+)(?:-[A-Za-z0-9_-]+)?$ profile.php?uid=$1 [L,QSA]
+
+# Pretty URL für AllMyLinks: /all_my_links/max-mustermann
+RewriteRule ^all_my_links/([a-zA-Z0-9-]+)/?$ all_my_links.php?user_name=$1 [QSA,L]
+
+# SEO recipe route: /recipe/123-spaghetti-carbonara
+RewriteRule ^recipe/([a-zA-Z0-9-]+)/?$ recipe_view.php?id=$1 [L,QSA]
+
+# SEO recipe route: /recipe/123-spaghetti-carbonara
+RewriteRule ^recipe/(?:-[A-Za-z0-9_-]+)?$ recipe_view.php?id=$1 [L,QSA]

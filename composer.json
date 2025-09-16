@@ -1,0 +1,10 @@
+{
+    "name": "ddev/recipedb",
+    "description": "Recipe Database Application",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "phpmailer/phpmailer": "^6.10",
+        "dompdf/dompdf": "^3.1"
+    }
+}
