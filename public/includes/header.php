@@ -132,35 +132,35 @@ $seo = [
                             <?php endif; ?>
                         </button>
 
-                        <!-- User Menu -->
-                        <div class="relative inline-block text-left">
-                            <!-- Avatar Button -->
-                            <button id="userMenuButton" class="flex items-center focus:outline-none">
-                                <div
-                                    class="h-10 w-10 rounded-full overflow-hidden outline-2 outline-offset-2 outline-[#2d7ef7] hover:outline-[var(--rh-text)] transition duration-600 cursor-pointer">
-                                    <img src="<?php echo htmlspecialchars(isset($user['avatar_path']) && $user['avatar_path'] ? absolute_url_from_path((string) $user['avatar_path']) : SITE_URL . 'images/default_avatar.png'); ?>"
-                                        class="h-10 w-10 rounded-full object-cover" alt="Avatar" />
-                                </div>
-                                <span
-                                    class="ml-2 text-sm font-medium hidden"><?php echo htmlspecialchars($user['name']); ?></span>
-                            </button>
+                        <!-- Ersetzen Sie das bestehende Dropdown HTML mit diesem: -->
+<div class="relative inline-block text-left">
+    <!-- Avatar Button -->
+    <button id="userMenuButton" class="flex items-center focus:outline-none">
+        <div
+            class="h-10 w-10 rounded-full overflow-hidden outline-2 outline-offset-2 outline-[#2d7ef7] hover:outline-[var(--rh-text)] transition duration-600 cursor-pointer">
+            <img src="<?php echo htmlspecialchars(isset($user['avatar_path']) && $user['avatar_path'] ? absolute_url_from_path((string) $user['avatar_path']) : SITE_URL . 'images/default_avatar.png'); ?>"
+                class="h-10 w-10 rounded-full object-cover" alt="Avatar" />
+        </div>
+        <span
+            class="ml-2 text-sm font-medium hidden"><?php echo htmlspecialchars($user['name']); ?></span>
+    </button>
 
-                            <!-- Dropdown -->
-                            <div id="userMenuDropdown"
-                                class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-                                <a href="<?php echo htmlspecialchars(profile_url(['id' => $user['id'], 'name' => $user['name']])); ?>"
-                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                    Profil ansehen
-                                </a>
-                                <a href="/profile_edit.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                    Profil bearbeiten
-                                </a>
-                                <a href="/logout.php" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
-                                    Logout
-                                    <i class="fa-solid fa-arrow-right-from-bracket ml-1 rotate-180"></i>
-                                </a>
-                            </div>
-                        </div>
+    <!-- Dropdown - Updated classes for flexible positioning -->
+    <div id="userMenuDropdown"
+        class="hidden absolute right-0 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 transform transition-all duration-200 ease-out">
+        <a href="<?php echo htmlspecialchars(profile_url(['id' => $user['id'], 'name' => $user['name']])); ?>"
+            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-lg transition-colors">
+            <i class="fas fa-user mr-2"></i>Profil ansehen
+        </a>
+        <a href="/profile_edit.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+            <i class="fas fa-edit mr-2"></i>Profil bearbeiten
+        </a>
+        <div class="border-t border-gray-200"></div>
+        <a href="/logout.php" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 rounded-b-lg transition-colors">
+            <i class="fa-solid fa-arrow-right-from-bracket mr-2 rotate-180"></i>Logout
+        </a>
+    </div>
+</div>
                     <?php else: ?>
                         <div class="flex items-center gap-x-5 text-[16px]">
                             <a href="/login.php"
@@ -296,25 +296,74 @@ $seo = [
                 });
             }
 
-            // User Dropdown Menu
-            const userButton = document.getElementById("userMenuButton");
-            const userDropdown = document.getElementById("userMenuDropdown");
+            // Diese Funktion ersetzt den ursprünglichen User Dropdown Code in Ihrem header.php
+// Ersetzen Sie den Code ab "// User Dropdown Menu" bis zum Ende des if-Blocks
 
-            if (userButton && userDropdown) {
-                // Toggle Dropdown
-                userButton.addEventListener("click", (e) => {
-                    e.stopPropagation();
-                    userDropdown.classList.toggle("hidden");
-                });
+// Verbesserte User Dropdown Menu Funktionalität
+const userButton = document.getElementById("userMenuButton");
+const userDropdown = document.getElementById("userMenuDropdown");
 
-                // Click outside closes dropdown
-                document.addEventListener("click", (e) => {
-                    if (!userButton.contains(e.target) && !userDropdown.contains(e.target)) {
-                        userDropdown.classList.add("hidden");
-                    }
-                });
-            }
+if (userButton && userDropdown) {
+    // Funktion zur automatischen Positionierung des Dropdowns
+    function positionDropdown() {
+        const buttonRect = userButton.getBoundingClientRect();
+        const dropdownRect = userDropdown.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const spaceBelow = viewportHeight - buttonRect.bottom;
+        const spaceAbove = buttonRect.top;
+        const dropdownHeight = dropdownRect.height || 200; // Fallback-Höhe
 
+        // Klassen zurücksetzen
+        userDropdown.classList.remove('bottom-full', 'top-full', 'mb-2', 'mt-2');
+        
+        // Entscheiden ob nach oben oder unten
+        if (spaceBelow >= dropdownHeight || spaceBelow >= spaceAbove) {
+            // Nach unten ausrichten
+            userDropdown.classList.add('top-full', 'mt-2');
+        } else {
+            // Nach oben ausrichten
+            userDropdown.classList.add('bottom-full', 'mb-2');
+        }
+    }
+
+    // Toggle Dropdown mit automatischer Positionierung
+    userButton.addEventListener("click", (e) => {
+        e.stopPropagation();
+        
+        if (userDropdown.classList.contains("hidden")) {
+            // Dropdown anzeigen
+            userDropdown.classList.remove("hidden");
+            // Kurz warten, damit das Element gerendert wird, dann positionieren
+            requestAnimationFrame(() => {
+                positionDropdown();
+            });
+        } else {
+            // Dropdown verstecken
+            userDropdown.classList.add("hidden");
+        }
+    });
+
+    // Bei Fenstergröße-Änderung neu positionieren
+    window.addEventListener('resize', () => {
+        if (!userDropdown.classList.contains("hidden")) {
+            positionDropdown();
+        }
+    });
+
+    // Bei Scroll neu positionieren
+    window.addEventListener('scroll', () => {
+        if (!userDropdown.classList.contains("hidden")) {
+            positionDropdown();
+        }
+    });
+
+    // Click outside closes dropdown
+    document.addEventListener("click", (e) => {
+        if (!userButton.contains(e.target) && !userDropdown.contains(e.target)) {
+            userDropdown.classList.add("hidden");
+        }
+    });
+}
             // Notification System
             const notificationBell = document.getElementById('notification-bell');
             const notificationOverlay = document.getElementById('notification-overlay');

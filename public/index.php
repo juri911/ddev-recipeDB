@@ -202,16 +202,30 @@ if (isset($_GET['message'])) {
                             </div>
                             <?php if (count($r['images']) > 1): ?>
                                 <button type="button"
-                                    class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2"
-                                    data-prev>
-                                    &#10094;
-                                </button>
+                                class="flex absolute top-0 left-0 z-30 justify-center items-center px-4 h-full cursor-pointer group focus:outline-none"
+                                data-prev>
+                                <span
+              class="inline-flex justify-center items-center w-8 h-8 rounded-full sm:w-10 sm:h-10 border-2 border-[#2d7ef7] bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-[#2d7ef7]">
+              <svg class="w-5 h-5 text-[#2d7ef7] sm:w-6 sm:h-6" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+              </svg>
+              <span class="hidden">Previous</span>
+            </span>
+                            </button>
                                 <button type="button"
-                                    class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2"
+                                    class="flex absolute top-0 right-0 z-30 justify-center items-center px-4 h-full cursor-pointer group focus:outline-none"
                                     data-next>
-                                    &#10095;
+                                    <span
+              class="inline-flex justify-center items-center w-8 h-8 rounded-full sm:w-10 sm:h-10 border-2 border-[#2d7ef7] bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-[#2d7ef7]">
+              <svg class="w-5 h-5 text-[#2d7ef7] sm:w-6 sm:h-6" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+              <span class="hidden">Next</span>
+            </span>
                                 </button>
-                                <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 bg-black px-5 py-2 text-lg"
+                                <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 px-5 py-2 text-lg"
                                     data-dots>
                                 </div>
                             <?php endif; ?>
@@ -553,7 +567,7 @@ if (isset($_GET['message'])) {
             for (let i = 0; i < slideCount; i++) {
                 const dot = document.createElement('button');
                 dot.type = 'button';
-                dot.className = `h-3 w-3 rounded-full cursor-pointer ${i === currentIndex ? 'bg-white' : 'bg-white/50'}`;
+                dot.className = `h-3 w-3 rounded-full cursor-pointer ${i === currentIndex ? 'bg-[#2d7ef7]' : 'bg-[#2d7ef7]/50'}`;
                 dot.addEventListener('click', () => goTo(i));
                 dotsContainer.appendChild(dot);
             }
