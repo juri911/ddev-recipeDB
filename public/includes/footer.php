@@ -1,30 +1,37 @@
 </main>
-    <footer class="py-[15px] border-t-[1px] border-gray-200 dark:border-gray-600 mt-[100px]">
-    <header class="flex-row justify-between items-center w-full gap-y-4 px-3 grid lg:grid-cols-3 grid-cols-1">
-      <div
-        class="flex lg:justify-start lg:py-0 py-6 justify-center items-center lg:border-0 border-gray-200 dark:border-gray-600 border-b-[1px]">
+    <footer class="text-center flex justify-center grid grid-rows-3 pb-[85px] mt-[100px]">
+    
+      
+      <a href="/" class="flex justify-center items-center navbar-brand">
+                <?php //echo get_app_logo_html(); 
+                ?>
+                <svg fill="currentColor" width="160px" height="50px">
+                    <use href="#logo"></use>
+                </svg>
+            </a>
+        <ul class="flex justify-center items-center gap-x-2 text-base">
+          <li><a href="#" class="text-[var(--rh-text)] hover:text-[var(--rh-primary)]">Impressum</a></li>
+          <li><a href="#" class="text-[var(--rh-text)] hover:text-[var(--rh-primary)]">Datenschutz</a></li>
+          <li><a href="#" class="text-[var(--rh-text)] hover:text-[var(--rh-primary)]">AGB</a></li>
+        </ul>
+     
+     
+        <ul class="flex justify-center items-center flex-col gap-y-2">
+          <h3 class="font-semibold text-xl text-black">Stay in touch</h3>
+          <div class="flex items-align gap-x-2">
+            <a href="#" class="text-[var(--rh-text)] hover:text-[var(--rh-primary)]">
+              <i class="fa-brands fa-instagram fa-xl"></i>
+            </a>
+            <a href="#" class="text-[var(--rh-text)] hover:text-[var(--rh-primary)]">
+              <i class="fa-brands fa-pinterest fa-xl"></i>
+            </a>
+          </div>
+        </ul>
+     
+        <div class="flex justify-around items-center text-[12px] pt-4">
        <p>&copy; <?php echo date('Y'); ?> <?php echo APP_NAME; ?></p>
       </div>
-      <div
-        class="flex justify-center items-center lg:py-0 py-6 lg:border-0 border-gray-200 dark:border-gray-600 border-b-[1px]">
-        <ul class="flex justify-center gap-x-4">
-          <li><a href="#">Impressum</a></li>
-          <li><a href="#">Datenschutz</a></li>
-          <li><a href="#">AGB</a></li>
-        </ul>
-      </div>
-      <div
-        class="flex lg:justify-end justify-center lg:py-0 py-6 items-center lg:border-0 border-gray-200 dark:border-gray-600">
-        <ul class="flex justify-between items-center gap-x-4">
-          <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-[#2d7ef7]">
-            <i class="fa-brands fa-instagram fa-xl"></i>
-          </a>
-          <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-[#2d7ef7]">
-            <i class="fa-brands fa-pinterest fa-xl"></i>
-          </a>
-        </ul>
-      </div>
-    </header>
+
   </footer>
 
   <div popover id="search-popover" class="search container mx-auto">

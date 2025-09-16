@@ -139,6 +139,20 @@ if (isset($_GET['message'])) {
                         </div>
                     </div>
 
+                    <?php if ($user && $user['id'] !== (int) $r['user_id']): ?>
+            <!-- Follow Button -->
+            <button data-user-id="<?php echo (int) $r['user_id']; ?>" 
+                onclick="toggleFollow(<?php echo (int) $r['user_id']; ?>)"
+                class="follow-btn px-3 py-1 rounded text-sm font-medium transition-colors duration-200
+                <?php echo is_following((int) $user['id'], (int) $r['user_id']) 
+                    ? 'bg-gray-200 text-gray-800 hover:bg-gray-300' 
+                    : 'bg-[#2d7ef7] text-white hover:bg-blue-600'; ?>">
+                <span class="follow-text">
+                    <?php echo is_following((int) $user['id'], (int) $r['user_id']) ? 'Entfolgen' : 'Folgen'; ?>
+                </span>
+            </button>
+        <?php endif; ?>
+
                     <?php if ($user && $user['id'] === (int) $r['user_id']): ?>
                         <div class="ml-auto">
                             <button type="button"
@@ -253,7 +267,7 @@ if (isset($_GET['message'])) {
                                 id="like-count-<?php echo (int) $r['id']; ?>"><?php echo (int) $r['likes_count']; ?></span>
                         </div>
 
-<?php if ($user): ?>
+                <?php if ($user): ?>
                     <button id="favorite-btn-<?php echo (int) $r['id']; ?>"
                         onclick="toggleFavorite(<?php echo (int) $r['id']; ?>)"
                         class="favorite-btn ml-auto <?php echo is_favorited((int) $r['id'], (int) $user['id']) ? 'text-[#2d7ef7]' : 'text-white'; ?>">
@@ -295,12 +309,14 @@ if (isset($_GET['message'])) {
                         </span>
                     </div>
                     <div class="flex flex-col">
+                        <a href="<?php echo htmlspecialchars(recipe_url($r)); ?>">
                         <h3 class="font-bold text-lg my-2">
-                           <a href="<?php echo htmlspecialchars(recipe_url($r)); ?>"><?php echo htmlspecialchars($r['title']); ?></a>
+                           <?php echo htmlspecialchars($r['title']); ?>
                         </h3>
                         <p class="mb-3 lg:line-clamp-3 hidden text-pretty hyphens-all">
                            <?php echo nl2br(htmlspecialchars($r['description'])); ?>
                         </p>
+                        </a>
                     </div>
 
                 </div>
@@ -678,6 +694,66 @@ if (isset($_GET['message'])) {
             observer.observe(sentinel);
         }
     });
+
+    // Follow/Unfollow functionality
+const toggleFollow = async (profileId) => {
+    // Find ALL follow buttons for this user
+    const followBtns = document.querySelectorAll(`[data-user-id="${profileId}"].follow-btn`);
+    
+    if (followBtns.length === 0) return;
+    
+    // Disable all buttons during request
+    followBtns.forEach(btn => {
+        btn.disabled = true;
+        btn.style.opacity = '0.6';
+    });
+    
+    try {
+        const response = await fetch('/api/toggle_follow.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                profile_id: profileId,
+                csrf_token: document.querySelector('meta[name="csrf-token"]').content
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.ok) {
+            // Update ALL follow buttons for this user
+            followBtns.forEach(followBtn => {
+                const followText = followBtn.querySelector('.follow-text');
+                
+                if (result.following) {
+                    // Now following
+                    followBtn.classList.remove('bg-[#2d7ef7]', 'text-white', 'hover:bg-blue-600');
+                    followBtn.classList.add('bg-gray-200', 'text-gray-800', 'hover:bg-gray-300');
+                    followText.textContent = 'Entfolgen';
+                } else {
+                    // Not following anymore
+                    followBtn.classList.remove('bg-gray-200', 'text-gray-800', 'hover:bg-gray-300');
+                    followBtn.classList.add('bg-[#2d7ef7]', 'text-white', 'hover:bg-blue-600');
+                    followText.textContent = 'Folgen';
+                }
+            });
+        } else {
+            console.error('Follow toggle failed:', result.error);
+            alert('Fehler beim Folgen/Entfolgen: ' + result.error);
+        }
+    } catch (error) {
+        console.error('Network error:', error);
+        alert('Netzwerkfehler beim Folgen/Entfolgen.');
+    } finally {
+        // Re-enable all buttons
+        followBtns.forEach(btn => {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+        });
+    }
+};
 </script>
 
 <?php

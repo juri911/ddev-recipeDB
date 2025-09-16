@@ -7,8 +7,8 @@
 :root {
     --rh-bg: #222831;
     --rh-bg-secondary: #393E46;
-    --rh-text: #e5e7eb;
-    --rh-text-black: #222831;
+    --rh-text: #e5e7eb; --rh-text-hover: #737f97;
+    --rh-text-black: #000000;
     --rh-border: #e5e7eb;
     --rh-muted: #6b7280;
     --rh-primary: #2d7ef7;
@@ -245,7 +245,7 @@ a.link:hover {
                 inline-size: 44px;
                 border-radius: var(--radius-round);
                 cursor: pointer;
-                background-color: var(--stone-2);
+                background-color: var(--rh-primary);
             }
 
             .search-section {

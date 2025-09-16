@@ -78,7 +78,7 @@ $seo = [
     <div class="w-full h-[6px] bg-gradient-to-r from-[#2d7ef7] to-fuchsia-400 fixed top-0 z-[99999]"></div>
 
     <header
-        class="flex lg:sticky lg:top-0 fixed bottom-0 left-0 right-0 z-10 container-fluid min-h-[80px] mx-auto justify-between items-center  px-3 border-b-[1px] bg-[var(--rh-bg)]/40 border-[var(--rh-bg-secondary)] backdrop-blur-lg">
+        class="flex lg:sticky lg:top-0 fixed bottom-0 left-0 right-0 z-10 container-fluid min-h-[80px] mx-auto justify-between items-center px-0 lg:px-3 border-b-[1px] bg-[var(--rh-bg)]/40 border-[var(--rh-bg-secondary)] backdrop-blur-lg">
         <!-- Logo -->
         <div class="lg:flex hidden content-start">
             <a href="/"
@@ -92,29 +92,29 @@ $seo = [
         </div>
 
         <!-- Navigation -->
-        <nav class="flex content-end">
-            <div class="flex justify-end items-center gap-x-5 text-[16px]">
+        <nav class="flex items-center justify-between lg:justify-end h-[75px] w-full">
+            <div class="flex justify-center lg:justify-end w-full items-center gap-x-0 lg:gap-x-5 text-[16px]">
                 <!-- Link group -->
                 <div class="flex justify-center items-center">
                     <a href="/"
-                        class="bg-[#2d7ef7] border-1 border-[#2d7ef7] font-semibold hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white py-1 px-3 rounded-l transition duration-600">
-                        <i class="fa-solid fa-house"></i>
+                        class="bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1 border-[#2d7ef7]  hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white lg:py-1 lg:px-3 p-4  lg:rounded-l transition duration-600 aspect-square lg:aspect-auto rounded-none">
+                        <i class="fa-solid fa-house lg:text-base text-2xl"></i>
                     </a>
                     <button popovertarget="search-popover"
-                        class="bg-[#2d7ef7] border-1 border-[#2d7ef7] font-semibold hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white py-1 px-3 s transition duration-600">
-                        <i class="fas fa-magnifying-glass"></i>
+                        class="bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1  border-[#2d7ef7] hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white lg:py-1 lg:px-3 p-4 transition duration-600 aspect-square lg:aspect-auto rounded-none">
+                        <i class="fas fa-magnifying-glass lg:text-base text-2xl"></i>
                     </button>
                     <a href="/categories.php"
-                        class="bg-[#2d7ef7] border-1 border-[#2d7ef7] font-semibold hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white py-1 px-3 rounded-r transition duration-600">
-                        <i class="fa-solid fa-tags"></i>
+                        class="lg:block hidden bg-[#2d7ef7] border-1 border-[#2d7ef7] hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white lg:py-1 lg:px-3 p-4 lg:rounded-r transition duration-600 aspect-square lg:aspect-auto rounded-none"">
+                        <i class="fa-solid fa-tags lg:text-base text-2xl"></i>
                     </a>
                 </div>
-                <div class="flex items-center gap-x-5">
+                <div class="flex items-center gap-x0 lg:gap-x-2 pr-0 lg:pr-3">
                     <?php if (isset($user) && $user): ?>
                         <!-- New Recipe Button -->
                         <a href="/recipe_new.php"
-                            class="bg-[#2d7ef7] border-1 border-[#2d7ef7] hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white py-1 px-3 rounded transition duration-600">
-                            <i class="fa-solid fa-feather pr-2"></i>Neues Rezept
+                            class="bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1 bg-[#2d7ef7] border-[#2d7ef7] hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white p-4 lg:py-1 lg:px-3 aspect-square lg:aspect-auto rounded-none lg:rounded transition duration-600">
+                            <i class="fa-solid fa-feather lg:text-base text-2xl p-0 lg:pr-2"></i><p class="lg:inline hidden">Neues Rezept</p>
                         </a>
                         <!-- Notifications -->
                         <?php
@@ -124,8 +124,8 @@ $seo = [
                             $unreadCount = count_unread_notifications((int) $user['id']);
                         }
                         ?>
-                        <button id="notification-bell" class="relative text-gray-600 hover:text-[var(--rh-text)]">
-                            <i class="fa-solid fa-bell text-[26px]"></i>
+                        <button id="notification-bell" class="bg-transparent lg:bg-[#2d7ef7]  relative text-white lg:text-gray-600 bg-[var(--rh-primary)] lg:bg-transparent hover:text-[var(--rh-text)] lg:p-0 p-4 aspect-square lg:aspect-auto hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent transition duration-600">
+                            <i class="fa-solid fa-bell lg:text-[26px] text-2xl"></i>
                             <?php if ($unreadCount > 0): ?>
                                 <span
                                     class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center"><?php echo $unreadCount; ?></span>
@@ -133,59 +133,57 @@ $seo = [
                         </button>
 
                         <!-- Ersetzen Sie das bestehende Dropdown HTML mit diesem: -->
-<div class="relative inline-block text-left">
-    <!-- Avatar Button -->
-    <button id="userMenuButton" class="flex items-center focus:outline-none">
-        <div
-            class="h-10 w-10 rounded-full overflow-hidden outline-2 outline-offset-2 outline-[#2d7ef7] hover:outline-[var(--rh-text)] transition duration-600 cursor-pointer">
-            <img src="<?php echo htmlspecialchars(isset($user['avatar_path']) && $user['avatar_path'] ? absolute_url_from_path((string) $user['avatar_path']) : SITE_URL . 'images/default_avatar.png'); ?>"
-                class="h-10 w-10 rounded-full object-cover" alt="Avatar" />
-        </div>
-        <span
-            class="ml-2 text-sm font-medium hidden"><?php echo htmlspecialchars($user['name']); ?></span>
-    </button>
+                        <div class="relative inline-block text-left ml-auto">
+                            <!-- Avatar Button -->
+                            <button id="userMenuButton" class="flex items-center focus:outline-none lg:pr-4 p-4 aspect-square lg:aspect-auto">
+                                <div
+                                    class="h-10 w-10 rounded-full overflow-hidden outline-2 outline-offset-2 outline-[#2d7ef7] hover:outline-[var(--rh-text)] transition duration-600 cursor-pointer">
+                                    <img src="<?php echo htmlspecialchars(isset($user['avatar_path']) && $user['avatar_path'] ? absolute_url_from_path((string) $user['avatar_path']) : SITE_URL . 'images/default_avatar.png'); ?>"
+                                        class="h-10 w-10 rounded-full object-cover" alt="Avatar" />
+                                </div>
+                                <span
+                                    class="ml-2 text-sm font-medium hidden"><?php echo htmlspecialchars($user['name']); ?></span>
+                            </button>
 
-    <!-- Dropdown - Updated classes for flexible positioning -->
-    <div id="userMenuDropdown"
-        class="hidden absolute right-0 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 transform transition-all duration-200 ease-out">
-        <a href="<?php echo htmlspecialchars(profile_url(['id' => $user['id'], 'name' => $user['name']])); ?>"
-            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-lg transition-colors">
-            <i class="fas fa-user mr-2"></i>Profil ansehen
-        </a>
-        <a href="/profile_edit.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-            <i class="fas fa-edit mr-2"></i>Profil bearbeiten
-        </a>
-        <div class="border-t border-gray-200"></div>
-        <a href="/logout.php" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 rounded-b-lg transition-colors">
-            <i class="fa-solid fa-arrow-right-from-bracket mr-2 rotate-180"></i>Logout
-        </a>
-    </div>
-</div>
+                            <!-- Dropdown - Updated classes for flexible positioning -->
+                            <div id="userMenuDropdown"
+                                class="hidden absolute right-0 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 transform transition-all duration-200 ease-out">
+                                <a href="<?php echo htmlspecialchars(profile_url(['id' => $user['id'], 'name' => $user['name']])); ?>"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-lg transition-colors">
+                                    <i class="fas fa-user mr-2"></i>Profil ansehen
+                                </a>
+                                <a href="/profile_edit.php"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-edit mr-2"></i>Profil bearbeiten
+                                </a>
+                                <div class="border-t border-gray-200"></div>
+                                <a href="/logout.php"
+                                    class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 rounded-b-lg transition-colors">
+                                    <i class="fa-solid fa-arrow-right-from-bracket mr-2 rotate-180"></i>Logout
+                                </a>
+                            </div>
+                        </div>
                     <?php else: ?>
-                        <div class="flex items-center gap-x-5 text-[16px]">
+                        <div class="flex items-center gap-x-5 text-[16px] pr-0 lg:pr-4">
                             <a href="/login.php"
-                                class="bg-[#2d7ef7] border-1 border-[#2d7ef7] font-semibold hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white py-1 px-3 rounded transition duration-600">
-                                <i class="fa-solid fa-arrow-right-from-bracket pr-2"></i>Login
+                                class="flex items-center bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1   bg-[#2d7ef7] border-[#2d7ef7] font-semibold hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white p-4 lg:py-1 lg:px-3 lg:rounded rounded-none transition duration-600 aspect-square lg:aspect-auto">
+                                <i class="fa-solid fa-arrow-right-from-bracket lg:text-base text-2xl pr-0 lg:pr-2"></i><p class="lg:inline hidden">Login</p>
                             </a>
 
                             <a class="flex items-center gap-x-1 font-semibold text-[#2d7ef7] relative after:absolute after:bg-[#2d7ef7] after:h-[2px] after:w-0 after:left-1/2 after:-translate-x-1/2 after:bottom-0 hover:after:w-full after:transition-all after:duration-300"
-                                href="/register.php">Registrieren <i class="fa-solid fa-pencil"></i></a>
+                                href="/register.php"><p class="lg:inline hidden">Registrieren</p><i class="fa-solid fa-pencil lg:text-base text-2xl"></i></a>
                         </div>
                     <?php endif; ?>
                 </div>
-                <!-- Mobile menu button -->
-                <button id="mobile-nav-btn"
-                    class=" relative w-10 h-10 flex flex-col items-center justify-center gap-1.5 active:scale-95 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50"
-                    aria-label="Menü öffnen" aria-expanded="false" aria-controls="mobile-nav-panel">
-                    <span
-                        class="line line-1 block h-[3px] w-6 bg-[var(--rh-primary)]  rounded-full transition-all duration-300 ease-out"></span>
-                    <span
-                        class="line line-2 block h-[3px] w-6 bg-[var(--rh-primary)]  rounded-full transition-all duration-300 ease-out"></span>
-                    <span
-                        class="line line-3 block h-[3px] w-6 bg-[var(--rh-primary)]  rounded-full transition-all duration-300 ease-out"></span>
-                </button>
             </div>
         </nav>
+        <!-- Mobile menu button -->
+                <button id="mobile-nav-btn" class="relative flex  items-center justify-center"
+                    aria-label="Menü öffnen" aria-expanded="false" aria-controls="mobile-nav-panel">
+                    <i
+                        class="fa-solid fa-burger text-[36px] text-[var(--rh-primary)] hover:text-[var(--rh-text)]  transition-all duration-300 ease-out"></i>
+
+                </button>
     </header>
 
     <!-- Notification Overlay -->
@@ -212,8 +210,7 @@ $seo = [
         </div>
     <?php endif; ?>
 
-    <!-- Mobile Menu (Drawer) -->
-    <!-- Overlay -->
+    <!-- Menu Overlay -->
     <div id="mobile-nav-overlay"
         class="fixed inset-0 bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 z-40">
     </div>
@@ -224,14 +221,9 @@ $seo = [
         aria-hidden="true">
         <div class="flex items-center justify-end p-4">
             <button id="mobile-nav-close"
-                class=" relative w-10 h-10 flex flex-col items-center justify-center gap-1.5 active:scale-95 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50"
+                class=" relative w-[46px] h-[46px] bg-[var(--rh-primary)] rounded-full flex flex-col items-center justify-center gap-1.5 active:scale-95 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50"
                 aria-label="Menü schließen" aria-expanded="false" aria-controls="mobile-nav-panel">
-                <span
-                    class="rotate-45 translate-y-[8px] h-[3px] w-6 bg-[var(--rh-primary)] rounded-full transition-all duration-300 ease-out"></span>
-                <span
-                    class="opacity-0 block h-[2px] w-6 bg-gray-700 rounded-full transition-all duration-300 ease-out"></span>
-                <span
-                    class="-rotate-45 -translate-y-[8px] h-[3px] w-6 bg-[var(--rh-primary)]  rounded-full transition-all duration-300 ease-out"></span>
+                <i class="fa-solid fa-xmark text-[26px]  transition-all duration-300 ease-out"></i>
             </button>
         </div>
 
@@ -247,7 +239,7 @@ $seo = [
     <!-- Header JavaScript - Loaded immediately -->
     <script>
         // Header-specific JavaScript that needs to run immediately
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             // Mobile navigation
             const btn = document.getElementById("mobile-nav-btn");
             const panel = document.getElementById("mobile-nav-panel");
@@ -297,73 +289,73 @@ $seo = [
             }
 
             // Diese Funktion ersetzt den ursprünglichen User Dropdown Code in Ihrem header.php
-// Ersetzen Sie den Code ab "// User Dropdown Menu" bis zum Ende des if-Blocks
+            // Ersetzen Sie den Code ab "// User Dropdown Menu" bis zum Ende des if-Blocks
 
-// Verbesserte User Dropdown Menu Funktionalität
-const userButton = document.getElementById("userMenuButton");
-const userDropdown = document.getElementById("userMenuDropdown");
+            // Verbesserte User Dropdown Menu Funktionalität
+            const userButton = document.getElementById("userMenuButton");
+            const userDropdown = document.getElementById("userMenuDropdown");
 
-if (userButton && userDropdown) {
-    // Funktion zur automatischen Positionierung des Dropdowns
-    function positionDropdown() {
-        const buttonRect = userButton.getBoundingClientRect();
-        const dropdownRect = userDropdown.getBoundingClientRect();
-        const viewportHeight = window.innerHeight;
-        const spaceBelow = viewportHeight - buttonRect.bottom;
-        const spaceAbove = buttonRect.top;
-        const dropdownHeight = dropdownRect.height || 200; // Fallback-Höhe
+            if (userButton && userDropdown) {
+                // Funktion zur automatischen Positionierung des Dropdowns
+                function positionDropdown() {
+                    const buttonRect = userButton.getBoundingClientRect();
+                    const dropdownRect = userDropdown.getBoundingClientRect();
+                    const viewportHeight = window.innerHeight;
+                    const spaceBelow = viewportHeight - buttonRect.bottom;
+                    const spaceAbove = buttonRect.top;
+                    const dropdownHeight = dropdownRect.height || 200; // Fallback-Höhe
 
-        // Klassen zurücksetzen
-        userDropdown.classList.remove('bottom-full', 'top-full', 'mb-2', 'mt-2');
-        
-        // Entscheiden ob nach oben oder unten
-        if (spaceBelow >= dropdownHeight || spaceBelow >= spaceAbove) {
-            // Nach unten ausrichten
-            userDropdown.classList.add('top-full', 'mt-2');
-        } else {
-            // Nach oben ausrichten
-            userDropdown.classList.add('bottom-full', 'mb-2');
-        }
-    }
+                    // Klassen zurücksetzen
+                    userDropdown.classList.remove('bottom-full', 'top-full', 'mb-2', 'mt-2');
 
-    // Toggle Dropdown mit automatischer Positionierung
-    userButton.addEventListener("click", (e) => {
-        e.stopPropagation();
-        
-        if (userDropdown.classList.contains("hidden")) {
-            // Dropdown anzeigen
-            userDropdown.classList.remove("hidden");
-            // Kurz warten, damit das Element gerendert wird, dann positionieren
-            requestAnimationFrame(() => {
-                positionDropdown();
-            });
-        } else {
-            // Dropdown verstecken
-            userDropdown.classList.add("hidden");
-        }
-    });
+                    // Entscheiden ob nach oben oder unten
+                    if (spaceBelow >= dropdownHeight || spaceBelow >= spaceAbove) {
+                        // Nach unten ausrichten
+                        userDropdown.classList.add('top-full', 'mt-2');
+                    } else {
+                        // Nach oben ausrichten
+                        userDropdown.classList.add('bottom-full', 'mb-2');
+                    }
+                }
 
-    // Bei Fenstergröße-Änderung neu positionieren
-    window.addEventListener('resize', () => {
-        if (!userDropdown.classList.contains("hidden")) {
-            positionDropdown();
-        }
-    });
+                // Toggle Dropdown mit automatischer Positionierung
+                userButton.addEventListener("click", (e) => {
+                    e.stopPropagation();
 
-    // Bei Scroll neu positionieren
-    window.addEventListener('scroll', () => {
-        if (!userDropdown.classList.contains("hidden")) {
-            positionDropdown();
-        }
-    });
+                    if (userDropdown.classList.contains("hidden")) {
+                        // Dropdown anzeigen
+                        userDropdown.classList.remove("hidden");
+                        // Kurz warten, damit das Element gerendert wird, dann positionieren
+                        requestAnimationFrame(() => {
+                            positionDropdown();
+                        });
+                    } else {
+                        // Dropdown verstecken
+                        userDropdown.classList.add("hidden");
+                    }
+                });
 
-    // Click outside closes dropdown
-    document.addEventListener("click", (e) => {
-        if (!userButton.contains(e.target) && !userDropdown.contains(e.target)) {
-            userDropdown.classList.add("hidden");
-        }
-    });
-}
+                // Bei Fenstergröße-Änderung neu positionieren
+                window.addEventListener('resize', () => {
+                    if (!userDropdown.classList.contains("hidden")) {
+                        positionDropdown();
+                    }
+                });
+
+                // Bei Scroll neu positionieren
+                window.addEventListener('scroll', () => {
+                    if (!userDropdown.classList.contains("hidden")) {
+                        positionDropdown();
+                    }
+                });
+
+                // Click outside closes dropdown
+                document.addEventListener("click", (e) => {
+                    if (!userButton.contains(e.target) && !userDropdown.contains(e.target)) {
+                        userDropdown.classList.add("hidden");
+                    }
+                });
+            }
             // Notification System
             const notificationBell = document.getElementById('notification-bell');
             const notificationOverlay = document.getElementById('notification-overlay');
@@ -534,4 +526,3 @@ if (userButton && userDropdown) {
     </div>
     <!-- Main Content Container -->
     <main class="min-h-screen w-full md:px-[50px] px-[10px] mt-[20px]">
-     
