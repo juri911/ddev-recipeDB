@@ -23,7 +23,6 @@ if (!isset($user)) {
     }
 }
 
-
 // SEO Defaults – können pro Seite überschrieben werden
 $seo = [
     'title' => $seo['title'] ?? $pageTitle ?? APP_NAME,
@@ -125,13 +124,13 @@ $seo = [
                             $unreadCount = count_unread_notifications((int) $user['id']);
                         }
                         ?>
-                        <a href="#" id="notification-bell" class="relative text-gray-600 hover:text-[var(--rh-text)]">
+                        <button id="notification-bell" class="relative text-gray-600 hover:text-[var(--rh-text)]">
                             <i class="fa-solid fa-bell text-[26px]"></i>
                             <?php if ($unreadCount > 0): ?>
                                 <span
                                     class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center"><?php echo $unreadCount; ?></span>
                             <?php endif; ?>
-                        </a>
+                        </button>
 
                         <!-- User Menu -->
                         <div class="relative inline-block text-left">
@@ -317,13 +316,13 @@ $seo = [
             }
 
             // Notification System
-            const notificationBell = document.getElement<!-- Flash Messages anzeigen -->
-<?php echo display_flash_messages(); ?>ById('notification-bell');
+            const notificationBell = document.getElementById('notification-bell');
             const notificationOverlay = document.getElementById('notification-overlay');
             const notificationList = document.getElementById('notification-list');
             const closeNotifications = document.getElementById('close-notifications');
             const markAllReadButton = document.getElementById('mark-all-read');
             const deleteAllButton = document.getElementById('delete-all-notifications');
+
             // Fetch notifications function
             async function fetchNotifications() {
                 if (!notificationList) return;
@@ -374,6 +373,8 @@ $seo = [
             if (notificationBell && notificationOverlay) {
                 notificationBell.addEventListener('click', async (e) => {
                     e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Notification bell clicked'); // Debug log
                     notificationOverlay.classList.remove('hidden');
                     notificationOverlay.classList.add('flex');
                     await fetchNotifications();
@@ -385,6 +386,16 @@ $seo = [
                 closeNotifications.addEventListener('click', () => {
                     notificationOverlay.classList.add('hidden');
                     notificationOverlay.classList.remove('flex');
+                });
+            }
+
+            // Close on overlay click
+            if (notificationOverlay) {
+                notificationOverlay.addEventListener('click', (e) => {
+                    if (e.target === notificationOverlay) {
+                        notificationOverlay.classList.add('hidden');
+                        notificationOverlay.classList.remove('flex');
+                    }
                 });
             }
 
@@ -474,4 +485,4 @@ $seo = [
     </div>
     <!-- Main Content Container -->
     <main class="min-h-screen w-full md:px-[50px] px-[10px] mt-[20px]">
-      <!-- Flash Messages anzeigen -->
+     
