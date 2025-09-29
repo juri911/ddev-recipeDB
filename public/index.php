@@ -259,7 +259,7 @@ if (isset($_GET['message'])) {
                             class="like-btn pr-1 <?php echo $user ? '' : 'cursor-not-allowed'; ?> 
                     <?php echo $user && is_liked((int) $r['id'], (int) $user['id']) ? 'text-red-600' : 'text-white'; ?>">
                             <i id="like-heart"
-                                class="icon-transition  <?php echo $user && is_liked((int) $r['id'], (int) $user['id']) ? 'fas' : 'far'; ?> fa-heart fa-xl"></i>
+                                class="icon-transition  <?php echo $user && is_liked((int) $r['id'], (int) $user['id']) ? 'fas' : 'far'; ?> fa-solid fa-heart fa-xl"></i>
                         </button>
                         <div id="like-count-wrapper-<?php echo (int) $r['id']; ?>"
                             class="text-[16px]<?php echo ((int) $r['likes_count'] === 0 ? ' hidden' : ''); ?>">
@@ -272,7 +272,7 @@ if (isset($_GET['message'])) {
                         onclick="toggleFavorite(<?php echo (int) $r['id']; ?>)"
                         class="favorite-btn ml-auto <?php echo is_favorited((int) $r['id'], (int) $user['id']) ? 'text-[#2d7ef7]' : 'text-white'; ?>">
                         <i id="like-bookmark"
-                            class="icon-transition <?php echo is_favorited((int) $r['id'], (int) $user['id']) ? 'fas' : 'far'; ?> fa-bookmark fa-xl"></i>
+                            class="icon-transition <?php echo is_favorited((int) $r['id'], (int) $user['id']) ? 'fas' : 'far'; ?> fa-solid fa-bookmark fa-xl"></i>
                     </button>
                 <?php endif; ?>
 

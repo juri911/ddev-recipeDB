@@ -183,10 +183,10 @@ $seo = [
                     <?php endif; ?>
                 </div>
                  <!-- Mobile menu button -->
-        <button id="mobile-nav-btn" class="relative flex  items-center justify-center lg:mr-3 mr-0 aspect-square lg:aspect-auto lg:p-0 p-4"
+        <button id="mobile-nav-btn" class="relative flex  items-end justify-center mr-0 lg:mr-3"
             aria-label="Menü öffnen" aria-expanded="false" aria-controls="mobile-nav-panel">
             <i
-                class="fa-solid fa-burger text-[36px] text-[var(--rh-primary)] hover:text-[var(--rh-text)]  transition-all duration-300 ease-out"></i>
+                class="fa-solid fa-burger text-[36px] text-[var(--rh-primary)] hover:text-[var(--rh-text)]  transition-all duration-300 ease-out aspect-square lg:aspect-auto lg:p-0 p-4"></i>
 
         </button>
             </div>

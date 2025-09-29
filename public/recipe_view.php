@@ -170,7 +170,7 @@ include __DIR__ . '/includes/header.php';
 </span>
 
                             <span>
-    <i class="fas fa-clock mr-1"></i>Zubereitungszeit:
+
 
 
                         <?php if (!empty($recipe['portions'])): ?>
@@ -182,8 +182,8 @@ include __DIR__ . '/includes/header.php';
                         <span><i class="fas fa-heart mr-1"></i>Likes: <strong id="like-count-<?php echo (int)$recipe['id']; ?>"><?php echo (int)$recipe['likes_count']; ?></strong></span>
                     </div>
                     <?php if ($user): ?>
-                        <button id="like-btn-<?php echo (int)$recipe['id']; ?>" onclick="likeRecipe(<?php echo (int)$recipe['id']; ?>)" class="like-btn text-2xl <?php echo is_liked((int)$recipe['id'], (int)$user['id']) ? 'text-red-500' : 'text-gray-400'; ?>">
-                            <i id="like-heart" class="icon-transition <?php echo is_liked((int)$recipe['id'], (int)$user['id']) ? 'fas' : 'far'; ?> fa-heart"></i>
+                        <button id="like-btn-<?php echo (int)$recipe['id']; ?>" onclick="likeRecipe(<?php echo (int)$recipe['id']; ?>)" class="like-btn text-2xl <?php echo is_liked((int)$recipe['id'], (int)$user['id']) ? 'text-red-500' : 'text-white'; ?>">
+                            <i id="like-heart" class="icon-transition <?php echo is_liked((int)$recipe['id'], (int)$user['id']) ? 'fas' : 'far'; ?> fa-solid fa-heart"></i>
                         </button>
                     <?php endif; ?>
                 </div>
@@ -444,13 +444,13 @@ include __DIR__ . '/includes/header.php';
                 
                 // Icon und Farbe ändern
                 if (data.liked) {
-                    likeBtn.classList.remove('text-gray-400');
+                    likeBtn.classList.remove('text-white');
                     likeBtn.classList.add('text-red-500');
                     likeIcon.classList.remove('far');
                     likeIcon.classList.add('fas');
                 } else {
                     likeBtn.classList.remove('text-red-500');
-                    likeBtn.classList.add('text-gray-400');
+                    likeBtn.classList.add('text-white');
                     likeIcon.classList.remove('fas');
                     likeIcon.classList.add('far');
                 }
