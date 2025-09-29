@@ -184,9 +184,9 @@ a.link:hover {
 
 
       
-            .search {
+            .popover {
                 background-color: oklch(99% 0 287);
-                block-size: 40svb;
+                
                 border-radius: var(--radius-3) var(--radius-3) 0px 0px;
                 border-width: 0;
                 box-shadow: var(--shadow-6);
@@ -222,13 +222,13 @@ a.link:hover {
                 }
             }
 
-            .search-content-wrapper {
+            .popover-content-wrapper {
                 display: grid;
                 grid-template-rows: min-content 1fr;
                 block-size: 100%;
             }
 
-            .search-header {
+            .popover-header {
                 border-bottom: 1px solid #e5e7eb;
                 padding-block: 12px;
                 padding-inline: 12px;
@@ -236,7 +236,7 @@ a.link:hover {
                 place-items: center end;
             }
 
-            .search-popover-close-btn {
+            .popover-close-btn {
                 display: inline-grid;
                 place-items: center;
                 padding: 0;
@@ -248,7 +248,7 @@ a.link:hover {
                 background-color: var(--rh-primary);
             }
 
-            .search-section {
+            .popover-section {
                 display: grid;
                 grid-template-rows: 1fr min-content;
             }

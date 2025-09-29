@@ -1,179 +1,179 @@
 </main>
-    <footer class="text-center flex justify-center grid grid-rows-3 pb-[85px] mt-[100px]">
-    
-      
-      <a href="/" class="flex justify-center items-center navbar-brand">
-                <?php //echo get_app_logo_html(); 
-                ?>
-                <svg fill="currentColor" width="160px" height="50px">
-                    <use href="#logo"></use>
-                </svg>
-            </a>
-        <ul class="flex justify-center items-center gap-x-2 text-base">
-          <li><a href="#" class="text-[var(--rh-text)] hover:text-[var(--rh-primary)]">Impressum</a></li>
-          <li><a href="#" class="text-[var(--rh-text)] hover:text-[var(--rh-primary)]">Datenschutz</a></li>
-          <li><a href="#" class="text-[var(--rh-text)] hover:text-[var(--rh-primary)]">AGB</a></li>
-        </ul>
-     
-     
-        <ul class="flex justify-center items-center flex-col gap-y-2">
-          <h3 class="font-semibold text-xl text-black">Stay in touch</h3>
-          <div class="flex items-align gap-x-2">
-            <a href="#" class="text-[var(--rh-text)] hover:text-[var(--rh-primary)]">
-              <i class="fa-brands fa-instagram fa-xl"></i>
-            </a>
-            <a href="#" class="text-[var(--rh-text)] hover:text-[var(--rh-primary)]">
-              <i class="fa-brands fa-pinterest fa-xl"></i>
-            </a>
-          </div>
-        </ul>
-     
-        <div class="flex justify-around items-center text-[12px] pt-4">
-       <p>&copy; <?php echo date('Y'); ?> <?php echo APP_NAME; ?></p>
-      </div>
+<footer class="text-center flex justify-center grid grid-rows-3 pb-[85px] mt-[100px]">
 
-  </footer>
 
-  <div popover id="search-popover" class="search container mx-auto">
-        <div class="search-content-wrapper">
-            <header class="search-header">
-                <button popovertarget="search-popover" popovertargetaction="hide" class="search-popover-close-btn"
-                    aria-label="Close search" title="Close search">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
-                        fill="currentColor" aria-hidden="true">
-                        <path
-                            d="M11.9997 10.5865L16.9495 5.63672L18.3637 7.05093L13.4139 12.0007L18.3637 16.9504L16.9495 18.3646L11.9997 13.4149L7.04996 18.3646L5.63574 16.9504L10.5855 12.0007L5.63574 7.05093L7.04996 5.63672L11.9997 10.5865Z">
-                        </path>
-                    </svg>
-                </button>
-            </header>
+  <a href="/" class="flex justify-center items-center navbar-brand">
+    <?php //echo get_app_logo_html(); 
+    ?>
+    <svg fill="currentColor" width="160px" height="50px">
+      <use href="#logo"></use>
+    </svg>
+  </a>
+  <ul class="flex justify-center items-center gap-x-2 text-base">
+    <li><a href="#" class="text-[var(--rh-text)] hover:text-[var(--rh-primary)]">Impressum</a></li>
+    <li><a href="#" class="text-[var(--rh-text)] hover:text-[var(--rh-primary)]">Datenschutz</a></li>
+    <li><a href="#" class="text-[var(--rh-text)] hover:text-[var(--rh-primary)]">AGB</a></li>
+  </ul>
 
-            <section class="search-section sm:px-[2rem] px-1 py-[3.5rem]">     
-             
-                    <div class="search-input-container flex justify-between items-end rounded-xl px-4">
-                      <form method="get" action="/search.php" class="flex justify-between items-center">
-                        <input name="q" role="search"  autofocus class="search-input w-full" placeholder="Ask me anything" type="text" value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>">
-                       
-                        <button type="submit" class="search-submit-btn rounded-xl  flex justify-end items-center" aria-label="search Submit" title="search Submit">
-                            <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"
-                                xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                <g clip-path="url(#clip0_208_691)">
-                                    <path
-                                        d="M2.5664 3.26059C2.32007 2.76794 2.51587 2.5663 3.02256 2.81964L21.0172 11.8169C21.5155 12.0661 21.5206 12.4896 21.0494 12.7513L3.69739 22.3914C3.21698 22.6582 2.98859 22.4559 3.18594 21.9427L6.36304 13.6822L16.2625 12.268L6.36306 10.8538L2.5664 3.26059Z" />
-                                </g>
-                                <defs>
-                                    <clipPath id="clip0_208_691">
-                                        <rect width="30" height="30" fill="white" />
-                                    </clipPath>
-                                </defs>
-                            </svg>
-                        </button>
-                  </form>
-            </section>
-        </div>
+
+  <ul class="flex justify-center items-center flex-col gap-y-2">
+    <h3 class="font-semibold text-xl text-black">Stay in touch</h3>
+    <div class="flex items-align gap-x-2">
+      <a href="#" class="text-[var(--rh-text)] hover:text-[var(--rh-primary)]">
+        <i class="fa-brands fa-instagram fa-xl"></i>
+      </a>
+      <a href="#" class="text-[var(--rh-text)] hover:text-[var(--rh-primary)]">
+        <i class="fa-brands fa-pinterest fa-xl"></i>
+      </a>
     </div>
+  </ul>
+
+  <div class="flex justify-around items-center text-[12px] pt-4">
+    <p>&copy; <?php echo date('Y'); ?> <?php echo APP_NAME; ?></p>
+  </div>
+</footer>
 
 
-  <!--SVG Logo-->
-  <svg id="Ebene_1" data-name="Ebene 1" xmlns="http://www.w3.org/2000/svg" style="display: none">
-    <symbol id="logo" viewBox="0 0 1100 250">
-      <path
-        d="M24,181.15q-4.8,0-7.4-2.5t-2.6-7.5V81.75q0-4.8,2.6-7.4t7.4-2.6q5,0,7.5,2.5t2.5,7.5v89.4q0,4.8-2.5,7.4T24,181.15Zm-.2-68.4a39.93,39.93,0,0,1,5.9-21.5,43.19,43.19,0,0,1,15.9-15.1,44.3,44.3,0,0,1,22-5.6q12,0,17.9,3.9t4.5,9.3a7.69,7.69,0,0,1-2.3,4.3A7.94,7.94,0,0,1,83.8,90a11.78,11.78,0,0,1-4.8-.2q-12.8-2.59-23-.4t-16.1,8.2a20.8,20.8,0,0,0-5.9,15.2Z"
-        class="logo-dm" />
-      <path
-        d="M154.6,182q-16.6,0-29.5-7.1a51.94,51.94,0,0,1-20.2-19.6q-7.31-12.5-7.3-28.7,0-16.39,6.9-28.9a50.47,50.47,0,0,1,19.1-19.6q12.19-7.1,28-7.1,15.6,0,26.8,6.9a44.9,44.9,0,0,1,17.1,19q5.9,12.11,5.9,27.9a8.39,8.39,0,0,1-2.6,6.3,9.11,9.11,0,0,1-6.6,2.5H111.6v-16h80l-8.2,5.6a42.8,42.8,0,0,0-4-17.9,30.32,30.32,0,0,0-10.8-12.5q-7-4.6-17-4.6-11.4,0-19.5,5a32.19,32.19,0,0,0-12.3,13.7,44.76,44.76,0,0,0-4.2,19.7,38.31,38.31,0,0,0,5,19.6,36.49,36.49,0,0,0,13.8,13.6,40.21,40.21,0,0,0,20.2,5,38,38,0,0,0,12.7-2.3,39.46,39.46,0,0,0,10.5-5.3,11.35,11.35,0,0,1,6.5-2.3,8.71,8.71,0,0,1,6.1,2.1,9.45,9.45,0,0,1,3.6,6.6,7.09,7.09,0,0,1-3.2,6.2,55.38,55.38,0,0,1-16.9,8.8A60.38,60.38,0,0,1,154.6,182Z"
-        class="logo-dm" />
-      <path
-        d="M273,182a55.41,55.41,0,0,1-28.5-7.3,52.76,52.76,0,0,1-19.6-19.8,56.32,56.32,0,0,1-7.1-28.3q0-16.2,7-28.8A50.93,50.93,0,0,1,244,78.05Q256.2,71,272,71a51.12,51.12,0,0,1,21.6,4.5A52,52,0,0,1,311.2,89c1.87,2.13,2.53,4.33,2,6.6a10.4,10.4,0,0,1-4.4,6,7.6,7.6,0,0,1-6.2,1.3,12.15,12.15,0,0,1-6.2-3.5A32.17,32.17,0,0,0,272,89a34.22,34.22,0,0,0-18,4.7,32.56,32.56,0,0,0-12.2,13.1q-4.4,8.4-4.4,19.8a40,40,0,0,0,4.5,19.2,34.33,34.33,0,0,0,12.5,13.3A34.85,34.85,0,0,0,273,164a40.44,40.44,0,0,0,12.3-1.7A29.31,29.31,0,0,0,295,157a12.13,12.13,0,0,1,6.6-2.9,7.85,7.85,0,0,1,6,1.9,9.58,9.58,0,0,1,3.8,6.3,7.4,7.4,0,0,1-2.4,6.3Q294.6,181.95,273,182Z"
-        class="logo-dm" />
-      <path
-        d="M355.8,54a13.32,13.32,0,0,1-13.2-13.2,13.2,13.2,0,1,1,22.5,9.3A12.7,12.7,0,0,1,355.8,54Zm0,127.2A9.92,9.92,0,0,1,345.6,171V82a9.79,9.79,0,0,1,2.9-7.4A10.16,10.16,0,0,1,366,82v89a10.11,10.11,0,0,1-2.8,7.3A9.84,9.84,0,0,1,355.8,181.15Z"
-        class="logo-dm" />
-      <path
-        d="M414.2,228a9.92,9.92,0,0,1-10.2-10.2v-91.2a57.7,57.7,0,0,1,7.4-28.4A53.47,53.47,0,0,1,431,78.25a55.21,55.21,0,0,1,75.9,19.9,55.68,55.68,0,0,1,7.3,28.4,59,59,0,0,1-6.7,28.3,52,52,0,0,1-18.3,19.8,50.59,50.59,0,0,1-47.9,2.4,51.44,51.44,0,0,1-16.9-13.3v54a10.11,10.11,0,0,1-2.8,7.3A9.84,9.84,0,0,1,414.2,228ZM459,164a34.13,34.13,0,0,0,18.2-4.9,35.67,35.67,0,0,0,12.7-13.4,38.84,38.84,0,0,0,4.7-19.1,39.26,39.26,0,0,0-4.7-19.3,35.67,35.67,0,0,0-12.7-13.4,36.06,36.06,0,0,0-36.3,0,34.55,34.55,0,0,0-12.7,13.4,39.87,39.87,0,0,0-4.6,19.3,39.44,39.44,0,0,0,4.6,19.1A34.39,34.39,0,0,0,459,164Z"
-        class="logo-dm;" />
-      <path
-        d="M596,182q-16.61,0-29.5-7.1a51.94,51.94,0,0,1-20.2-19.6q-7.31-12.5-7.3-28.7,0-16.39,6.9-28.9A50.47,50.47,0,0,1,565,78.05Q577.18,71,593,71q15.6,0,26.8,6.9a44.9,44.9,0,0,1,17.1,19q5.91,12.11,5.9,27.9a8.39,8.39,0,0,1-2.6,6.3,9.11,9.11,0,0,1-6.6,2.5H553v-16h80l-8.2,5.6a42.65,42.65,0,0,0-4-17.9A30.32,30.32,0,0,0,610,92.75q-7-4.6-17-4.6-11.4,0-19.5,5a32.19,32.19,0,0,0-12.3,13.7,44.76,44.76,0,0,0-4.2,19.7,38.31,38.31,0,0,0,5,19.6,36.56,36.56,0,0,0,13.8,13.6,40.21,40.21,0,0,0,20.2,5,38,38,0,0,0,12.7-2.3,39.15,39.15,0,0,0,10.5-5.3,11.35,11.35,0,0,1,6.5-2.3,8.69,8.69,0,0,1,6.1,2.1,9.45,9.45,0,0,1,3.6,6.6q.21,3.6-3.2,6.2a55.26,55.26,0,0,1-16.9,8.8A60.38,60.38,0,0,1,596,182Z"
-        class="logo-dm" />
-      <path
-        d="M674.79,133.15a5.81,5.81,0,0,1-6-6V31a5.76,5.76,0,0,1,1.7-4.4,6,6,0,0,1,4.3-1.6,5.54,5.54,0,0,1,6,6v96.2a6,6,0,0,1-1.6,4.3A5.76,5.76,0,0,1,674.79,133.15Zm0,48a5.81,5.81,0,0,1-6-6V77.75a5.76,5.76,0,0,1,1.7-4.4,6,6,0,0,1,4.3-1.6,5.54,5.54,0,0,1,6,6v97.4a6,6,0,0,1-1.6,4.3A5.76,5.76,0,0,1,674.79,181.15Zm88.6,0a5.81,5.81,0,0,1-6-6v-53.8q0-13.2-5.1-21.8a32.6,32.6,0,0,0-13.8-12.9,43.84,43.84,0,0,0-19.7-4.3,44.56,44.56,0,0,0-19.4,4.1,33.91,33.91,0,0,0-13.6,11.3,27.76,27.76,0,0,0-5,16.2h-10a44.61,44.61,0,0,1,7.4-22.3,47.19,47.19,0,0,1,17.2-15.6,48.63,48.63,0,0,1,23.4-5.7,56,56,0,0,1,25.9,5.9,43.65,43.65,0,0,1,18.1,17.2q6.6,11.3,6.6,27.9v53.8a5.81,5.81,0,0,1-6,6Z"
-        style="fill: #3779d6" />
-      <path
-        d="M837,182.55a55.34,55.34,0,0,1-25.8-5.9,44.23,44.23,0,0,1-18.1-17.3q-6.71-11.4-6.7-27.8V77.75a6,6,0,1,1,12,0v53.8q0,13,5.1,21.7a32.42,32.42,0,0,0,13.8,13,47.09,47.09,0,0,0,39.1.1,35.15,35.15,0,0,0,13.6-11.3,27.3,27.3,0,0,0,5-16.1h10a44.7,44.7,0,0,1-7.4,22.3,47.46,47.46,0,0,1-17.1,15.6A48.47,48.47,0,0,1,837,182.55Zm44-1.4a5.81,5.81,0,0,1-6-6V77.75a5.73,5.73,0,0,1,1.7-4.4,6,6,0,0,1,10.3,4.4v97.4a6.05,6.05,0,0,1-1.6,4.3A5.78,5.78,0,0,1,881,181.15Z"
-        style="fill: #3779d6" />
-      <path
-        d="M963.79,182.35a55.82,55.82,0,0,1-28.2-7.2,53.4,53.4,0,0,1-19.9-19.6,57,57,0,0,1-7.7-28V31a5.73,5.73,0,0,1,1.7-4.4,6.71,6.71,0,0,1,8.7,0A6,6,0,0,1,920,31v62.4a46.25,46.25,0,0,1,17.9-16.6,53.71,53.71,0,0,1,25.9-6.2,56.54,56.54,0,0,1,28.7,7.3,53.65,53.65,0,0,1,20,19.9,56.06,56.06,0,0,1,7.3,28.6,56.61,56.61,0,0,1-7.3,28.7,53.4,53.4,0,0,1-20,20A56.54,56.54,0,0,1,963.79,182.35Zm0-11.2a43.13,43.13,0,0,0,22.5-5.9,43.57,43.57,0,0,0,15.7-16,45.22,45.22,0,0,0,5.8-22.9,44.69,44.69,0,0,0-5.8-22.8,43.76,43.76,0,0,0-15.7-15.9,45.66,45.66,0,0,0-44.9,0,42.69,42.69,0,0,0-15.7,15.9,45.24,45.24,0,0,0-5.7,22.8,45.77,45.77,0,0,0,5.7,22.9,42.53,42.53,0,0,0,15.7,16A43.26,43.26,0,0,0,963.79,171.15Z"
-        style="fill: #3779d6" />
-      <path
-        d="M968.49,143.29a7.86,7.86,0,0,1,.1-2.1,7.51,7.51,0,0,1,12.22-4.35,11.44,11.44,0,0,1,6.14-.58,7.24,7.24,0,0,1,6.41-2,7.09,7.09,0,0,1,2,.67c.16-.66.31-1.32.44-2a32,32,0,1,0-37.42,25.57,32.69,32.69,0,0,0,4.78.54,11.46,11.46,0,0,1,5.37-15.8Z"
-        style="fill: #3779d6" />
-      <rect x="990" y="25" width="30" height="30" transform="translate(57.57 377.65) rotate(-21.89)"
-        style="fill: #3779d6" />
-      <rect x="1065" y="158" width="23" height="23" transform="translate(12.17 403.57) rotate(-21.35)"
-        style="fill: #3779d6" />
-      <rect x="1045" y="75" width="40" height="40" transform="translate(154.24 -465.15) rotate(26.5)"
-        style="fill: #3779d6" />
-      <rect x="1012" y="192" width="36" height="36" transform="translate(35.97 -131.92) rotate(7.46)"
-        style="fill: #3779d6" />
-      <line x1="1030" y1="210" x2="994" y2="163" style="
-            fill: none;
-            stroke: #3779d6;
-            stroke-miterlimit: 10;
-            stroke-width: 4px;
-          " />
-      <line x1="1065" y1="95" x2="1011" y2="113" style="
-            fill: none;
-            stroke: #3779d6;
-            stroke-miterlimit: 10;
-            stroke-width: 4px;
-          " />
-      <line x1="1077" y1="169" x2="1008" y2="143" style="
-            fill: none;
-            stroke: #3779d6;
-            stroke-miterlimit: 10;
-            stroke-width: 4px;
-          " />
-      <line x1="1005" y1="40" x2="986" y2="83" style="
-            fill: none;
-            stroke: #3779d6;
-            stroke-miterlimit: 10;
-            stroke-width: 4px;
-          " />
-    </symbol>
-  </svg>
+<!--Search PopOver -->
+<div popover id="search-popover" class="popover container mx-auto lg:max-w-4xl min-h-[50%]">
+  <div class="popover-content-wrapper">
+    <header class="popover-header">
+      <button popovertarget="search-popover" popovertargetaction="hide" class="popover-close-btn"
+        aria-label="Close search" title="Close search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
+          fill="currentColor" aria-hidden="true">
+          <path
+            d="M11.9997 10.5865L16.9495 5.63672L18.3637 7.05093L13.4139 12.0007L18.3637 16.9504L16.9495 18.3646L11.9997 13.4149L7.04996 18.3646L5.63574 16.9504L10.5855 12.0007L5.63574 7.05093L7.04996 5.63672L11.9997 10.5865Z">
+          </path>
+        </svg>
+      </button>
+    </header>
+    <section class="popover-section sm:px-[2rem] px-1 py-[3.5rem]">
+      <div class="search-input-container flex justify-between items-end rounded-xl px-4">
+        <form method="get" action="/search.php" class="flex justify-between items-center">
+          <input name="q" role="search" autofocus class="search-input w-full" placeholder="Ask me anything" type="text" value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>">
 
-    <!-- Global JavaScript -->
-    <script src="/assets/fonts/fontawesome/js/all.min.js"></script>
-    <script src="/assets/js/app.js"></script>
-    <script>
-        // Footer-specific JavaScript - Only for functions not already handled in header
-        document.addEventListener('DOMContentLoaded', () => {
-            // Carousel functionality (if not already initialized in header)
-            if (typeof initCarousels !== 'function') {
-                const initCarousels = () => {
-                    document.querySelectorAll('[data-carousel]')?.forEach(carousel => {
-                        const slides = carousel.querySelectorAll('[data-slide]');
-                        let current = 0;
-                        const show = (idx) => {
-                            slides.forEach((s, i) => {
-                                s.classList.toggle('hidden', i !== idx);
-                            });
-                        };
-                        carousel.querySelector('[data-prev]')?.addEventListener('click', () => {
-                            current = (current - 1 + slides.length) % slides.length;
-                            show(current);
-                        });
-                        carousel.querySelector('[data-next]')?.addEventListener('click', () => {
-                            current = (current + 1) % slides.length;
-                            show(current);
-                        });
-                        show(0);
-                    });
-                };
-                initCarousels();
-            }
+          <button type="submit" class="search-submit-btn rounded-xl  flex justify-end items-center" aria-label="search Submit" title="search Submit">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <g clip-path="url(#clip0_208_691)">
+                <path
+                  d="M2.5664 3.26059C2.32007 2.76794 2.51587 2.5663 3.02256 2.81964L21.0172 11.8169C21.5155 12.0661 21.5206 12.4896 21.0494 12.7513L3.69739 22.3914C3.21698 22.6582 2.98859 22.4559 3.18594 21.9427L6.36304 13.6822L16.2625 12.268L6.36306 10.8538L2.5664 3.26059Z" />
+              </g>
+              <defs>
+                <clipPath id="clip0_208_691">
+                  <rect width="30" height="30" fill="white" />
+                </clipPath>
+              </defs>
+            </svg>
+          </button>
+        </form>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!--SVG Logo-->
+<svg id="Ebene_1" data-name="Ebene 1" xmlns="http://www.w3.org/2000/svg" style="display: none">
+  <symbol id="logo" viewBox="0 0 1100 250">
+    <path
+      d="M24,181.15q-4.8,0-7.4-2.5t-2.6-7.5V81.75q0-4.8,2.6-7.4t7.4-2.6q5,0,7.5,2.5t2.5,7.5v89.4q0,4.8-2.5,7.4T24,181.15Zm-.2-68.4a39.93,39.93,0,0,1,5.9-21.5,43.19,43.19,0,0,1,15.9-15.1,44.3,44.3,0,0,1,22-5.6q12,0,17.9,3.9t4.5,9.3a7.69,7.69,0,0,1-2.3,4.3A7.94,7.94,0,0,1,83.8,90a11.78,11.78,0,0,1-4.8-.2q-12.8-2.59-23-.4t-16.1,8.2a20.8,20.8,0,0,0-5.9,15.2Z"
+      class="logo-dm" />
+    <path
+      d="M154.6,182q-16.6,0-29.5-7.1a51.94,51.94,0,0,1-20.2-19.6q-7.31-12.5-7.3-28.7,0-16.39,6.9-28.9a50.47,50.47,0,0,1,19.1-19.6q12.19-7.1,28-7.1,15.6,0,26.8,6.9a44.9,44.9,0,0,1,17.1,19q5.9,12.11,5.9,27.9a8.39,8.39,0,0,1-2.6,6.3,9.11,9.11,0,0,1-6.6,2.5H111.6v-16h80l-8.2,5.6a42.8,42.8,0,0,0-4-17.9,30.32,30.32,0,0,0-10.8-12.5q-7-4.6-17-4.6-11.4,0-19.5,5a32.19,32.19,0,0,0-12.3,13.7,44.76,44.76,0,0,0-4.2,19.7,38.31,38.31,0,0,0,5,19.6,36.49,36.49,0,0,0,13.8,13.6,40.21,40.21,0,0,0,20.2,5,38,38,0,0,0,12.7-2.3,39.46,39.46,0,0,0,10.5-5.3,11.35,11.35,0,0,1,6.5-2.3,8.71,8.71,0,0,1,6.1,2.1,9.45,9.45,0,0,1,3.6,6.6,7.09,7.09,0,0,1-3.2,6.2,55.38,55.38,0,0,1-16.9,8.8A60.38,60.38,0,0,1,154.6,182Z"
+      class="logo-dm" />
+    <path
+      d="M273,182a55.41,55.41,0,0,1-28.5-7.3,52.76,52.76,0,0,1-19.6-19.8,56.32,56.32,0,0,1-7.1-28.3q0-16.2,7-28.8A50.93,50.93,0,0,1,244,78.05Q256.2,71,272,71a51.12,51.12,0,0,1,21.6,4.5A52,52,0,0,1,311.2,89c1.87,2.13,2.53,4.33,2,6.6a10.4,10.4,0,0,1-4.4,6,7.6,7.6,0,0,1-6.2,1.3,12.15,12.15,0,0,1-6.2-3.5A32.17,32.17,0,0,0,272,89a34.22,34.22,0,0,0-18,4.7,32.56,32.56,0,0,0-12.2,13.1q-4.4,8.4-4.4,19.8a40,40,0,0,0,4.5,19.2,34.33,34.33,0,0,0,12.5,13.3A34.85,34.85,0,0,0,273,164a40.44,40.44,0,0,0,12.3-1.7A29.31,29.31,0,0,0,295,157a12.13,12.13,0,0,1,6.6-2.9,7.85,7.85,0,0,1,6,1.9,9.58,9.58,0,0,1,3.8,6.3,7.4,7.4,0,0,1-2.4,6.3Q294.6,181.95,273,182Z"
+      class="logo-dm" />
+    <path
+      d="M355.8,54a13.32,13.32,0,0,1-13.2-13.2,13.2,13.2,0,1,1,22.5,9.3A12.7,12.7,0,0,1,355.8,54Zm0,127.2A9.92,9.92,0,0,1,345.6,171V82a9.79,9.79,0,0,1,2.9-7.4A10.16,10.16,0,0,1,366,82v89a10.11,10.11,0,0,1-2.8,7.3A9.84,9.84,0,0,1,355.8,181.15Z"
+      class="logo-dm" />
+    <path
+      d="M414.2,228a9.92,9.92,0,0,1-10.2-10.2v-91.2a57.7,57.7,0,0,1,7.4-28.4A53.47,53.47,0,0,1,431,78.25a55.21,55.21,0,0,1,75.9,19.9,55.68,55.68,0,0,1,7.3,28.4,59,59,0,0,1-6.7,28.3,52,52,0,0,1-18.3,19.8,50.59,50.59,0,0,1-47.9,2.4,51.44,51.44,0,0,1-16.9-13.3v54a10.11,10.11,0,0,1-2.8,7.3A9.84,9.84,0,0,1,414.2,228ZM459,164a34.13,34.13,0,0,0,18.2-4.9,35.67,35.67,0,0,0,12.7-13.4,38.84,38.84,0,0,0,4.7-19.1,39.26,39.26,0,0,0-4.7-19.3,35.67,35.67,0,0,0-12.7-13.4,36.06,36.06,0,0,0-36.3,0,34.55,34.55,0,0,0-12.7,13.4,39.87,39.87,0,0,0-4.6,19.3,39.44,39.44,0,0,0,4.6,19.1A34.39,34.39,0,0,0,459,164Z"
+      class="logo-dm;" />
+    <path
+      d="M596,182q-16.61,0-29.5-7.1a51.94,51.94,0,0,1-20.2-19.6q-7.31-12.5-7.3-28.7,0-16.39,6.9-28.9A50.47,50.47,0,0,1,565,78.05Q577.18,71,593,71q15.6,0,26.8,6.9a44.9,44.9,0,0,1,17.1,19q5.91,12.11,5.9,27.9a8.39,8.39,0,0,1-2.6,6.3,9.11,9.11,0,0,1-6.6,2.5H553v-16h80l-8.2,5.6a42.65,42.65,0,0,0-4-17.9A30.32,30.32,0,0,0,610,92.75q-7-4.6-17-4.6-11.4,0-19.5,5a32.19,32.19,0,0,0-12.3,13.7,44.76,44.76,0,0,0-4.2,19.7,38.31,38.31,0,0,0,5,19.6,36.56,36.56,0,0,0,13.8,13.6,40.21,40.21,0,0,0,20.2,5,38,38,0,0,0,12.7-2.3,39.15,39.15,0,0,0,10.5-5.3,11.35,11.35,0,0,1,6.5-2.3,8.69,8.69,0,0,1,6.1,2.1,9.45,9.45,0,0,1,3.6,6.6q.21,3.6-3.2,6.2a55.26,55.26,0,0,1-16.9,8.8A60.38,60.38,0,0,1,596,182Z"
+      class="logo-dm" />
+    <path
+      d="M674.79,133.15a5.81,5.81,0,0,1-6-6V31a5.76,5.76,0,0,1,1.7-4.4,6,6,0,0,1,4.3-1.6,5.54,5.54,0,0,1,6,6v96.2a6,6,0,0,1-1.6,4.3A5.76,5.76,0,0,1,674.79,133.15Zm0,48a5.81,5.81,0,0,1-6-6V77.75a5.76,5.76,0,0,1,1.7-4.4,6,6,0,0,1,4.3-1.6,5.54,5.54,0,0,1,6,6v97.4a6,6,0,0,1-1.6,4.3A5.76,5.76,0,0,1,674.79,181.15Zm88.6,0a5.81,5.81,0,0,1-6-6v-53.8q0-13.2-5.1-21.8a32.6,32.6,0,0,0-13.8-12.9,43.84,43.84,0,0,0-19.7-4.3,44.56,44.56,0,0,0-19.4,4.1,33.91,33.91,0,0,0-13.6,11.3,27.76,27.76,0,0,0-5,16.2h-10a44.61,44.61,0,0,1,7.4-22.3,47.19,47.19,0,0,1,17.2-15.6,48.63,48.63,0,0,1,23.4-5.7,56,56,0,0,1,25.9,5.9,43.65,43.65,0,0,1,18.1,17.2q6.6,11.3,6.6,27.9v53.8a5.81,5.81,0,0,1-6,6Z"
+      style="fill: #3779d6" />
+    <path
+      d="M837,182.55a55.34,55.34,0,0,1-25.8-5.9,44.23,44.23,0,0,1-18.1-17.3q-6.71-11.4-6.7-27.8V77.75a6,6,0,1,1,12,0v53.8q0,13,5.1,21.7a32.42,32.42,0,0,0,13.8,13,47.09,47.09,0,0,0,39.1.1,35.15,35.15,0,0,0,13.6-11.3,27.3,27.3,0,0,0,5-16.1h10a44.7,44.7,0,0,1-7.4,22.3,47.46,47.46,0,0,1-17.1,15.6A48.47,48.47,0,0,1,837,182.55Zm44-1.4a5.81,5.81,0,0,1-6-6V77.75a5.73,5.73,0,0,1,1.7-4.4,6,6,0,0,1,10.3,4.4v97.4a6.05,6.05,0,0,1-1.6,4.3A5.78,5.78,0,0,1,881,181.15Z"
+      style="fill: #3779d6" />
+    <path
+      d="M963.79,182.35a55.82,55.82,0,0,1-28.2-7.2,53.4,53.4,0,0,1-19.9-19.6,57,57,0,0,1-7.7-28V31a5.73,5.73,0,0,1,1.7-4.4,6.71,6.71,0,0,1,8.7,0A6,6,0,0,1,920,31v62.4a46.25,46.25,0,0,1,17.9-16.6,53.71,53.71,0,0,1,25.9-6.2,56.54,56.54,0,0,1,28.7,7.3,53.65,53.65,0,0,1,20,19.9,56.06,56.06,0,0,1,7.3,28.6,56.61,56.61,0,0,1-7.3,28.7,53.4,53.4,0,0,1-20,20A56.54,56.54,0,0,1,963.79,182.35Zm0-11.2a43.13,43.13,0,0,0,22.5-5.9,43.57,43.57,0,0,0,15.7-16,45.22,45.22,0,0,0,5.8-22.9,44.69,44.69,0,0,0-5.8-22.8,43.76,43.76,0,0,0-15.7-15.9,45.66,45.66,0,0,0-44.9,0,42.69,42.69,0,0,0-15.7,15.9,45.24,45.24,0,0,0-5.7,22.8,45.77,45.77,0,0,0,5.7,22.9,42.53,42.53,0,0,0,15.7,16A43.26,43.26,0,0,0,963.79,171.15Z"
+      style="fill: #3779d6" />
+    <path
+      d="M968.49,143.29a7.86,7.86,0,0,1,.1-2.1,7.51,7.51,0,0,1,12.22-4.35,11.44,11.44,0,0,1,6.14-.58,7.24,7.24,0,0,1,6.41-2,7.09,7.09,0,0,1,2,.67c.16-.66.31-1.32.44-2a32,32,0,1,0-37.42,25.57,32.69,32.69,0,0,0,4.78.54,11.46,11.46,0,0,1,5.37-15.8Z"
+      style="fill: #3779d6" />
+    <rect x="990" y="25" width="30" height="30" transform="translate(57.57 377.65) rotate(-21.89)"
+      style="fill: #3779d6" />
+    <rect x="1065" y="158" width="23" height="23" transform="translate(12.17 403.57) rotate(-21.35)"
+      style="fill: #3779d6" />
+    <rect x="1045" y="75" width="40" height="40" transform="translate(154.24 -465.15) rotate(26.5)"
+      style="fill: #3779d6" />
+    <rect x="1012" y="192" width="36" height="36" transform="translate(35.97 -131.92) rotate(7.46)"
+      style="fill: #3779d6" />
+    <line x1="1030" y1="210" x2="994" y2="163" style="
+            fill: none;
+            stroke: #3779d6;
+            stroke-miterlimit: 10;
+            stroke-width: 4px;
+          " />
+    <line x1="1065" y1="95" x2="1011" y2="113" style="
+            fill: none;
+            stroke: #3779d6;
+            stroke-miterlimit: 10;
+            stroke-width: 4px;
+          " />
+    <line x1="1077" y1="169" x2="1008" y2="143" style="
+            fill: none;
+            stroke: #3779d6;
+            stroke-miterlimit: 10;
+            stroke-width: 4px;
+          " />
+    <line x1="1005" y1="40" x2="986" y2="83" style="
+            fill: none;
+            stroke: #3779d6;
+            stroke-miterlimit: 10;
+            stroke-width: 4px;
+          " />
+  </symbol>
+</svg>
+
+<!-- Global JavaScript -->
+<script src="/assets/fonts/fontawesome/js/all.min.js"></script>
+<script src="/assets/js/app.js"></script>
+<script>
+  // Footer-specific JavaScript - Only for functions not already handled in header
+  document.addEventListener('DOMContentLoaded', () => {
+    // Carousel functionality (if not already initialized in header)
+    if (typeof initCarousels !== 'function') {
+      const initCarousels = () => {
+        document.querySelectorAll('[data-carousel]')?.forEach(carousel => {
+          const slides = carousel.querySelectorAll('[data-slide]');
+          let current = 0;
+          const show = (idx) => {
+            slides.forEach((s, i) => {
+              s.classList.toggle('hidden', i !== idx);
+            });
+          };
+          carousel.querySelector('[data-prev]')?.addEventListener('click', () => {
+            current = (current - 1 + slides.length) % slides.length;
+            show(current);
+          });
+          carousel.querySelector('[data-next]')?.addEventListener('click', () => {
+            current = (current + 1) % slides.length;
+            show(current);
+          });
+          show(0);
         });
-    </script>
-   
+      };
+      initCarousels();
+    }
+  });
+</script>
+
 </body>
+
 </html>

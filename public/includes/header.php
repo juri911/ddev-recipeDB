@@ -77,6 +77,7 @@ $seo = [
     <!-- Top gradient -->
     <div class="w-full h-[6px] bg-gradient-to-r from-[#2d7ef7] to-fuchsia-400 fixed top-0 z-[99999]"></div>
 
+    <!-- Header -->
     <header
         class="flex lg:sticky lg:top-0 fixed bottom-0 left-0 right-0 z-10 container-fluid min-h-[80px] mx-auto justify-between 
                items-center border-b-[1px] bg-[var(--rh-bg)]/40 border-[var(--rh-bg-secondary)] backdrop-blur-lg">
@@ -97,14 +98,17 @@ $seo = [
             <div class="flex justify-center lg:justify-end w-full items-center gap-x-0 lg:gap-x-5 text-[16px]">
                 <!-- Link group -->
                 <div class="flex justify-center items-center">
+                    <!-- Home -->
                     <a href="/"
                         class="bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1 border-[#2d7ef7]  hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white lg:py-1 lg:px-3 p-4  lg:rounded-l transition duration-600 aspect-square lg:aspect-auto rounded-none">
                         <i class="fa-solid fa-house lg:text-base text-2xl"></i>
                     </a>
+                    <!-- Search -->
                     <button popovertarget="search-popover"
                         class="bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1  border-[#2d7ef7] hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white lg:py-1 lg:px-3 p-4 transition duration-600 aspect-square lg:aspect-auto rounded-none">
                         <i class="fas fa-magnifying-glass lg:text-base text-2xl"></i>
                     </button>
+                    <!-- Categories -->
                     <a href="/categories.php"
                         class="lg:block hidden bg-[#2d7ef7] border-1 border-[#2d7ef7] hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white lg:py-1 lg:px-3 p-4 lg:rounded-r transition duration-600 aspect-square lg:aspect-auto rounded-none"">
                         <i class=" fa-solid fa-tags lg:text-base text-2xl"></i>
@@ -126,7 +130,7 @@ $seo = [
                             $unreadCount = count_unread_notifications((int) $user['id']);
                         }
                         ?>
-                        <button id="notification-bell" class="bg-transparent lg:bg-[#2d7ef7]  relative text-white lg:text-gray-600 bg-[var(--rh-primary)] lg:bg-transparent hover:text-[var(--rh-text)] lg:p-0 p-4 aspect-square lg:aspect-auto hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent transition duration-600">
+                        <button popovertarget="notification-bells" class="bg-transparent lg:bg-[#2d7ef7]  relative text-white lg:text-gray-600 bg-[var(--rh-primary)] lg:bg-transparent hover:text-[var(--rh-text)] lg:p-0 p-4 aspect-square lg:aspect-auto hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent transition duration-600">
                             <i class="fa-solid fa-bell lg:text-[26px] text-2xl"></i>
                             <?php if ($unreadCount > 0): ?>
                                 <span
@@ -134,7 +138,7 @@ $seo = [
                             <?php endif; ?>
                         </button>
 
-                        <!-- Ersetzen Sie das bestehende Dropdown HTML mit diesem: -->
+                        <!-- User Dropdown -->
                         <div class="relative inline-block text-left ml-auto">
                             <!-- Avatar Button -->
                             <button id="userMenuButton" class="flex items-center focus:outline-none lg:pr-4 p-4 aspect-square lg:aspect-auto">
@@ -182,16 +186,44 @@ $seo = [
                         </div>
                     <?php endif; ?>
                 </div>
-                 <!-- Mobile menu button -->
-        <button id="mobile-nav-btn" class="relative flex  items-end justify-center mr-0 lg:mr-3"
-            aria-label="Menü öffnen" aria-expanded="false" aria-controls="mobile-nav-panel">
-            <i
-                class="fa-solid fa-burger text-[36px] text-[var(--rh-primary)] hover:text-[var(--rh-text)]  transition-all duration-300 ease-out aspect-square lg:aspect-auto lg:p-0 p-4"></i>
+                <!-- Mobile menu button -->
+                <button id="mobile-nav-btn" class="relative flex  items-end justify-center mr-0 lg:mr-3"
+                    aria-label="Menü öffnen" aria-expanded="false" aria-controls="mobile-nav-panel">
+                    <i
+                        class="fa-solid fa-burger text-[36px] text-[var(--rh-primary)] hover:text-[var(--rh-text)]  transition-all duration-300 ease-out aspect-square lg:aspect-auto lg:p-0 p-4"></i>
 
-        </button>
+                </button>
             </div>
         </nav>
     </header>
+
+    <!-- Menu Overlay -->
+    <div id="mobile-nav-overlay"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 z-40">
+    </div>
+
+    <!-- Drawer -->
+    <nav id="mobile-nav-panel"
+        class="fixed top-0 right-0 h-full w-full sm:w-[500px] bg-white text-[var(--rh-text-black)] shadow-2xl z-50 translate-x-full 
+                transition-transform duration-300 ease-in-out will-change-transform flex flex-col"
+        aria-hidden="true">
+        <div class="flex items-center justify-end p-4">
+            <button id="mobile-nav-close"
+                class=" relative w-[46px] h-[46px] bg-[var(--rh-primary)] rounded-full flex flex-col items-center justify-center gap-1.5 active:scale-95 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50"
+                aria-label="Menü schließen" aria-expanded="false" aria-controls="mobile-nav-panel">
+                <i class="fa-solid fa-xmark text-[26px]  transition-all duration-300 ease-out"></i>
+            </button>
+        </div>
+
+        <ul class="flex-1 overflow-y-auto p-4 space-y-3 dark:text-black">
+            <li><a href="/" class="block px-3 py-2 rounded-lg hover:bg-gray-100 transition">Startseite</a></li>
+            <li><a href="/categories.php" class="block px-3 py-2 rounded-lg hover:bg-gray-100 transition">Rezepte</a>
+            </li>
+            <li><a href="/blog.php" class="block px-3 py-2 rounded-lg hover:bg-gray-100 transition">Blog</a></li>
+            <li><a href="/kontakt.php" class="block px-3 py-2 rounded-lg hover:bg-gray-100 transition">Kontakt</a></li>
+        </ul>
+    </nav>
+
 
     <!-- Notification Overlay -->
     <?php if (isset($user) && $user): ?>
@@ -217,32 +249,48 @@ $seo = [
         </div>
     <?php endif; ?>
 
-    <!-- Menu Overlay -->
-    <div id="mobile-nav-overlay"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 z-40">
-    </div>
+<!--Notification PopOver -->
+<div popover id="notification-bells" class="popover container mx-auto lg:max-w-4xl min-h-[50%] max-h-full">
+  <div class="popover-content-wrapper">
+    <header class="popover-header">
+      <button popovertarget="notification-bells" popovertargetaction="hide" class="popover-close-btn"
+        aria-label="Close search" title="Close search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
+          fill="currentColor" aria-hidden="true">
+          <path
+            d="M11.9997 10.5865L16.9495 5.63672L18.3637 7.05093L13.4139 12.0007L18.3637 16.9504L16.9495 18.3646L11.9997 13.4149L7.04996 18.3646L5.63574 16.9504L10.5855 12.0007L5.63574 7.05093L7.04996 5.63672L11.9997 10.5865Z">
+          </path>
+        </svg>
+      </button>
+    </header>
+    <section class="popover-section sm:px-[2rem] px-1 py-[3.5rem]">
+      <!-- PopOver Content -->
+      <?php if (isset($user) && $user): ?>
 
-    <!-- Drawer -->
-    <nav id="mobile-nav-panel"
-         class="fixed top-0 right-0 h-full w-full sm:w-[500px] bg-white text-[var(--rh-text-black)] shadow-2xl z-50 translate-x-full 
-                transition-transform duration-300 ease-in-out will-change-transform flex flex-col"
-        aria-hidden="true">
-        <div class="flex items-center justify-end p-4">
-            <button id="mobile-nav-close"
-                class=" relative w-[46px] h-[46px] bg-[var(--rh-primary)] rounded-full flex flex-col items-center justify-center gap-1.5 active:scale-95 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50"
-                aria-label="Menü schließen" aria-expanded="false" aria-controls="mobile-nav-panel">
-                <i class="fa-solid fa-xmark text-[26px]  transition-all duration-300 ease-out"></i>
-            </button>
-        </div>
+            <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-[var(--rh-text-black)]">Benachrichtigungen</h3>
+                    
+                </div>
+                <div id="notification-list" class="space-y-2 max-h-64 overflow-y-auto">
+                    <!-- Notifications will be loaded here -->
+                </div>
+                <div class="mt-4 pt-4 border-t flex justify-between items-center">
+                    <button id="mark-all-read"
+                        class="text-sm text-[var(--rh-primary)] hover:text-[var(--rh-primary-hover)]">Alle als gelesen
+                        markieren</button>
+                    <button id="delete-all-notifications" class="text-sm text-red-600 hover:text-red-700">Alle
+                        löschen</button>
+                </div>
+            </div>
 
-        <ul class="flex-1 overflow-y-auto p-4 space-y-3 dark:text-black">
-            <li><a href="/" class="block px-3 py-2 rounded-lg hover:bg-gray-100 transition">Startseite</a></li>
-            <li><a href="/categories.php" class="block px-3 py-2 rounded-lg hover:bg-gray-100 transition">Rezepte</a>
-            </li>
-            <li><a href="/blog.php" class="block px-3 py-2 rounded-lg hover:bg-gray-100 transition">Blog</a></li>
-            <li><a href="/kontakt.php" class="block px-3 py-2 rounded-lg hover:bg-gray-100 transition">Kontakt</a></li>
-        </ul>
-    </nav>
+    <?php endif; ?>
+      <!-- PopOver Content end  -->
+    </section>
+  </div>
+</div>
+
+
 
     <!-- Header JavaScript - Loaded immediately -->
     <script>
@@ -365,7 +413,7 @@ $seo = [
                 });
             }
             // Notification System
-            const notificationBell = document.getElementById('notification-bell');
+            const notificationBell = document.getElementById('notification-bells');
             const notificationOverlay = document.getElementById('notification-overlay');
             const notificationList = document.getElementById('notification-list');
             const closeNotifications = document.getElementById('close-notifications');
