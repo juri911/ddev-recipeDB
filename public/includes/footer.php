@@ -52,7 +52,6 @@
       <div class="search-input-container flex justify-between items-end rounded-xl px-4">
         <form method="get" action="/search.php" class="flex justify-between items-center">
           <input name="q" role="search" autofocus class="search-input w-full" placeholder="Tippe ein magisches Wort ✨" type="text" value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>">
-
           <button type="submit" class="search-submit-btn rounded-xl  flex justify-end items-center" aria-label="search Submit" title="search Submit">
             <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"
               xmlns="http://www.w3.org/2000/svg" aria-hidden="true">

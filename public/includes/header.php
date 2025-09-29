@@ -252,12 +252,12 @@ $seo = [
                     <!-- Action Buttons -->
                     <div class="grid lg:grid-cols-2 lg:grid-rows-1 grid-cols-1 grid-rows-2 gap-4 pt-4 border-t border-gray-200 gap-4">
                         <button id="mark-all-read"
-                            class="flex-1 text-sm bg-[var(--rh-primary)] hover:bg-[var(--rh-primary-hover)] text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                            class="block w-full px-4 py-3 rounded bg-blue-600 text-white text-center text-sm font-medium hover:bg-blue-700 transition-colors">
                             <i class="fas fa-check-double mr-2"></i>
                             Alle als gelesen markieren
                         </button>
                         <button id="delete-all-notifications" 
-                            class="flex-1 text-sm bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                            class="w-full px-4 py-3 rounded bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-colors cursor-pointer">
                             <i class="fas fa-trash mr-2"></i>
                             Alle löschen
                         </button>

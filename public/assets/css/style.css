@@ -185,8 +185,7 @@ a.link:hover {
 
       
             .popover {
-                background-color: oklch(99% 0 287);
-                
+                background-color: oklch(99% 0 287); 
                 border-radius: var(--radius-3) var(--radius-3) 0px 0px;
                 border-width: 0;
                 box-shadow: var(--shadow-6);

@@ -153,71 +153,75 @@ if (isset($_GET['message'])) {
                         </button>
                     <?php endif; ?>
 
+                        <?php if ($user && $user['id'] !== (int) $r['user_id']): ?>
+                        <!-- Follow Button -->
+                        <button data-user-id="<?php echo (int) $r['user_id']; ?>"
+                            onclick="toggleFollow(<?php echo (int) $r['user_id']; ?>)"
+                            class="follow-btn px-3 py-1 rounded text-sm font-medium transition-colors duration-200
+                <?php echo is_following((int) $user['id'], (int) $r['user_id'])
+                            ? 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                            : 'bg-[#2d7ef7] text-white hover:bg-blue-600'; ?>">
+                            <span class="follow-text">
+                                <?php echo is_following((int) $user['id'], (int) $r['user_id']) ? 'Entfolgen' : 'Folgen'; ?>
+                            </span>
+                        </button>
+                    <?php endif; ?>
+
                     <?php if ($user && $user['id'] === (int) $r['user_id']): ?>
                         <div class="ml-auto">
                             <button type="button"
                                 class="p-2 text-[var(--rh-primary)] hover:text-[var(--rh-text)] cursor-pointer"
-                                aria-haspopup="dialog" aria-controls="recipe-actions-<?php echo (int) $r['id']; ?>"
-                                onclick="openModal('recipe-actions-<?php echo (int) $r['id']; ?>')">
+                                popovertarget="recipe-actions-<?php echo (int) $r['id']; ?>"
+                                popovertargetaction="toggle">
                                 <i class="fas fa-ellipsis-v fa-xl"></i>
                             </button>
                         </div>
 
-                        <div id="recipe-actions-<?php echo (int) $r['id']; ?>" class="fixed inset-0 z-50 hidden" role="dialog"
-                            aria-modal="true">
-                            <div class="inset-0 bg-black/50 w-full h-full  items-center justify-center"
-                                onclick="closeModal('recipe-actions-<?php echo (int) $r['id']; ?>')">
-                                <div class="flex justify-center items-center h-full">
-                                    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-
-                                        <div class="flex justify-between items-center mb-4">
-                                            <h3 class="font-semibold">Aktionen</h3>
-                                            <button id="close-notifications" class="text-gray-500 hover:text-gray-700">
-                                                <i class="fas fa-times"></i>
-                                            </button>
-                                        </div>
-                                        <div class="space-y-2">
-                                            <a class="block w-full px-3 py-2 rounded bg-blue-600 text-white text-center text-sm"
-                                                href="/recipe_edit.php?id=<?php echo (int) $r['id']; ?>">Bearbeiten</a>
+                        <!-- Recipe action Popover -->
+                        <div popover id="recipe-actions-<?php echo (int) $r['id']; ?>" 
+                             class="popover container mx-auto lg:max-w-4xl min-h-[50%] max-h-full z-[99]">
+                            <div class="popover-content-wrapper">
+                                <header class="popover-header">
+                                    <button popovertarget="recipe-actions-<?php echo (int) $r['id']; ?>" 
+                                            popovertargetaction="hide" 
+                                            class="popover-close-btn"
+                                            aria-label="Schließen" 
+                                            title="Schließen">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
+                                            fill="currentColor" aria-hidden="true">
+                                            <path
+                                                d="M11.9997 10.5865L16.9495 5.63672L18.3637 7.05093L13.4139 12.0007L18.3637 16.9504L16.9495 18.3646L11.9997 13.4149L7.04996 18.3646L5.63574 16.9504L10.5855 12.0007L5.63574 7.05093L7.04996 5.63672L11.9997 10.5865Z">
+                                            </path>
+                                        </svg>
+                                    </button>
+                                </header>
+                                <section class="popover-section sm:px-[2rem] px-4 py-[1.5rem]">
+                                    <!-- Action Buttons -->
+                                        <div class="grid lg:grid-cols-2 lg:grid-rows-1 grid-cols-1 grid-rows-2 gap-4 pt-4 border-t border-gray-200 gap-4">
+                                            <a class="block w-full px-4 py-3 rounded bg-blue-600 text-white text-center text-sm font-medium hover:bg-blue-700 transition-colors"
+                                                href="/recipe_edit.php?id=<?php echo (int) $r['id']; ?>">
+                                                <i class="fas fa-edit mr-2"></i>Bearbeiten
+                                            </a>
                                             <form method="post" action="/recipe_delete.php"
                                                 onsubmit="return confirm('Rezept wirklich löschen?');">
                                                 <input type="hidden" name="id" value="<?php echo (int) $r['id']; ?>">
                                                 <input type="hidden" name="csrf_token"
                                                     value="<?php echo htmlspecialchars(csrf_token()); ?>">
-                                                <button
-                                                    class="w-full px-3 py-2 rounded bg-red-600 text-white text-sm cursor-pointer">Löschen</button>
+                                                <button type="submit"
+                                                    class="w-full px-4 py-3 rounded bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-colors cursor-pointer">
+                                                    <i class="fas fa-trash mr-2"></i>Löschen
+                                                </button>
                                             </form>
-                                            <button type="button" class="w-full px-3 py-2 rounded border text-sm cursor-pointer"
-                                                onclick="closeModal('recipe-actions-<?php echo (int) $r['id']; ?>')">Abbrechen</button>
                                         </div>
-                                    </div>
-                                </div>
+                                            <button type="button" 
+                                                    class="w-full px-4 py-3 rounded border border-gray-300 text-sm font-medium hover:bg-gray-50 transition-colors cursor-pointer mt-4 shadow-[var(--shadow-6)]"
+                                                    popovertarget="recipe-actions-<?php echo (int) $r['id']; ?>"
+                                                    popovertargetaction="hide">
+                                                Abbrechen
+                                            </button>
+                                </section>
                             </div>
                         </div>
-
-                        <!-- Recipe action PopOver -->
-    <?php if (isset($user) && $user): ?>
-        <div popover id="notification-bells" class="popover container mx-auto lg:max-w-4xl min-h-[50%] max-h-full z-[99]">
-            <div class="popover-content-wrapper">
-                <header class="popover-header">
-                    <button popovertarget="notification-bells" popovertargetaction="hide" class="popover-close-btn"
-                        aria-label="Close notifications" title="Close notifications">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
-                            fill="currentColor" aria-hidden="true">
-                            <path
-                                d="M11.9997 10.5865L16.9495 5.63672L18.3637 7.05093L13.4139 12.0007L18.3637 16.9504L16.9495 18.3646L11.9997 13.4149L7.04996 18.3646L5.63574 16.9504L10.5855 12.0007L5.63574 7.05093L7.04996 5.63672L11.9997 10.5865Z">
-                            </path>
-                        </svg>
-                    </button>
-                </header>
-                <section class="popover-section sm:px-[2rem] px-4 py-[1.5rem]">
-                    <!-- Content -->
-                     
-                    <!-- Content end-->
-                </section>
-            </div>
-        </div>
-    <?php endif; ?>
                     <?php endif; ?>
                 </div>
 
@@ -376,21 +380,6 @@ if (isset($_GET['message'])) {
 
 <!-- Page specific JavaScript -->
 <script>
-    function openModal(id) {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.classList.remove('hidden');
-        document.documentElement.classList.add('overflow-hidden');
-        document.body.classList.add('overflow-hidden');
-    }
-
-    function closeModal(id) {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.classList.add('hidden');
-        document.documentElement.classList.remove('overflow-hidden');
-        document.body.classList.remove('overflow-hidden');
-    }
     const likeRecipe = async (recipeId) => {
         // Prüfen ob User angemeldet ist
         const isLoggedIn = <?php echo $user ? 'true' : 'false'; ?>;
