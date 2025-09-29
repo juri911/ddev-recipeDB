@@ -140,18 +140,18 @@ if (isset($_GET['message'])) {
                     </div>
 
                     <?php if ($user && $user['id'] !== (int) $r['user_id']): ?>
-            <!-- Follow Button -->
-            <button data-user-id="<?php echo (int) $r['user_id']; ?>" 
-                onclick="toggleFollow(<?php echo (int) $r['user_id']; ?>)"
-                class="follow-btn px-3 py-1 rounded text-sm font-medium transition-colors duration-200
-                <?php echo is_following((int) $user['id'], (int) $r['user_id']) 
-                    ? 'bg-gray-200 text-gray-800 hover:bg-gray-300' 
-                    : 'bg-[#2d7ef7] text-white hover:bg-blue-600'; ?>">
-                <span class="follow-text">
-                    <?php echo is_following((int) $user['id'], (int) $r['user_id']) ? 'Entfolgen' : 'Folgen'; ?>
-                </span>
-            </button>
-        <?php endif; ?>
+                        <!-- Follow Button -->
+                        <button data-user-id="<?php echo (int) $r['user_id']; ?>"
+                            onclick="toggleFollow(<?php echo (int) $r['user_id']; ?>)"
+                            class="follow-btn px-3 py-1 rounded text-sm font-medium transition-colors duration-200
+                <?php echo is_following((int) $user['id'], (int) $r['user_id'])
+                            ? 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                            : 'bg-[#2d7ef7] text-white hover:bg-blue-600'; ?>">
+                            <span class="follow-text">
+                                <?php echo is_following((int) $user['id'], (int) $r['user_id']) ? 'Entfolgen' : 'Folgen'; ?>
+                            </span>
+                        </button>
+                    <?php endif; ?>
 
                     <?php if ($user && $user['id'] === (int) $r['user_id']): ?>
                         <div class="ml-auto">
@@ -194,6 +194,30 @@ if (isset($_GET['message'])) {
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Recipe action PopOver -->
+    <?php if (isset($user) && $user): ?>
+        <div popover id="notification-bells" class="popover container mx-auto lg:max-w-4xl min-h-[50%] max-h-full z-[99]">
+            <div class="popover-content-wrapper">
+                <header class="popover-header">
+                    <button popovertarget="notification-bells" popovertargetaction="hide" class="popover-close-btn"
+                        aria-label="Close notifications" title="Close notifications">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
+                            fill="currentColor" aria-hidden="true">
+                            <path
+                                d="M11.9997 10.5865L16.9495 5.63672L18.3637 7.05093L13.4139 12.0007L18.3637 16.9504L16.9495 18.3646L11.9997 13.4149L7.04996 18.3646L5.63574 16.9504L10.5855 12.0007L5.63574 7.05093L7.04996 5.63672L11.9997 10.5865Z">
+                            </path>
+                        </svg>
+                    </button>
+                </header>
+                <section class="popover-section sm:px-[2rem] px-4 py-[1.5rem]">
+                    <!-- Content -->
+                     
+                    <!-- Content end-->
+                </section>
+            </div>
+        </div>
+    <?php endif; ?>
                     <?php endif; ?>
                 </div>
 
@@ -216,28 +240,28 @@ if (isset($_GET['message'])) {
                             </div>
                             <?php if (count($r['images']) > 1): ?>
                                 <button type="button"
-                                class="flex absolute top-0 left-0 z-30 justify-center items-center px-4 h-full cursor-pointer group focus:outline-none"
-                                data-prev>
-                                <span
-              class="inline-flex justify-center items-center w-8 h-8 rounded-full sm:w-10 sm:h-10 border-2 border-[#2d7ef7] bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-[#2d7ef7]">
-              <svg class="w-5 h-5 text-[#2d7ef7] sm:w-6 sm:h-6" fill="none" stroke="currentColor"
-                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-              </svg>
-              <span class="hidden">Previous</span>
-            </span>
-                            </button>
+                                    class="flex absolute top-0 left-0 z-30 justify-center items-center px-4 h-full cursor-pointer group focus:outline-none"
+                                    data-prev>
+                                    <span
+                                        class="inline-flex justify-center items-center w-8 h-8 rounded-full sm:w-10 sm:h-10 border-2 border-[#2d7ef7] bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-[#2d7ef7]">
+                                        <svg class="w-5 h-5 text-[#2d7ef7] sm:w-6 sm:h-6" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                        </svg>
+                                        <span class="hidden">Previous</span>
+                                    </span>
+                                </button>
                                 <button type="button"
                                     class="flex absolute top-0 right-0 z-30 justify-center items-center px-4 h-full cursor-pointer group focus:outline-none"
                                     data-next>
                                     <span
-              class="inline-flex justify-center items-center w-8 h-8 rounded-full sm:w-10 sm:h-10 border-2 border-[#2d7ef7] bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-[#2d7ef7]">
-              <svg class="w-5 h-5 text-[#2d7ef7] sm:w-6 sm:h-6" fill="none" stroke="currentColor"
-                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-              <span class="hidden">Next</span>
-            </span>
+                                        class="inline-flex justify-center items-center w-8 h-8 rounded-full sm:w-10 sm:h-10 border-2 border-[#2d7ef7] bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-[#2d7ef7]">
+                                        <svg class="w-5 h-5 text-[#2d7ef7] sm:w-6 sm:h-6" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                        </svg>
+                                        <span class="hidden">Next</span>
+                                    </span>
                                 </button>
                                 <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 px-5 py-2 text-lg"
                                     data-dots>
@@ -267,14 +291,14 @@ if (isset($_GET['message'])) {
                                 id="like-count-<?php echo (int) $r['id']; ?>"><?php echo (int) $r['likes_count']; ?></span>
                         </div>
 
-                <?php if ($user): ?>
-                    <button id="favorite-btn-<?php echo (int) $r['id']; ?>"
-                        onclick="toggleFavorite(<?php echo (int) $r['id']; ?>)"
-                        class="favorite-btn ml-auto <?php echo is_favorited((int) $r['id'], (int) $user['id']) ? 'text-[#2d7ef7]' : 'text-white'; ?>">
-                        <i id="like-bookmark"
-                            class="icon-transition <?php echo is_favorited((int) $r['id'], (int) $user['id']) ? 'fas' : 'far'; ?> fa-solid fa-bookmark fa-xl"></i>
-                    </button>
-                <?php endif; ?>
+                        <?php if ($user): ?>
+                            <button id="favorite-btn-<?php echo (int) $r['id']; ?>"
+                                onclick="toggleFavorite(<?php echo (int) $r['id']; ?>)"
+                                class="favorite-btn ml-auto <?php echo is_favorited((int) $r['id'], (int) $user['id']) ? 'text-[#2d7ef7]' : 'text-white'; ?>">
+                                <i id="like-bookmark"
+                                    class="icon-transition <?php echo is_favorited((int) $r['id'], (int) $user['id']) ? 'fas' : 'far'; ?> fa-solid fa-bookmark fa-xl"></i>
+                            </button>
+                        <?php endif; ?>
 
                     </div>
                 </div>
@@ -282,26 +306,26 @@ if (isset($_GET['message'])) {
                 <!-- Card Content -->
                 <div class="px-4 flex flex-col">
                     <div class="flex items-end justify-between text-sm text-gray-500 pb-2 border-b-1 border-gray-100">
-                <span>
-    <i class="fas fa-clock mr-1"></i>Zubereitungszeit:
-    <strong>
-        <?php
-        $duration_minutes = (int) $r['duration_minutes']; // Get the duration in minutes
-        $hours = floor($duration_minutes / 60); // Calculate hours
-        $minutes = $duration_minutes % 60; // Calculate remaining minutes
-        
-        // Display with German units
-        if ($hours > 0 && $minutes > 0) {
-            echo $hours . " Std. " . $minutes . " Min.";
-        } elseif ($hours > 0) {
-            echo $hours . " Std.";
-        } else {
-            echo $minutes . " Min.";
-        }
-        ?>
-    </strong>
-</span>
-                
+                        <span>
+                            <i class="fas fa-clock mr-1"></i>Zubereitungszeit:
+                            <strong>
+                                <?php
+                                $duration_minutes = (int) $r['duration_minutes']; // Get the duration in minutes
+                                $hours = floor($duration_minutes / 60); // Calculate hours
+                                $minutes = $duration_minutes % 60; // Calculate remaining minutes
+
+                                // Display with German units
+                                if ($hours > 0 && $minutes > 0) {
+                                    echo $hours . " Std. " . $minutes . " Min.";
+                                } elseif ($hours > 0) {
+                                    echo $hours . " Std.";
+                                } else {
+                                    echo $minutes . " Min.";
+                                }
+                                ?>
+                            </strong>
+                        </span>
+
                         <span>
                             <i class="fas fa-cog mr-1"></i>Schwierigkeit:
                             <strong>
@@ -318,12 +342,12 @@ if (isset($_GET['message'])) {
                     </div>
                     <div class="flex flex-col">
                         <a href="<?php echo htmlspecialchars(recipe_url($r)); ?>">
-                        <h3 class="font-bold text-lg my-2">
-                           <?php echo htmlspecialchars($r['title']); ?>
-                        </h3>
-                        <p class="mb-3 lg:line-clamp-3 hidden text-pretty hyphens-all">
-                           <?php echo nl2br(htmlspecialchars($r['description'])); ?>
-                        </p>
+                            <h3 class="font-bold text-lg my-2">
+                                <?php echo htmlspecialchars($r['title']); ?>
+                            </h3>
+                            <p class="mb-3 lg:line-clamp-3 hidden text-pretty hyphens-all">
+                                <?php echo nl2br(htmlspecialchars($r['description'])); ?>
+                            </p>
                         </a>
                     </div>
 
@@ -609,7 +633,9 @@ if (isset($_GET['message'])) {
             isTouching = true;
             moved = false;
             track.style.transition = 'none';
-        }, { passive: true });
+        }, {
+            passive: true
+        });
 
         track.addEventListener('touchmove', (e) => {
             if (!isTouching) return;
@@ -618,7 +644,9 @@ if (isset($_GET['message'])) {
             const percent = (dx / getWidth()) * 100;
             track.style.transform = `translateX(calc(-${currentIndex * 100}% + ${percent}%))`;
             if (Math.abs(dx) > 5) moved = true;
-        }, { passive: true });
+        }, {
+            passive: true
+        });
 
         track.addEventListener('touchend', () => {
             if (!isTouching) return;
@@ -698,70 +726,72 @@ if (isset($_GET['message'])) {
                         loadMore();
                     }
                 });
-            }, { rootMargin: '400px 0px' });
+            }, {
+                rootMargin: '400px 0px'
+            });
             observer.observe(sentinel);
         }
     });
 
     // Follow/Unfollow functionality
-const toggleFollow = async (profileId) => {
-    // Find ALL follow buttons for this user
-    const followBtns = document.querySelectorAll(`[data-user-id="${profileId}"].follow-btn`);
-    
-    if (followBtns.length === 0) return;
-    
-    // Disable all buttons during request
-    followBtns.forEach(btn => {
-        btn.disabled = true;
-        btn.style.opacity = '0.6';
-    });
-    
-    try {
-        const response = await fetch('/api/toggle_follow.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                profile_id: profileId,
-                csrf_token: document.querySelector('meta[name="csrf-token"]').content
-            })
-        });
+    const toggleFollow = async (profileId) => {
+        // Find ALL follow buttons for this user
+        const followBtns = document.querySelectorAll(`[data-user-id="${profileId}"].follow-btn`);
 
-        const result = await response.json();
+        if (followBtns.length === 0) return;
 
-        if (result.ok) {
-            // Update ALL follow buttons for this user
-            followBtns.forEach(followBtn => {
-                const followText = followBtn.querySelector('.follow-text');
-                
-                if (result.following) {
-                    // Now following
-                    followBtn.classList.remove('bg-[#2d7ef7]', 'text-white', 'hover:bg-blue-600');
-                    followBtn.classList.add('bg-gray-200', 'text-gray-800', 'hover:bg-gray-300');
-                    followText.textContent = 'Entfolgen';
-                } else {
-                    // Not following anymore
-                    followBtn.classList.remove('bg-gray-200', 'text-gray-800', 'hover:bg-gray-300');
-                    followBtn.classList.add('bg-[#2d7ef7]', 'text-white', 'hover:bg-blue-600');
-                    followText.textContent = 'Folgen';
-                }
-            });
-        } else {
-            console.error('Follow toggle failed:', result.error);
-            alert('Fehler beim Folgen/Entfolgen: ' + result.error);
-        }
-    } catch (error) {
-        console.error('Network error:', error);
-        alert('Netzwerkfehler beim Folgen/Entfolgen.');
-    } finally {
-        // Re-enable all buttons
+        // Disable all buttons during request
         followBtns.forEach(btn => {
-            btn.disabled = false;
-            btn.style.opacity = '1';
+            btn.disabled = true;
+            btn.style.opacity = '0.6';
         });
-    }
-};
+
+        try {
+            const response = await fetch('/api/toggle_follow.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    profile_id: profileId,
+                    csrf_token: document.querySelector('meta[name="csrf-token"]').content
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.ok) {
+                // Update ALL follow buttons for this user
+                followBtns.forEach(followBtn => {
+                    const followText = followBtn.querySelector('.follow-text');
+
+                    if (result.following) {
+                        // Now following
+                        followBtn.classList.remove('bg-[#2d7ef7]', 'text-white', 'hover:bg-blue-600');
+                        followBtn.classList.add('bg-gray-200', 'text-gray-800', 'hover:bg-gray-300');
+                        followText.textContent = 'Entfolgen';
+                    } else {
+                        // Not following anymore
+                        followBtn.classList.remove('bg-gray-200', 'text-gray-800', 'hover:bg-gray-300');
+                        followBtn.classList.add('bg-[#2d7ef7]', 'text-white', 'hover:bg-blue-600');
+                        followText.textContent = 'Folgen';
+                    }
+                });
+            } else {
+                console.error('Follow toggle failed:', result.error);
+                alert('Fehler beim Folgen/Entfolgen: ' + result.error);
+            }
+        } catch (error) {
+            console.error('Network error:', error);
+            alert('Netzwerkfehler beim Folgen/Entfolgen.');
+        } finally {
+            // Re-enable all buttons
+            followBtns.forEach(btn => {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            });
+        }
+    };
 </script>
 
 <?php
