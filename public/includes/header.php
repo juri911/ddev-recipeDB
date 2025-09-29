@@ -133,7 +133,7 @@ $seo = [
                         <button popovertarget="notification-bells" class="bg-transparent lg:bg-[#2d7ef7]  relative text-white lg:text-gray-600 bg-[var(--rh-primary)] lg:bg-transparent hover:text-[var(--rh-text)] lg:p-0 p-4 aspect-square lg:aspect-auto hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent transition duration-600">
                             <i class="fa-solid fa-bell lg:text-[26px] text-2xl"></i>
                             <?php if ($unreadCount > 0): ?>
-                                <span
+                                <span id="notification-badge"
                                     class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center"><?php echo $unreadCount; ?></span>
                             <?php endif; ?>
                         </button>
@@ -224,73 +224,48 @@ $seo = [
         </ul>
     </nav>
 
-
-    <!-- Notification Overlay -->
+    <!-- Notification PopOver -->
     <?php if (isset($user) && $user): ?>
-        <div id="notification-overlay" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
-            <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-[var(--rh-text-black)]">Benachrichtigungen</h3>
-                    <button id="close-notifications" class="text-gray-500 hover:text-gray-700">
-                        <i class="fas fa-times"></i>
+        <div popover id="notification-bells" class="popover container mx-auto lg:max-w-4xl min-h-[50%] max-h-full z-[99]">
+            <div class="popover-content-wrapper">
+                <header class="popover-header">
+                    <button popovertarget="notification-bells" popovertargetaction="hide" class="popover-close-btn"
+                        aria-label="Close notifications" title="Close notifications">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
+                            fill="currentColor" aria-hidden="true">
+                            <path
+                                d="M11.9997 10.5865L16.9495 5.63672L18.3637 7.05093L13.4139 12.0007L18.3637 16.9504L16.9495 18.3646L11.9997 13.4149L7.04996 18.3646L5.63574 16.9504L10.5855 12.0007L5.63574 7.05093L7.04996 5.63672L11.9997 10.5865Z">
+                            </path>
+                        </svg>
                     </button>
-                </div>
-                <div id="notification-list" class="space-y-2 max-h-64 overflow-y-auto">
-                    <!-- Notifications will be loaded here -->
-                </div>
-                <div class="mt-4 pt-4 border-t flex justify-between items-center">
-                    <button id="mark-all-read"
-                        class="text-sm text-[var(--rh-primary)] hover:text-[var(--rh-primary-hover)]">Alle als gelesen
-                        markieren</button>
-                    <button id="delete-all-notifications" class="text-sm text-red-600 hover:text-red-700">Alle
-                        löschen</button>
-                </div>
+                </header>
+                <section class="popover-section sm:px-[2rem] px-4 py-[1.5rem]">
+                    <!-- Notification List -->
+                    <div id="notification-list" class="space-y-3 max-h-96 overflow-y-auto mb-6">
+                        <!-- Notifications will be loaded here -->
+                        <div class="flex items-center justify-center py-8">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--rh-primary)]"></div>
+                            <span class="ml-3 text-gray-600">Lade Benachrichtigungen...</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="grid lg:grid-cols-2 lg:grid-rows-1 grid-cols-1 grid-rows-2 gap-4 pt-4 border-t border-gray-200 gap-4">
+                        <button id="mark-all-read"
+                            class="flex-1 text-sm bg-[var(--rh-primary)] hover:bg-[var(--rh-primary-hover)] text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                            <i class="fas fa-check-double mr-2"></i>
+                            Alle als gelesen markieren
+                        </button>
+                        <button id="delete-all-notifications" 
+                            class="flex-1 text-sm bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                            <i class="fas fa-trash mr-2"></i>
+                            Alle löschen
+                        </button>
+                    </div>
+                </section>
             </div>
         </div>
     <?php endif; ?>
-
-<!--Notification PopOver -->
-<div popover id="notification-bells" class="popover container mx-auto lg:max-w-4xl min-h-[50%] max-h-full">
-  <div class="popover-content-wrapper">
-    <header class="popover-header">
-      <button popovertarget="notification-bells" popovertargetaction="hide" class="popover-close-btn"
-        aria-label="Close search" title="Close search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
-          fill="currentColor" aria-hidden="true">
-          <path
-            d="M11.9997 10.5865L16.9495 5.63672L18.3637 7.05093L13.4139 12.0007L18.3637 16.9504L16.9495 18.3646L11.9997 13.4149L7.04996 18.3646L5.63574 16.9504L10.5855 12.0007L5.63574 7.05093L7.04996 5.63672L11.9997 10.5865Z">
-          </path>
-        </svg>
-      </button>
-    </header>
-    <section class="popover-section sm:px-[2rem] px-1 py-[3.5rem]">
-      <!-- PopOver Content -->
-      <?php if (isset($user) && $user): ?>
-
-            <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-[var(--rh-text-black)]">Benachrichtigungen</h3>
-                    
-                </div>
-                <div id="notification-list" class="space-y-2 max-h-64 overflow-y-auto">
-                    <!-- Notifications will be loaded here -->
-                </div>
-                <div class="mt-4 pt-4 border-t flex justify-between items-center">
-                    <button id="mark-all-read"
-                        class="text-sm text-[var(--rh-primary)] hover:text-[var(--rh-primary-hover)]">Alle als gelesen
-                        markieren</button>
-                    <button id="delete-all-notifications" class="text-sm text-red-600 hover:text-red-700">Alle
-                        löschen</button>
-                </div>
-            </div>
-
-    <?php endif; ?>
-      <!-- PopOver Content end  -->
-    </section>
-  </div>
-</div>
-
-
 
     <!-- Header JavaScript - Loaded immediately -->
     <script>
@@ -344,10 +319,7 @@ $seo = [
                 });
             }
 
-            // Diese Funktion ersetzt den ursprünglichen User Dropdown Code in Ihrem header.php
-            // Ersetzen Sie den Code ab "// User Dropdown Menu" bis zum Ende des if-Blocks
-
-            // Verbesserte User Dropdown Menu Funktionalität
+            // User Dropdown Menu Functionality
             const userButton = document.getElementById("userMenuButton");
             const userDropdown = document.getElementById("userMenuDropdown");
 
@@ -412,13 +384,13 @@ $seo = [
                     }
                 });
             }
-            // Notification System
-            const notificationBell = document.getElementById('notification-bells');
-            const notificationOverlay = document.getElementById('notification-overlay');
+
+            // Notification PopOver System
+            const notificationPopover = document.getElementById('notification-bells');
             const notificationList = document.getElementById('notification-list');
-            const closeNotifications = document.getElementById('close-notifications');
             const markAllReadButton = document.getElementById('mark-all-read');
             const deleteAllButton = document.getElementById('delete-all-notifications');
+            const notificationBadge = document.getElementById('notification-badge');
 
             // Fetch notifications function
             async function fetchNotifications() {
@@ -439,59 +411,71 @@ $seo = [
 
                     notificationList.innerHTML = '';
                     if (notifications.length === 0) {
-                        notificationList.innerHTML = '<p class="text-gray-500">Keine Benachrichtigungen.</p>';
+                        notificationList.innerHTML = `
+                            <div class="flex flex-col items-center justify-center py-12 text-center">
+                                <i class="fas fa-bell-slash text-4xl text-gray-300 mb-3"></i>
+                                <p class="text-gray-500 text-lg">Keine Benachrichtigungen</p>
+                                <p class="text-gray-400 text-sm mt-1">Du bist auf dem neuesten Stand!</p>
+                            </div>
+                        `;
                         return;
                     }
 
                     notifications.forEach(n => {
                         const notificationItem = document.createElement('div');
-                        notificationItem.className = `p-3 border rounded ${n.is_read ? 'bg-gray-100' : 'bg-white font-semibold'}`;
+                        notificationItem.className = `p-4 border rounded-lg transition-colors hover:bg-gray-50 ${n.is_read ? 'bg-gray-50 border-gray-200' : 'bg-white border-blue-200 shadow-sm'}`;
 
                         let link = '';
+                        let icon = 'fa-bell';
+                        
                         if (n.type === 'new_recipe' && n.entity_id) {
-                            link = `<a href="/recipe/${n.entity_id}" class="text-blue-600 hover:underline">${n.message}</a>`;
+                            link = `<a href="/recipe/${n.entity_id}" class="text-blue-600 hover:text-blue-800 hover:underline font-medium">${n.message}</a>`;
+                            icon = 'fa-utensils';
                         } else {
-                            link = n.message;
+                            link = `<span class="${n.is_read ? 'text-gray-700' : 'text-gray-900 font-medium'}">${n.message}</span>`;
                         }
 
                         notificationItem.innerHTML = `
-                            <div>${link}</div>
-                            <div class="text-xs text-gray-500 mt-1">${new Date(n.created_at).toLocaleString()}</div>
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 mt-1">
+                                    <i class="fas ${icon} ${n.is_read ? 'text-gray-400' : 'text-blue-500'} text-sm"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-sm">${link}</div>
+                                    <div class="text-xs text-gray-500 mt-1">
+                                        <i class="far fa-clock mr-1"></i>
+                                        ${new Date(n.created_at).toLocaleString('de-DE', {
+                                            day: '2-digit',
+                                            month: '2-digit',
+                                            year: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })}
+                                    </div>
+                                </div>
+                                ${!n.is_read ? '<div class="flex-shrink-0"><div class="w-2 h-2 bg-blue-500 rounded-full"></div></div>' : ''}
+                            </div>
                         `;
                         notificationList.appendChild(notificationItem);
                     });
                 } catch (error) {
                     console.error('Error fetching notifications:', error);
-                    notificationList.innerHTML = '<p class="text-red-500">Fehler beim Laden der Benachrichtigungen.</p>';
+                    notificationList.innerHTML = `
+                        <div class="flex flex-col items-center justify-center py-8 text-center">
+                            <i class="fas fa-exclamation-triangle text-3xl text-red-400 mb-3"></i>
+                            <p class="text-red-500 font-medium">Fehler beim Laden der Benachrichtigungen</p>
+                            <p class="text-gray-500 text-sm mt-1">Bitte versuche es später erneut.</p>
+                        </div>
+                    `;
                 }
             }
 
-            // Notification bell click handler
-            if (notificationBell && notificationOverlay) {
-                notificationBell.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('Notification bell clicked'); // Debug log
-                    notificationOverlay.classList.remove('hidden');
-                    notificationOverlay.classList.add('flex');
-                    await fetchNotifications();
-                });
-            }
-
-            // Close notifications
-            if (closeNotifications && notificationOverlay) {
-                closeNotifications.addEventListener('click', () => {
-                    notificationOverlay.classList.add('hidden');
-                    notificationOverlay.classList.remove('flex');
-                });
-            }
-
-            // Close on overlay click
-            if (notificationOverlay) {
-                notificationOverlay.addEventListener('click', (e) => {
-                    if (e.target === notificationOverlay) {
-                        notificationOverlay.classList.add('hidden');
-                        notificationOverlay.classList.remove('flex');
+            // Load notifications when popover is shown
+            if (notificationPopover) {
+                // Listen for popover toggle events
+                notificationPopover.addEventListener('toggle', (e) => {
+                    if (e.newState === 'open') {
+                        fetchNotifications();
                     }
                 });
             }
@@ -518,14 +502,18 @@ $seo = [
                             const result = await response.json();
                             if (result.ok) {
                                 await fetchNotifications();
-                                const unreadSpan = notificationBell?.querySelector('span');
-                                if (unreadSpan) unreadSpan.remove();
+                                // Remove notification badge
+                                if (notificationBadge) {
+                                    notificationBadge.remove();
+                                }
+                                // Show success message
+                                showNotificationMessage('Alle Benachrichtigungen wurden als gelesen markiert.', 'success');
                             } else {
-                                alert('Fehler beim Markieren als gelesen: ' + result.error);
+                                showNotificationMessage('Fehler beim Markieren als gelesen: ' + result.error, 'error');
                             }
                         } catch (error) {
                             console.error('Error:', error);
-                            alert('Netzwerkfehler beim Markieren als gelesen.');
+                            showNotificationMessage('Netzwerkfehler beim Markieren als gelesen.', 'error');
                         }
                     }
                 });
@@ -553,19 +541,54 @@ $seo = [
                             const result = await response.json();
                             if (result.ok) {
                                 await fetchNotifications();
-                                const unreadSpan = notificationBell?.querySelector('span');
-                                if (unreadSpan) unreadSpan.remove();
-                                // Show success message
-                                alert('Alle Benachrichtigungen wurden erfolgreich gelöscht.');
+                                // Remove notification badge
+                                if (notificationBadge) {
+                                    notificationBadge.remove();
+                                }
+                                showNotificationMessage('Alle Benachrichtigungen wurden erfolgreich gelöscht.', 'success');
                             } else {
-                                alert('Fehler beim Löschen der Benachrichtigungen: ' + result.error);
+                                showNotificationMessage('Fehler beim Löschen der Benachrichtigungen: ' + result.error, 'error');
                             }
                         } catch (error) {
                             console.error('Error:', error);
-                            alert('Netzwerkfehler beim Löschen der Benachrichtigungen.');
+                            showNotificationMessage('Netzwerkfehler beim Löschen der Benachrichtigungen.', 'error');
                         }
                     }
                 });
+            }
+
+            // Helper function to show notification messages
+            function showNotificationMessage(message, type = 'info') {
+                // Create a temporary toast notification
+                const toast = document.createElement('div');
+                toast.className = `fixed top-20 right-4 z-[9999] px-4 py-3 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full ${
+                    type === 'success' ? 'bg-green-500 text-white' : 
+                    type === 'error' ? 'bg-red-500 text-white' : 
+                    'bg-blue-500 text-white'
+                }`;
+                toast.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                        <span>${message}</span>
+                    </div>
+                `;
+                
+                document.body.appendChild(toast);
+                
+                // Animate in
+                setTimeout(() => {
+                    toast.classList.remove('translate-x-full');
+                }, 100);
+                
+                // Animate out and remove
+                setTimeout(() => {
+                    toast.classList.add('translate-x-full');
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.parentNode.removeChild(toast);
+                        }
+                    }, 300);
+                }, 3000);
             }
         });
     </script>

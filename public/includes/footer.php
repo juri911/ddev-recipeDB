@@ -35,7 +35,7 @@
 
 
 <!--Search PopOver -->
-<div popover id="search-popover" class="popover container mx-auto lg:max-w-4xl min-h-[50%]">
+<div popover id="search-popover" class="popover container mx-auto lg:max-w-4xl min-h-[50%] z-[99]">
   <div class="popover-content-wrapper">
     <header class="popover-header">
       <button popovertarget="search-popover" popovertargetaction="hide" class="popover-close-btn"
@@ -51,7 +51,7 @@
     <section class="popover-section sm:px-[2rem] px-1 py-[3.5rem]">
       <div class="search-input-container flex justify-between items-end rounded-xl px-4">
         <form method="get" action="/search.php" class="flex justify-between items-center">
-          <input name="q" role="search" autofocus class="search-input w-full" placeholder="Ask me anything" type="text" value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>">
+          <input name="q" role="search" autofocus class="search-input w-full" placeholder="Tippe ein magisches Wort ✨" type="text" value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>">
 
           <button type="submit" class="search-submit-btn rounded-xl  flex justify-end items-center" aria-label="search Submit" title="search Submit">
             <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"
