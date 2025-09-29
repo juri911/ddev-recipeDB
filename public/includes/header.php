@@ -78,11 +78,12 @@ $seo = [
     <div class="w-full h-[6px] bg-gradient-to-r from-[#2d7ef7] to-fuchsia-400 fixed top-0 z-[99999]"></div>
 
     <header
-        class="flex lg:sticky lg:top-0 fixed bottom-0 left-0 right-0 z-10 container-fluid min-h-[80px] mx-auto justify-between items-center px-0 lg:px-3 border-b-[1px] bg-[var(--rh-bg)]/40 border-[var(--rh-bg-secondary)] backdrop-blur-lg">
+        class="flex lg:sticky lg:top-0 fixed bottom-0 left-0 right-0 z-10 container-fluid min-h-[80px] mx-auto justify-between 
+               items-center border-b-[1px] bg-[var(--rh-bg)]/40 border-[var(--rh-bg-secondary)] backdrop-blur-lg">
         <!-- Logo -->
         <div class="lg:flex hidden content-start">
             <a href="/"
-                class="flex items-center z-[9999] navbar-brand hover:scale-150 origin-left transition duration-300 ease-in-out">
+                class="flex items-center z-[9999] navbar-brand hover:scale-150 origin-left transition duration-300 ease-in-out pl-3">
                 <?php //echo get_app_logo_html(); 
                 ?>
                 <svg fill="currentColor" width="160px" height="50px">
@@ -106,7 +107,7 @@ $seo = [
                     </button>
                     <a href="/categories.php"
                         class="lg:block hidden bg-[#2d7ef7] border-1 border-[#2d7ef7] hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white lg:py-1 lg:px-3 p-4 lg:rounded-r transition duration-600 aspect-square lg:aspect-auto rounded-none"">
-                        <i class="fa-solid fa-tags lg:text-base text-2xl"></i>
+                        <i class=" fa-solid fa-tags lg:text-base text-2xl"></i>
                     </a>
                 </div>
                 <div class="flex items-center gap-x0 lg:gap-x-2 pr-0 lg:pr-3">
@@ -114,7 +115,8 @@ $seo = [
                         <!-- New Recipe Button -->
                         <a href="/recipe_new.php"
                             class="bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1 bg-[#2d7ef7] border-[#2d7ef7] hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white p-4 lg:py-1 lg:px-3 aspect-square lg:aspect-auto rounded-none lg:rounded transition duration-600">
-                            <i class="fa-solid fa-feather lg:text-base text-2xl p-0 lg:pr-2"></i><p class="lg:inline hidden">Neues Rezept</p>
+                            <i class="fa-solid fa-feather lg:text-base text-2xl p-0 lg:pr-2"></i>
+                            <p class="lg:inline hidden">Neues Rezept</p>
                         </a>
                         <!-- Notifications -->
                         <?php
@@ -164,26 +166,31 @@ $seo = [
                             </div>
                         </div>
                     <?php else: ?>
-                        <div class="flex items-center gap-x-5 text-[16px] pr-0 lg:pr-4">
+                        <div class="flex items-center gap-x-0 lg:gap-x-5 text-[16px]">
                             <a href="/login.php"
-                                class="flex items-center bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1   bg-[#2d7ef7] border-[#2d7ef7] font-semibold hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white p-4 lg:py-1 lg:px-3 lg:rounded rounded-none transition duration-600 aspect-square lg:aspect-auto">
-                                <i class="fa-solid fa-arrow-right-from-bracket lg:text-base text-2xl pr-0 lg:pr-2"></i><p class="lg:inline hidden">Login</p>
+                                class="flex items-center bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1 border-[#2d7ef7] font-semibold hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent 
+                                text-white p-4 lg:py-1 lg:px-3 lg:rounded rounded-none transition duration-600 aspect-square lg:aspect-auto">
+                                <i class="fa-solid fa-arrow-right-from-bracket lg:text-base text-2xl pr-0 lg:pr-2"></i>
+                                <p class="lg:inline hidden">Login</p>
                             </a>
 
-                            <a class="flex items-center gap-x-1 font-semibold text-[#2d7ef7] relative after:absolute after:bg-[#2d7ef7] after:h-[2px] after:w-0 after:left-1/2 after:-translate-x-1/2 after:bottom-0 hover:after:w-full after:transition-all after:duration-300"
-                                href="/register.php"><p class="lg:inline hidden">Registrieren</p><i class="fa-solid fa-pencil lg:text-base text-2xl"></i></a>
+                            <a class="flex items-center lg:gap-x-1 font-semibold text-white lg:text-[#2d7ef7] relative after:absolute 
+                                    after:bg-[#2d7ef7] after:h-[2px] after:w-0 after:left-1/2 after:-translate-x-1/2 after:bottom-0 lg:hover:after:w-full after:transition-all after:duration-300 aspect-square lg:aspect-auto lg:p-0 p-4"
+                                href="/register.php">
+                                <p class="lg:inline hidden">Registrieren</p><i class="fa-solid fa-pencil lg:text-base text-2xl"></i>
+                            </a>
                         </div>
                     <?php endif; ?>
                 </div>
+                 <!-- Mobile menu button -->
+        <button id="mobile-nav-btn" class="relative flex  items-center justify-center lg:mr-3 mr-0 aspect-square lg:aspect-auto lg:p-0 p-4"
+            aria-label="Menü öffnen" aria-expanded="false" aria-controls="mobile-nav-panel">
+            <i
+                class="fa-solid fa-burger text-[36px] text-[var(--rh-primary)] hover:text-[var(--rh-text)]  transition-all duration-300 ease-out"></i>
+
+        </button>
             </div>
         </nav>
-        <!-- Mobile menu button -->
-                <button id="mobile-nav-btn" class="relative flex  items-center justify-center"
-                    aria-label="Menü öffnen" aria-expanded="false" aria-controls="mobile-nav-panel">
-                    <i
-                        class="fa-solid fa-burger text-[36px] text-[var(--rh-primary)] hover:text-[var(--rh-text)]  transition-all duration-300 ease-out"></i>
-
-                </button>
     </header>
 
     <!-- Notification Overlay -->
@@ -217,7 +224,8 @@ $seo = [
 
     <!-- Drawer -->
     <nav id="mobile-nav-panel"
-        class="fixed top-0 right-0 h-full w-full sm:w-[500px] bg-white text-[var(--rh-text-black)] shadow-2xl z-50 translate-x-full transition-transform duration-300 ease-in-out will-change-transform flex flex-col"
+         class="fixed top-0 right-0 h-full w-full sm:w-[500px] bg-white text-[var(--rh-text-black)] shadow-2xl z-50 translate-x-full 
+                transition-transform duration-300 ease-in-out will-change-transform flex flex-col"
         aria-hidden="true">
         <div class="flex items-center justify-end p-4">
             <button id="mobile-nav-close"
@@ -239,7 +247,7 @@ $seo = [
     <!-- Header JavaScript - Loaded immediately -->
     <script>
         // Header-specific JavaScript that needs to run immediately
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
             // Mobile navigation
             const btn = document.getElementById("mobile-nav-btn");
             const panel = document.getElementById("mobile-nav-panel");
