@@ -282,17 +282,25 @@ if (isset($_GET['message'])) {
                 <!-- Card Content -->
                 <div class="px-4 flex flex-col">
                     <div class="flex items-end justify-between text-sm text-gray-500 pb-2 border-b-1 border-gray-100">
-                        <span>
-                            <i class="fas fa-clock mr-1"></i>Zubereitungszeit:
-                            <strong>
-                                <?php
-                                $duration_minutes = (int) $r['duration_minutes']; // Get the duration in minutes
-                                $hours = floor($duration_minutes / 60); // Calculate hours
-                                $minutes = $duration_minutes % 60; // Calculate remaining minutes
-                                echo sprintf("%d:%02d", $hours, $minutes); // Format as h:m (e.g., 2:05)
-                                ?>
-                            </strong>
-                        </span>
+                <span>
+    <i class="fas fa-clock mr-1"></i>Zubereitungszeit:
+    <strong>
+        <?php
+        $duration_minutes = (int) $r['duration_minutes']; // Get the duration in minutes
+        $hours = floor($duration_minutes / 60); // Calculate hours
+        $minutes = $duration_minutes % 60; // Calculate remaining minutes
+        
+        // Display with German units
+        if ($hours > 0 && $minutes > 0) {
+            echo $hours . " Std. " . $minutes . " Min.";
+        } elseif ($hours > 0) {
+            echo $hours . " Std.";
+        } else {
+            echo $minutes . " Min.";
+        }
+        ?>
+    </strong>
+</span>
                 
                         <span>
                             <i class="fas fa-cog mr-1"></i>Schwierigkeit:

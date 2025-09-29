@@ -149,14 +149,30 @@ include __DIR__ . '/includes/header.php';
                                 default => $difficulty,
                             };
                         ?></strong></span>
-                        <span><i class="fas fa-clock mr-1"></i>Dauer: <strong><?php
-$duration_minutes = (int)$recipe['duration_minutes']; // Get the duration in minutes
-$hours = floor($duration_minutes / 60); // Calculate hours
-$minutes = $duration_minutes % 60; // Calculate remaining minutes
+     <span>
+    <i class="fas fa-clock mr-1"></i>Dauer: 
+    <strong>
+        <?php
+        $duration_minutes = (int) $recipe['duration_minutes']; // Get the duration in minutes
+        $hours = floor($duration_minutes / 60); // Calculate hours
+        $minutes = $duration_minutes % 60; // Calculate remaining minutes
+        
+        // Display with German units
+        if ($hours > 0 && $minutes > 0) {
+            echo $hours . " Std. " . $minutes . " Min.";
+        } elseif ($hours > 0) {
+            echo $hours . " Std.";
+        } else {
+            echo $minutes . " Min.";
+        }
+        ?>
+    </strong>
+</span>
 
-echo sprintf("%d:%02d", $hours, $minutes); // Format as h:m (e.g., 2:05)
-?>
-(Stunden/Minunten)</strong></span>
+                            <span>
+    <i class="fas fa-clock mr-1"></i>Zubereitungszeit:
+
+
                         <?php if (!empty($recipe['portions'])): ?>
                             <span><i class="fas fa-users mr-1"></i>Portionen: <strong><?php echo (int)$recipe['portions']; ?></strong></span>
                         <?php endif; ?>
