@@ -336,6 +336,77 @@ echo sprintf("%d:%02d", $hours, $minutes); // Format as h:m (e.g., 2:05)
         </script>
     </main>
 
+    <style>
+        /* CSS für Zutaten-Funktionalität */
+        .ingredient-label {
+            transition: all 0.2s ease;
+        }
+        
+        .ingredient-checkbox:checked + .ingredient-label {
+            text-decoration: line-through;
+            color: #9ca3af;
+            opacity: 0.6;
+        }
+
+        /* Heart animation */
+        .icon-transition {
+            transition: all 0.2s ease;
+        }
+        
+        .heart-animation {
+            animation: heartBeat 0.3s ease;
+        }
+        
+        @keyframes heartBeat {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.3); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Zoom Modal Styles */
+        #zoom-modal {
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+        
+        #zoom-modal img {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .zoom-btn-overlay {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        .zoom-btn-overlay:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 640px) {
+            #zoom-modal .absolute.top-4.left-4 {
+                top: 1rem;
+                left: 1rem;
+                font-size: 0.875rem;
+            }
+            
+            #zoom-modal .absolute.top-4.right-4 {
+                top: 1rem;
+                right: 1rem;
+                font-size: 1.5rem;
+            }
+            
+            #zoom-modal .absolute.bottom-4 {
+                display: none;
+            }
+        }
+    </style>
+
     <script>
         // Like functionality
         const likeRecipe = async (recipeId) => {
@@ -377,10 +448,13 @@ echo sprintf("%d:%02d", $hours, $minutes); // Format as h:m (e.g., 2:05)
             }
         };
 
-        // Instagram-ähnlicher, touch-fähiger Slider (wie auf index.php)
+        // Instagram-ähnlicher, touch-fähiger Slider
         document.addEventListener('DOMContentLoaded', () => {
             const sliders = document.querySelectorAll('[data-slider]');
             sliders.forEach(initSlider);
+            
+            // Initialize image zoom after slider
+            initImageZoom();
         });
 
         function initSlider(root) {
@@ -469,6 +543,376 @@ echo sprintf("%d:%02d", $hours, $minutes); // Format as h:m (e.g., 2:05)
 
             // Initial
             goTo(0);
+        }
+
+        // Enhanced Image Zoom Functionality
+        function initImageZoom() {
+            // Create zoom modal HTML structure
+            const zoomModal = document.createElement('div');
+            zoomModal.id = 'zoom-modal';
+            zoomModal.className = 'fixed inset-0 bg-black/90 z-50 hidden items-center justify-center';
+            zoomModal.innerHTML = `
+                <button id="zoom-close" class="absolute top-4 right-4 text-white text-2xl hover:text-gray-300 z-10 p-2">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="absolute top-4 left-4 text-white text-sm z-10">
+                    <span id="zoom-counter">1 / 1</span>
+                </div>
+                <div class="relative w-full h-full overflow-hidden">
+                    <div id="zoom-track" class="flex h-full transition-transform duration-300 ease-out">
+                        <!-- Zoom images will be inserted here -->
+                    </div>
+                    <!-- Navigation arrows for zoom modal -->
+                    <button id="zoom-prev" class="absolute left-4 top-1/2 -translate-y-1/2 text-white text-3xl hover:text-gray-300 bg-black/20 rounded-full w-12 h-12 flex items-center justify-center transition-all">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button id="zoom-next" class="absolute right-4 top-1/2 -translate-y-1/2 text-white text-3xl hover:text-gray-300 bg-black/20 rounded-full w-12 h-12 flex items-center justify-center transition-all">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-xs opacity-75">
+                    Pinch to zoom • Drag to pan • Click outside to close
+                </div>
+            `;
+            document.body.appendChild(zoomModal);
+
+            let currentZoomIndex = 0;
+            let images = [];
+            let zoomLevel = 1;
+            let panX = 0;
+            let panY = 0;
+            let isDragging = false;
+            let startX = 0;
+            let startY = 0;
+            let startPanX = 0;
+            let startPanY = 0;
+
+            // Initialize zoom functionality
+            function setupZoom() {
+                const slider = document.querySelector('[data-slider]');
+                if (!slider) return;
+
+                const slides = slider.querySelectorAll('[data-slide-index]');
+                images = Array.from(slides).map(slide => {
+                    const img = slide.querySelector('img');
+                    return img ? img.src : null;
+                }).filter(Boolean);
+
+                if (images.length === 0) return;
+
+                // Add zoom button to each slide
+                slides.forEach((slide, index) => {
+                    const zoomBtn = document.createElement('button');
+                    zoomBtn.className = 'absolute top-2 right-2 zoom-btn-overlay text-white rounded-full p-2 transition-all opacity-80 hover:opacity-100';
+                    zoomBtn.innerHTML = '<i class="fas fa-search-plus text-sm"></i>';
+                    zoomBtn.setAttribute('aria-label', 'Bild vergrößern');
+                    zoomBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        openZoom(index);
+                    });
+                    slide.style.position = 'relative';
+                    slide.appendChild(zoomBtn);
+                });
+
+                // Setup zoom modal content
+                setupZoomModal();
+            }
+
+            function setupZoomModal() {
+                const zoomTrack = document.getElementById('zoom-track');
+                const zoomClose = document.getElementById('zoom-close');
+                const zoomPrev = document.getElementById('zoom-prev');
+                const zoomNext = document.getElementById('zoom-next');
+                const modal = document.getElementById('zoom-modal');
+
+                // Create zoom images
+                zoomTrack.innerHTML = '';
+                images.forEach((src, index) => {
+                    const slideDiv = document.createElement('div');
+                    slideDiv.className = 'min-w-full h-full flex items-center justify-center relative overflow-hidden';
+                    
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.className = 'max-w-full max-h-full object-contain cursor-move transition-transform duration-200 ease-out select-none';
+                    img.style.transform = 'scale(1) translate(0px, 0px)';
+                    img.draggable = false;
+                    
+                    slideDiv.appendChild(img);
+                    zoomTrack.appendChild(slideDiv);
+                });
+
+                // Event listeners
+                zoomClose.addEventListener('click', closeZoom);
+                zoomPrev.addEventListener('click', () => navigateZoom(-1));
+                zoomNext.addEventListener('click', () => navigateZoom(1));
+
+                // Close on backdrop click
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        closeZoom();
+                    }
+                });
+
+                // Keyboard navigation
+                document.addEventListener('keydown', handleKeydown);
+
+                // Touch and mouse events for zoom and pan
+                setupZoomControls();
+            }
+
+            function setupZoomControls() {
+                const zoomTrack = document.getElementById('zoom-track');
+                
+                // Mouse wheel zoom
+                zoomTrack.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    const delta = e.deltaY > 0 ? -0.2 : 0.2;
+                    adjustZoom(delta, e.clientX, e.clientY);
+                }, { passive: false });
+
+                // Touch zoom (pinch)
+                let initialDistance = 0;
+                let initialZoom = 1;
+
+                zoomTrack.addEventListener('touchstart', (e) => {
+                    if (e.touches.length === 2) {
+                        // Pinch zoom start
+                        initialDistance = getDistance(e.touches[0], e.touches[1]);
+                        initialZoom = zoomLevel;
+                        e.preventDefault();
+                    } else if (e.touches.length === 1 && zoomLevel > 1) {
+                        // Pan start
+                        startDrag(e.touches[0].clientX, e.touches[0].clientY);
+                    }
+                }, { passive: false });
+
+                zoomTrack.addEventListener('touchmove', (e) => {
+                    if (e.touches.length === 2) {
+                        // Pinch zoom
+                        const currentDistance = getDistance(e.touches[0], e.touches[1]);
+                        const scale = currentDistance / initialDistance;
+                        const newZoom = Math.max(1, Math.min(5, initialZoom * scale));
+                        setZoom(newZoom);
+                        e.preventDefault();
+                    } else if (e.touches.length === 1 && zoomLevel > 1 && isDragging) {
+                        // Pan
+                        drag(e.touches[0].clientX, e.touches[0].clientY);
+                        e.preventDefault();
+                    }
+                }, { passive: false });
+
+                zoomTrack.addEventListener('touchend', (e) => {
+                    if (e.touches.length === 0) {
+                        endDrag();
+                    }
+                });
+
+                // Mouse events for pan
+                zoomTrack.addEventListener('mousedown', (e) => {
+                    if (zoomLevel > 1) {
+                        startDrag(e.clientX, e.clientY);
+                        e.preventDefault();
+                    }
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (isDragging) {
+                        drag(e.clientX, e.clientY);
+                    }
+                });
+
+                document.addEventListener('mouseup', endDrag);
+            }
+
+            function getDistance(touch1, touch2) {
+                const dx = touch1.clientX - touch2.clientX;
+                const dy = touch1.clientY - touch2.clientY;
+                return Math.sqrt(dx * dx + dy * dy);
+            }
+
+            function adjustZoom(delta, centerX, centerY) {
+                const newZoom = Math.max(1, Math.min(5, zoomLevel + delta));
+                setZoom(newZoom, centerX, centerY);
+            }
+
+            function setZoom(newZoom, centerX = null, centerY = null) {
+                const oldZoom = zoomLevel;
+                zoomLevel = newZoom;
+
+                if (centerX !== null && centerY !== null && oldZoom !== newZoom) {
+                    // Adjust pan to zoom towards cursor/touch point
+                    const modal = document.getElementById('zoom-modal');
+                    const rect = modal.getBoundingClientRect();
+                    const centerXRel = (centerX - rect.left) / rect.width - 0.5;
+                    const centerYRel = (centerY - rect.top) / rect.height - 0.5;
+                    
+                    const zoomRatio = newZoom / oldZoom;
+                    panX = panX * zoomRatio + centerXRel * (oldZoom - newZoom) * 200;
+                    panY = panY * zoomRatio + centerYRel * (oldZoom - newZoom) * 200;
+                }
+
+                // Reset pan if zoomed out completely
+                if (zoomLevel === 1) {
+                    panX = 0;
+                    panY = 0;
+                }
+
+                updateTransform();
+                updateCursor();
+            }
+
+            function updateCursor() {
+                const currentImg = getCurrentZoomImage();
+                if (currentImg) {
+                    currentImg.style.cursor = zoomLevel > 1 ? 'move' : 'zoom-in';
+                }
+            }
+
+            function startDrag(x, y) {
+                isDragging = true;
+                startX = x;
+                startY = y;
+                startPanX = panX;
+                startPanY = panY;
+                document.body.style.cursor = 'grabbing';
+            }
+
+            function drag(x, y) {
+                if (!isDragging) return;
+                
+                const dx = (x - startX) * (200 / window.innerWidth);
+                const dy = (y - startY) * (200 / window.innerHeight);
+                
+                panX = startPanX + dx;
+                panY = startPanY + dy;
+                
+                // Constrain pan within reasonable bounds
+                const maxPan = (zoomLevel - 1) * 100;
+                panX = Math.max(-maxPan, Math.min(maxPan, panX));
+                panY = Math.max(-maxPan, Math.min(maxPan, panY));
+                
+                updateTransform();
+            }
+
+            function endDrag() {
+                isDragging = false;
+                document.body.style.cursor = '';
+                updateCursor();
+            }
+
+            function updateTransform() {
+                const currentImg = getCurrentZoomImage();
+                if (currentImg) {
+                    currentImg.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
+                }
+            }
+
+            function getCurrentZoomImage() {
+                const zoomTrack = document.getElementById('zoom-track');
+                const slides = zoomTrack.children;
+                return slides[currentZoomIndex]?.querySelector('img');
+            }
+
+            function openZoom(index) {
+                currentZoomIndex = index;
+                zoomLevel = 1;
+                panX = 0;
+                panY = 0;
+                
+                const modal = document.getElementById('zoom-modal');
+                const zoomTrack = document.getElementById('zoom-track');
+                const counter = document.getElementById('zoom-counter');
+                const prevBtn = document.getElementById('zoom-prev');
+                const nextBtn = document.getElementById('zoom-next');
+                
+                // Update counter
+                counter.textContent = `${index + 1} / ${images.length}`;
+                
+                // Show/hide navigation buttons
+                prevBtn.style.display = images.length > 1 ? 'flex' : 'none';
+                nextBtn.style.display = images.length > 1 ? 'flex' : 'none';
+                
+                // Position track
+                zoomTrack.style.transform = `translateX(-${index * 100}%)`;
+                
+                // Reset all image transforms
+                Array.from(zoomTrack.children).forEach(slide => {
+                    const img = slide.querySelector('img');
+                    if (img) {
+                        img.style.transform = 'scale(1) translate(0px, 0px)';
+                        img.style.cursor = 'zoom-in';
+                    }
+                });
+                
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+
+                // Double-click to zoom
+                setTimeout(() => {
+                    const currentImg = getCurrentZoomImage();
+                    if (currentImg) {
+                        currentImg.addEventListener('dblclick', () => {
+                            if (zoomLevel === 1) {
+                                setZoom(2.5);
+                            } else {
+                                setZoom(1);
+                            }
+                        });
+                    }
+                }, 100);
+            }
+
+            function closeZoom() {
+                const modal = document.getElementById('zoom-modal');
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.body.style.overflow = '';
+                
+                // Reset zoom state
+                zoomLevel = 1;
+                panX = 0;
+                panY = 0;
+            }
+
+            function navigateZoom(direction) {
+                const newIndex = currentZoomIndex + direction;
+                if (newIndex >= 0 && newIndex < images.length) {
+                    openZoom(newIndex);
+                }
+            }
+
+            function handleKeydown(e) {
+                const modal = document.getElementById('zoom-modal');
+                if (modal.classList.contains('hidden')) return;
+                
+                switch (e.key) {
+                    case 'Escape':
+                        closeZoom();
+                        break;
+                    case 'ArrowLeft':
+                        navigateZoom(-1);
+                        break;
+                    case 'ArrowRight':
+                        navigateZoom(1);
+                        break;
+                    case '+':
+                    case '=':
+                        adjustZoom(0.3);
+                        break;
+                    case '-':
+                        adjustZoom(-0.3);
+                        break;
+                    case '0':
+                        setZoom(1);
+                        break;
+                }
+                e.preventDefault();
+            }
+
+            // Initialize zoom functionality
+            setupZoom();
         }
 
         // Share
