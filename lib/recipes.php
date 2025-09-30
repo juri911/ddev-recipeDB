@@ -372,3 +372,13 @@ function search_recipes(string $query): array {
 }
 
 
+function get_users_who_liked(int $recipeId, int $limit = 5): array {
+    return db_query('
+        SELECT u.id, u.name, u.avatar_path 
+        FROM recipe_likes rl 
+        JOIN users u ON rl.user_id = u.id 
+        WHERE rl.recipe_id = ? 
+        ORDER BY rl.created_at DESC 
+        LIMIT ?
+    ', [$recipeId, $limit])->fetchAll();
+}

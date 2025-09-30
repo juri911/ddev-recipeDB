@@ -153,20 +153,6 @@ if (isset($_GET['message'])) {
                         </button>
                     <?php endif; ?>
 
-                        <?php if ($user && $user['id'] !== (int) $r['user_id']): ?>
-                        <!-- Follow Button -->
-                        <button data-user-id="<?php echo (int) $r['user_id']; ?>"
-                            onclick="toggleFollow(<?php echo (int) $r['user_id']; ?>)"
-                            class="follow-btn px-3 py-1 rounded text-sm font-medium transition-colors duration-200
-                <?php echo is_following((int) $user['id'], (int) $r['user_id'])
-                            ? 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-                            : 'bg-[#2d7ef7] text-white hover:bg-blue-600'; ?>">
-                            <span class="follow-text">
-                                <?php echo is_following((int) $user['id'], (int) $r['user_id']) ? 'Entfolgen' : 'Folgen'; ?>
-                            </span>
-                        </button>
-                    <?php endif; ?>
-
                     <?php if ($user && $user['id'] === (int) $r['user_id']): ?>
                         <div class="ml-auto">
                             <button type="button"

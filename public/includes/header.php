@@ -70,7 +70,10 @@ $seo = [
     <?php if (isset($csrfToken)): ?>
         <meta name="csrf-token" content="<?php echo htmlspecialchars($csrfToken); ?>">
     <?php endif; ?>
-
+<?php if ($user): ?>
+<meta name="user-avatar" content="<?php echo htmlspecialchars($user['avatar_path'] ? '/' . ltrim($user['avatar_path'], '/') : '/images/default_avatar.png'); ?>">
+<meta name="user-name" content="<?php echo htmlspecialchars($user['name']); ?>">
+<?php endif; ?>
      <style>
       
     </style>

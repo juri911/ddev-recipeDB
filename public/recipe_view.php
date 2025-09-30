@@ -43,6 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $user) {
 $comments = list_comments($id, 50, 0);
 
 
+
+
 // === SEO für diese Seite ===
 $keywords = ['Rezepte', 'Kochen', 'Backen', APP_NAME];
 if (!empty($recipe['category'])) {
@@ -143,7 +145,7 @@ include __DIR__ . '/includes/header.php';
     </div>
     <!-- Rezept Header -->
     <div class="mb-12">
-         <!-- PDF/Share Buttons und like-->
+        <!-- PDF/Share Buttons und like-->
         <div class="py-3 flex items-center justify-between flex-row-reverse">
             <div class="flex items-center gap-3 sm:gap-4">
                 <!-- PDF Button mit Popover -->
@@ -204,15 +206,48 @@ include __DIR__ . '/includes/header.php';
                     <span class="hidden sm:inline text-sm">Teilen</span>
                 </button>
             </div>
-            <!-- Like Button -->
             <div>
                 <?php if ($user): ?>
-                    <button id="like-btn-<?php echo (int)$recipe['id']; ?>" onclick="likeRecipe(<?php echo (int)$recipe['id']; ?>)" class="like-btn text-2xl <?php echo is_liked((int)$recipe['id'], (int)$user['id']) ? 'text-red-500' : 'text-white'; ?>">
-                        <i id="like-heart" class="icon-transition <?php echo is_liked((int)$recipe['id'], (int)$user['id']) ? 'fas' : 'far'; ?> fa-solid fa-heart"></i>
-                    </button>
+                    <div class="flex items-center gap-3">
+                        <!-- Like Button -->
+                        <button id="like-btn-<?php echo (int)$recipe['id']; ?>"
+                            onclick="likeRecipe(<?php echo (int)$recipe['id']; ?>)"
+                            class="like-btn text-2xl <?php echo is_liked((int)$recipe['id'], (int)$user['id']) ? 'text-red-500' : 'text-white'; ?>">
+                            <i id="like-heart" class="icon-transition <?php echo is_liked((int)$recipe['id'], (int)$user['id']) ? 'fas' : 'far'; ?> fa-solid fa-heart"></i>
+                        </button>
+                        <!-- User Avatare die geliked haben -->
+                        <div id="liked-avatars-<?php echo (int)$recipe['id']; ?>" class="flex items-center -space-x-2 hover:-space-x-1 transition-all duration-300">
+                            <?php
+                            $likedUsers = get_users_who_liked($recipe['id'], 5);
+                            foreach ($likedUsers as $index => $likedUser):
+                            ?>
+                                <div class="relative group avatar-item">
+                                    <img src="<?php echo htmlspecialchars($likedUser['avatar_path'] ? '/' . ltrim($likedUser['avatar_path'], '/') : '/images/default_avatar.png'); ?>"
+                                        alt="<?php echo htmlspecialchars($likedUser['name']); ?>"
+                                        class="w-10 h-10 rounded-full outline-2 outline-offset-2 outline-[#2d7ef7] bg-white object-cover transition-transform duration-200 group-hover:scale-150 group-hover:z-10 cursor-pointer shadow-sm"
+                                        title="<?php echo htmlspecialchars($likedUser['name']); ?>">
+                                    <!-- Tooltip -->
+                                    <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-none z-20">
+                                        <?php echo htmlspecialchars($likedUser['name']); ?>
+                                        <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+
+                            <?php if ((int)$recipe['likes_count'] > 5): ?>
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 border-2 border-white dark:border-gray-800 flex items-center justify-center shadow-sm more-count">
+                                    <span class="text-xs font-semibold text-gray-600 dark:text-gray-300">
+                                        +<?php echo (int)$recipe['likes_count'] - 5; ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+
+                    </div>
                 <?php endif; ?>
             </div>
         </div>
+
         <!-- Rezept Titel -->
         <h1 class="md:text-4xl md:text-left text-center text-3xl font-semibold mb-6"><?php echo htmlspecialchars($recipe['title']); ?></h1>
         <!-- Rezept Beschreibung -->
@@ -467,7 +502,7 @@ include __DIR__ . '/includes/header.php';
 </main>
 
 <script>
-        function toggleReplyForm(commentId) {
+    function toggleReplyForm(commentId) {
         const form = document.getElementById(`reply-form-${commentId}`);
         if (form) {
             form.classList.toggle('hidden');
@@ -485,7 +520,8 @@ include __DIR__ . '/includes/header.php';
         }
         return true;
     }
-    // Like functionality
+
+    // Like functionality mit Avatar-Update
     const likeRecipe = async (recipeId) => {
         const likeBtn = document.querySelector(`#like-btn-${recipeId}`);
         const likeIcon = likeBtn.querySelector('#like-heart');
@@ -512,11 +548,17 @@ include __DIR__ . '/includes/header.php';
                 likeBtn.classList.add('text-red-500');
                 likeIcon.classList.remove('far');
                 likeIcon.classList.add('fas');
+
+                // Avatar hinzufügen
+                addCurrentUserAvatar(recipeId);
             } else {
                 likeBtn.classList.remove('text-red-500');
                 likeBtn.classList.add('text-white');
                 likeIcon.classList.remove('fas');
                 likeIcon.classList.add('far');
+
+                // Avatar entfernen
+                removeCurrentUserAvatar(recipeId);
             }
 
             // Animation entfernen
@@ -527,6 +569,62 @@ include __DIR__ . '/includes/header.php';
             window.location.href = data.redirect;
         }
     };
+
+    function addCurrentUserAvatar(recipeId) {
+        const avatarsContainer = document.getElementById(`liked-avatars-${recipeId}`);
+        if (!avatarsContainer) return;
+
+        // Aktuellen User Avatar und Name aus Meta-Tags holen (musst du im HTML hinzufügen)
+        const userAvatar = document.querySelector('meta[name="user-avatar"]')?.content || '/images/default_avatar.png';
+        const userName = document.querySelector('meta[name="user-name"]')?.content || 'Du';
+
+        // Neuen Avatar erstellen
+        const avatarDiv = document.createElement('div');
+        avatarDiv.className = 'relative group avatar-item';
+        avatarDiv.style.opacity = '0';
+        avatarDiv.style.transform = 'scale(0)';
+        avatarDiv.innerHTML = `
+            <img src="${userAvatar}" 
+                 alt="${userName}"
+                 class="w-10 h-10 outline-2 outline-offset-2 outline-[#2d7ef7] bg-white rounded-full object-cover transition-transform duration-200 group-hover:scale-150 group-hover:z-10 cursor-pointer shadow-sm"
+                 title="${userName}">
+            <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-none z-20">
+                ${userName}
+                <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+            </div>
+        `;
+
+        // Am Anfang einfügen
+        avatarsContainer.insertBefore(avatarDiv, avatarsContainer.firstChild);
+
+        // Animation
+        setTimeout(() => {
+            avatarDiv.style.transition = 'all 0.3s ease';
+            avatarDiv.style.opacity = '1';
+            avatarDiv.style.transform = 'scale(1)';
+        }, 10);
+
+        // Wenn mehr als 5 Avatare, letzten entfernen oder +X aktualisieren
+        const avatars = avatarsContainer.querySelectorAll('.avatar-item');
+        if (avatars.length > 5) {
+            const lastAvatar = avatars[avatars.length - 1];
+            lastAvatar.remove();
+        }
+    }
+
+    function removeCurrentUserAvatar(recipeId) {
+        const avatarsContainer = document.getElementById(`liked-avatars-${recipeId}`);
+        if (!avatarsContainer) return;
+
+        // Ersten Avatar entfernen (der aktuelle User)
+        const firstAvatar = avatarsContainer.querySelector('.avatar-item');
+        if (firstAvatar) {
+            firstAvatar.style.transition = 'all 0.3s ease';
+            firstAvatar.style.opacity = '0';
+            firstAvatar.style.transform = 'scale(0)';
+            setTimeout(() => firstAvatar.remove(), 300);
+        }
+    }
 
     // Instagram-ähnlicher, touch-fähiger Slider
     document.addEventListener('DOMContentLoaded', () => {
@@ -1093,71 +1191,72 @@ include __DIR__ . '/includes/header.php';
     document.addEventListener('DOMContentLoaded', () => {
         updateIngredientProgress();
     });
-                  function togglePdfPopover() {
-                    const popover = document.getElementById('pdf-popover');
-                    const arrow = document.getElementById('pdf-arrow');
-                    const btn = document.getElementById('pdf-btn');
 
-                    if (popover.classList.contains('opacity-0')) {
-                        // Position berechnen
-                        positionPopover(btn, popover);
+    function togglePdfPopover() {
+        const popover = document.getElementById('pdf-popover');
+        const arrow = document.getElementById('pdf-arrow');
+        const btn = document.getElementById('pdf-btn');
 
-                        // Öffnen
-                        popover.classList.remove('opacity-0', 'invisible', 'scale-95');
-                        popover.classList.add('opacity-100', 'visible', 'scale-100');
-                        arrow.classList.add('rotate-180');
-                    } else {
-                        // Schließen
-                        popover.classList.add('opacity-0', 'invisible', 'scale-95');
-                        popover.classList.remove('opacity-100', 'visible', 'scale-100');
-                        arrow.classList.remove('rotate-180');
-                    }
-                }
+        if (popover.classList.contains('opacity-0')) {
+            // Position berechnen
+            positionPopover(btn, popover);
 
-                function positionPopover(btn, popover) {
-                    const btnRect = btn.getBoundingClientRect();
-                    const popoverWidth = 224; // 56 * 4 (w-56 in Tailwind)
-                    const viewportWidth = window.innerWidth;
-                    const spaceRight = viewportWidth - btnRect.right;
-                    const spaceLeft = btnRect.left;
+            // Öffnen
+            popover.classList.remove('opacity-0', 'invisible', 'scale-95');
+            popover.classList.add('opacity-100', 'visible', 'scale-100');
+            arrow.classList.add('rotate-180');
+        } else {
+            // Schließen
+            popover.classList.add('opacity-0', 'invisible', 'scale-95');
+            popover.classList.remove('opacity-100', 'visible', 'scale-100');
+            arrow.classList.remove('rotate-180');
+        }
+    }
 
-                    // Entferne alte Positionierungsklassen
-                    popover.classList.remove('right-0', 'left-0');
+    function positionPopover(btn, popover) {
+        const btnRect = btn.getBoundingClientRect();
+        const popoverWidth = 224; // 56 * 4 (w-56 in Tailwind)
+        const viewportWidth = window.innerWidth;
+        const spaceRight = viewportWidth - btnRect.right;
+        const spaceLeft = btnRect.left;
 
-                    // Prüfe ob genug Platz rechts ist
-                    if (spaceRight >= popoverWidth) {
-                        // Rechts ausrichten
-                        popover.classList.add('left-0');
-                    } else if (spaceLeft >= popoverWidth) {
-                        // Links ausrichten
-                        popover.classList.add('right-0');
-                    } else {
-                        // Wenn beides nicht geht, rechts ausrichten (Standard)
-                        popover.classList.add('right-0');
-                    }
-                }
+        // Entferne alte Positionierungsklassen
+        popover.classList.remove('right-0', 'left-0');
 
-                // Schließen beim Klick außerhalb
-                document.addEventListener('click', function(event) {
-                    const popover = document.getElementById('pdf-popover');
-                    const btn = document.getElementById('pdf-btn');
+        // Prüfe ob genug Platz rechts ist
+        if (spaceRight >= popoverWidth) {
+            // Rechts ausrichten
+            popover.classList.add('left-0');
+        } else if (spaceLeft >= popoverWidth) {
+            // Links ausrichten
+            popover.classList.add('right-0');
+        } else {
+            // Wenn beides nicht geht, rechts ausrichten (Standard)
+            popover.classList.add('right-0');
+        }
+    }
 
-                    if (popover && btn && !popover.contains(event.target) && !btn.contains(event.target)) {
-                        popover.classList.add('opacity-0', 'invisible', 'scale-95');
-                        popover.classList.remove('opacity-100', 'visible', 'scale-100');
-                        document.getElementById('pdf-arrow')?.classList.remove('rotate-180');
-                    }
-                });
+    // Schließen beim Klick außerhalb
+    document.addEventListener('click', function(event) {
+        const popover = document.getElementById('pdf-popover');
+        const btn = document.getElementById('pdf-btn');
 
-                // Neupositionierung bei Resize
-                window.addEventListener('resize', function() {
-                    const popover = document.getElementById('pdf-popover');
-                    const btn = document.getElementById('pdf-btn');
+        if (popover && btn && !popover.contains(event.target) && !btn.contains(event.target)) {
+            popover.classList.add('opacity-0', 'invisible', 'scale-95');
+            popover.classList.remove('opacity-100', 'visible', 'scale-100');
+            document.getElementById('pdf-arrow')?.classList.remove('rotate-180');
+        }
+    });
 
-                    if (popover && btn && !popover.classList.contains('opacity-0')) {
-                        positionPopover(btn, popover);
-                    }
-                });
+    // Neupositionierung bei Resize
+    window.addEventListener('resize', function() {
+        const popover = document.getElementById('pdf-popover');
+        const btn = document.getElementById('pdf-btn');
+
+        if (popover && btn && !popover.classList.contains('opacity-0')) {
+            positionPopover(btn, popover);
+        }
+    });
 </script>
 <?php
 // Include global footer

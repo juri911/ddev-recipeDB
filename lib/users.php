@@ -8,6 +8,7 @@ function get_user_by_id(int $userId): ?array {
 }
 
 
+
 function profile_url(array $user): string {
 	$id = isset($user['id']) ? (int)$user['id'] : 0;
 	$name = isset($user['name']) ? (string)$user['name'] : '';
@@ -123,6 +124,4 @@ function get_followers_users(int $userId, int $limit = 20, int $offset = 0): arr
 function delete_user_by_id(int $userId): bool {
     return (bool)db_query('DELETE FROM users WHERE id = ?', [$userId]);
 }
-
-
 

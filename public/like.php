@@ -48,3 +48,4 @@ try {
     echo json_encode(['ok' => false, 'error' => 'Failed to toggle like: ' . $e->getMessage()]);
 }
 exit;
+
