@@ -1,10 +1,10 @@
 <?php if (is_admin()): ?>
     <!-- Admin Navigation Bar -->
-    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-b border-slate-700 shadow-lg sticky top-0 z-40">
-        <div class="container mx-auto px-4">
+    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-b border-slate-700 shadow-lg sticky top-0">
+        <div class="container mx-auto">
             <nav class="flex items-center justify-between h-16">
                 <!-- Left Side - Admin Branding -->
-                <div class="flex items-center gap-4">
+                <div class="lg:flex hidden items-center gap-4">
                     <div class="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 rounded-lg shadow-md">
                         <i class="fas fa-crown text-white text-sm"></i>
                         <span class="text-white font-bold text-sm tracking-wide">ADMIN</span>
@@ -95,107 +95,11 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Right Side - Quick Actions -->
-                <div class="flex items-center gap-2">
-                    <!-- Back to Site -->
-                    <a href="/" 
-                       class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200"
-                       title="Zur Website">
-                        <i class="fas fa-arrow-left text-sm"></i>
-                        <span class="hidden md:inline text-sm">Zur Website</span>
-                    </a>
-
-                    <!-- Mobile Menu Toggle -->
-                    <button id="admin-mobile-toggle" 
-                            class="lg:hidden flex items-center justify-center w-10 h-10 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200"
-                            aria-label="Admin-Menü öffnen">
-                        <i class="fas fa-bars text-lg"></i>
-                    </button>
-                </div>
             </nav>
         </div>
     </div>
 
-    <!-- Mobile Admin Menu -->
-    <div id="admin-mobile-menu" 
-         class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 lg:hidden hidden transition-opacity duration-300">
-        <div class="fixed inset-y-0 right-0 w-full max-w-sm bg-slate-900 shadow-2xl transform transition-transform duration-300 translate-x-full"
-             id="admin-mobile-panel">
-            <!-- Mobile Header -->
-            <div class="flex items-center justify-between p-4 border-b border-slate-700">
-                <div class="flex items-center gap-2">
-                    <div class="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 rounded-lg">
-                        <i class="fas fa-crown text-white text-sm"></i>
-                        <span class="text-white font-bold text-sm">ADMIN</span>
-                    </div>
-                </div>
-                <button id="admin-mobile-close" 
-                        class="flex items-center justify-center w-10 h-10 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700 transition-all duration-200"
-                        aria-label="Menü schließen">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-
-            <!-- Mobile Navigation -->
-            <nav class="flex flex-col p-4 space-y-2 overflow-y-auto max-h-[calc(100vh-80px)]">
-                <a href="/admin/dashboard.php" 
-                   class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700 transition-colors">
-                    <i class="fas fa-chart-line w-5"></i>
-                    <span class="font-medium">Dashboard</span>
-                </a>
-                <a href="/admin/categories.php" 
-                   class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700 transition-colors">
-                    <i class="fas fa-tags w-5"></i>
-                    <span class="font-medium">Kategorien</span>
-                </a>
-                <a href="/admin/users.php" 
-                   class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700 transition-colors">
-                    <i class="fas fa-users w-5"></i>
-                    <span class="font-medium">Benutzer</span>
-                </a>
-                <a href="/admin/recipes.php" 
-                   class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700 transition-colors">
-                    <i class="fas fa-utensils w-5"></i>
-                    <span class="font-medium">Rezepte</span>
-                </a>
-                
-                <div class="border-t border-slate-700 my-2"></div>
-                
-                <a href="/admin/comments.php" 
-                   class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700 transition-colors">
-                    <i class="fas fa-comments w-5"></i>
-                    <span class="font-medium">Kommentare</span>
-                </a>
-                <a href="/admin/notifications.php" 
-                   class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700 transition-colors">
-                    <i class="fas fa-bell w-5"></i>
-                    <span class="font-medium">Benachrichtigungen</span>
-                </a>
-                
-                <div class="border-t border-slate-700 my-2"></div>
-                
-                <a href="/admin/settings.php" 
-                   class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700 transition-colors">
-                    <i class="fas fa-cog w-5"></i>
-                    <span class="font-medium">Einstellungen</span>
-                </a>
-                <a href="/admin/logs.php" 
-                   class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700 transition-colors">
-                    <i class="fas fa-file-alt w-5"></i>
-                    <span class="font-medium">System-Logs</span>
-                </a>
-                
-                <div class="border-t border-slate-700 my-2"></div>
-                
-                <a href="/" 
-                   class="flex items-center gap-3 px-4 py-3 rounded-lg text-emerald-400 hover:text-emerald-300 hover:bg-slate-700 transition-colors">
-                    <i class="fas fa-arrow-left w-5"></i>
-                    <span class="font-medium">Zur Website</span>
-                </a>
-            </nav>
-        </div>
-    </div>
+    
 
     <!-- Admin Navigation JavaScript -->
     <script>

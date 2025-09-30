@@ -70,6 +70,25 @@ $seo = [
     <?php if (isset($csrfToken)): ?>
         <meta name="csrf-token" content="<?php echo htmlspecialchars($csrfToken); ?>">
     <?php endif; ?>
+
+     <style>
+        /* Active Link Styles */
+
+        @media (max-width: 1024px) {
+            .nav-link-active {
+                background-color: transparent !important;
+                color: var(--rh-primary) !important;
+               
+            }
+        }
+        
+        .mobile-nav-link-active {
+            background-color: oklch(96.7% 0.003 264.542) !important;
+            font-weight: 600 !important;
+            border-left: 4px solid #2d7ef7 !important;
+            color: var(--rh-primary) !important;
+        }
+    </style>
 </head>
 
 <body>
@@ -99,7 +118,7 @@ $seo = [
                 <!-- Link group -->
                 <div class="flex justify-center items-center">
                     <!-- Home -->
-                    <a href="/"
+                    <a href="/" data-nav-link
                         class="bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1 border-[#2d7ef7]  hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white lg:py-1 lg:px-3 p-4  lg:rounded-l transition duration-600 aspect-square lg:aspect-auto rounded-none">
                         <i class="fa-solid fa-house lg:text-base text-2xl"></i>
                     </a>
@@ -109,7 +128,7 @@ $seo = [
                         <i class="fas fa-magnifying-glass lg:text-base text-2xl"></i>
                     </button>
                     <!-- Categories -->
-                    <a href="/categories.php"
+                    <a href="/categories.php" data-nav-link
                         class="lg:block hidden bg-[#2d7ef7] border-1 border-[#2d7ef7] hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white lg:py-1 lg:px-3 p-4 lg:rounded-r transition duration-600 aspect-square lg:aspect-auto rounded-none"">
                         <i class=" fa-solid fa-tags lg:text-base text-2xl"></i>
                     </a>
@@ -117,7 +136,7 @@ $seo = [
                 <div class="flex items-center gap-x0 lg:gap-x-2 pr-0 lg:pr-3">
                     <?php if (isset($user) && $user): ?>
                         <!-- New Recipe Button -->
-                        <a href="/recipe_new.php"
+                        <a href="/recipe_new.php" data-nav-link
                             class="bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1 bg-[#2d7ef7] border-[#2d7ef7] hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white p-4 lg:py-1 lg:px-3 aspect-square lg:aspect-auto rounded-none lg:rounded transition duration-600">
                             <i class="fa-solid fa-feather lg:text-base text-2xl p-0 lg:pr-2"></i>
                             <p class="lg:inline hidden">Neues Rezept</p>
@@ -130,7 +149,7 @@ $seo = [
                             $unreadCount = count_unread_notifications((int) $user['id']);
                         }
                         ?>
-                        <button popovertarget="notification-bells" class="bg-transparent lg:bg-[#2d7ef7]  relative text-white lg:text-gray-600 bg-[var(--rh-primary)] lg:bg-transparent hover:text-[var(--rh-text)] lg:p-0 p-4 aspect-square lg:aspect-auto hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent transition duration-600">
+                        <button popovertarget="notification-bell" class="bg-transparent lg:bg-[#2d7ef7]  relative text-white lg:text-gray-600 bg-[var(--rh-primary)] lg:bg-transparent hover:text-[var(--rh-text)] lg:p-0 p-4 aspect-square lg:aspect-auto hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent transition duration-600">
                             <i class="fa-solid fa-bell lg:text-[26px] text-2xl"></i>
                             <?php if ($unreadCount > 0): ?>
                                 <span id="notification-badge"
@@ -142,8 +161,8 @@ $seo = [
                         <div class="relative inline-block text-left ml-auto">
                             <!-- Avatar Button -->
                             <button id="userMenuButton" class="flex items-center focus:outline-none lg:pr-4 p-4 aspect-square lg:aspect-auto">
-                                <div
-                                    class="h-10 w-10 rounded-full overflow-hidden outline-2 outline-offset-2 outline-[#2d7ef7] hover:outline-[var(--rh-text)] transition duration-600 cursor-pointer">
+                                <div 
+                                    class="h-10 w-10 rounded-full overflow-hidden outline-2 outline-offset-2 lg:outline-[#2d7ef7] hover:outline-[var(--rh-text)] transition duration-600 cursor-pointer">
                                     <img src="<?php echo htmlspecialchars(isset($user['avatar_path']) && $user['avatar_path'] ? absolute_url_from_path((string) $user['avatar_path']) : SITE_URL . 'images/default_avatar.png'); ?>"
                                         class="h-10 w-10 rounded-full object-cover" alt="Avatar" />
                                 </div>
@@ -153,17 +172,17 @@ $seo = [
 
                             <!-- Dropdown - Updated classes for flexible positioning -->
                             <div id="userMenuDropdown"
-                                class="hidden absolute right-0 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 transform transition-all duration-200 ease-out">
-                                <a href="<?php echo htmlspecialchars(profile_url(['id' => $user['id'], 'name' => $user['name']])); ?>"
+                                class="hidden absolute right-0 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 transform transition-all duration-200 ease-out shadow-xl/30">
+                                <a href="<?php echo htmlspecialchars(profile_url(['id' => $user['id'], 'name' => $user['name']])); ?>" data-nav-link
                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-lg transition-colors">
                                     <i class="fas fa-user mr-2"></i>Profil ansehen
                                 </a>
-                                <a href="/profile_edit.php"
+                                <a href="/profile_edit.php" data-nav-link
                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
                                     <i class="fas fa-edit mr-2"></i>Profil bearbeiten
                                 </a>
                                 <div class="border-t border-gray-200"></div>
-                                <a href="/logout.php"
+                                <a href="/logout.php" data-nav-link
                                     class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 rounded-b-lg transition-colors">
                                     <i class="fa-solid fa-arrow-right-from-bracket mr-2 rotate-180"></i>Logout
                                 </a>
@@ -171,7 +190,7 @@ $seo = [
                         </div>
                     <?php else: ?>
                         <div class="flex items-center gap-x-0 lg:gap-x-5 text-[16px]">
-                            <a href="/login.php"
+                            <a href="/login.php" data-nav-link
                                 class="flex items-center bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1 border-[#2d7ef7] font-semibold hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent 
                                 text-white p-4 lg:py-1 lg:px-3 lg:rounded rounded-none transition duration-600 aspect-square lg:aspect-auto">
                                 <i class="fa-solid fa-arrow-right-from-bracket lg:text-base text-2xl pr-0 lg:pr-2"></i>
@@ -180,7 +199,7 @@ $seo = [
 
                             <a class="flex items-center lg:gap-x-1 font-semibold text-white lg:text-[#2d7ef7] relative after:absolute 
                                     after:bg-[#2d7ef7] after:h-[2px] after:w-0 after:left-1/2 after:-translate-x-1/2 after:bottom-0 lg:hover:after:w-full after:transition-all after:duration-300 aspect-square lg:aspect-auto lg:p-0 p-4"
-                                href="/register.php">
+                                href="/register.php" data-nav-link>
                                 <p class="lg:inline hidden">Registrieren</p><i class="fa-solid fa-pencil lg:text-base text-2xl"></i>
                             </a>
                         </div>
@@ -190,7 +209,7 @@ $seo = [
                 <button id="mobile-nav-btn" class="relative flex  items-end justify-center mr-0 lg:mr-3"
                     aria-label="Menü öffnen" aria-expanded="false" aria-controls="mobile-nav-panel">
                     <i
-                        class="fa-solid fa-burger text-[36px] text-[var(--rh-primary)] hover:text-[var(--rh-text)]  transition-all duration-300 ease-out aspect-square lg:aspect-auto lg:p-0 p-4"></i>
+                        class="fa-solid fa-burger text-[36px] lg:text-[var(--rh-primary)] hover:text-[var(--rh-text)]  transition-all duration-300 ease-out aspect-square lg:aspect-auto lg:p-0 p-4"></i>
 
                 </button>
             </div>
@@ -216,20 +235,19 @@ $seo = [
         </div>
 
         <ul class="flex-1 overflow-y-auto p-4 space-y-3 dark:text-black">
-            <li><a href="/" class="block px-3 py-2 rounded-lg hover:bg-gray-100 transition">Startseite</a></li>
-            <li><a href="/categories.php" class="block px-3 py-2 rounded-lg hover:bg-gray-100 transition">Rezepte</a>
-            </li>
-            <li><a href="/blog.php" class="block px-3 py-2 rounded-lg hover:bg-gray-100 transition">Blog</a></li>
-            <li><a href="/kontakt.php" class="block px-3 py-2 rounded-lg hover:bg-gray-100 transition">Kontakt</a></li>
+            <li><a href="/" data-mobile-nav-link class="block px-3 py-2 rounded-lg hover:bg-gray-100 transition">Startseite</a></li>
+            <li><a href="/categories.php" data-mobile-nav-link class="block px-3 py-2 rounded-lg hover:bg-gray-100 transition">Rezepte</a></li>
+            <li><a href="/blog.php" data-mobile-nav-link class="block px-3 py-2 rounded-lg hover:bg-gray-100 transition">Blog</a></li>
+            <li><a href="/kontakt.php" data-mobile-nav-link class="block px-3 py-2 rounded-lg hover:bg-gray-100 transition">Kontakt</a></li>
         </ul>
     </nav>
 
     <!-- Notification PopOver -->
     <?php if (isset($user) && $user): ?>
-        <div popover id="notification-bells" class="popover container mx-auto lg:max-w-4xl min-h-[50%] max-h-full z-[99]">
+        <div popover id="notification-bell" class="popover container mx-auto lg:max-w-4xl min-h-[50%] max-h-full z-[99]">
             <div class="popover-content-wrapper">
                 <header class="popover-header">
-                    <button popovertarget="notification-bells" popovertargetaction="hide" class="popover-close-btn"
+                    <button popovertarget="notification-bell" popovertargetaction="hide" class="popover-close-btn"
                         aria-label="Close notifications" title="Close notifications">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
                             fill="currentColor" aria-hidden="true">
@@ -267,10 +285,58 @@ $seo = [
         </div>
     <?php endif; ?>
 
-    <!-- Header JavaScript - Loaded immediately -->
+  
     <script>
-        // Header-specific JavaScript that needs to run immediately
         document.addEventListener("DOMContentLoaded", function() {
+    
+            // Mobile nav active
+            function setActiveLinks() {
+                const currentPath = window.location.pathname;
+                const currentPage = currentPath.split('/').pop() || 'index.php';
+                
+                // Desktop navigation links
+                const navLinks = document.querySelectorAll('[data-nav-link]');
+                navLinks.forEach(link => {
+                    const linkPath = link.getAttribute('href');
+                    const linkPage = linkPath.split('/').pop() || 'index.php';
+                    
+                    // Check if current page matches
+                    if (currentPath === linkPath || 
+                        (currentPath === '/' && linkPath === '/') ||
+                        (currentPage === linkPage && linkPage !== '')) {
+                        link.classList.add('nav-link-active');
+                    } else {
+                        link.classList.remove('nav-link-active');
+                    }
+                });
+                
+                // Mobile navigation links
+                const mobileNavLinks = document.querySelectorAll('[data-mobile-nav-link]');
+                mobileNavLinks.forEach(link => {
+                    const linkPath = link.getAttribute('href');
+                    const linkPage = linkPath.split('/').pop() || 'index.php';
+                    
+                    if (currentPath === linkPath || 
+                        (currentPath === '/' && linkPath === '/') ||
+                        (currentPage === linkPage && linkPage !== '')) {
+                        link.classList.add('mobile-nav-link-active');
+                    } else {
+                        link.classList.remove('mobile-nav-link-active');
+                    }
+                });
+            }
+            
+            // Set active links on page load
+            setActiveLinks();
+            
+            // Update active links when user clicks (for SPA-like behavior)
+            document.addEventListener('click', function(e) {
+                const clickedLink = e.target.closest('[data-nav-link], [data-mobile-nav-link]');
+                if (clickedLink) {
+                    // Small delay to allow navigation to complete
+                    setTimeout(setActiveLinks, 100);
+                }
+            });
             // Mobile navigation
             const btn = document.getElementById("mobile-nav-btn");
             const panel = document.getElementById("mobile-nav-panel");
@@ -386,7 +452,7 @@ $seo = [
             }
 
             // Notification PopOver System
-            const notificationPopover = document.getElementById('notification-bells');
+            const notificationPopover = document.getElementById('notification-bell');
             const notificationList = document.getElementById('notification-list');
             const markAllReadButton = document.getElementById('mark-all-read');
             const deleteAllButton = document.getElementById('delete-all-notifications');

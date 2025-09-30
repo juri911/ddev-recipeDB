@@ -197,7 +197,7 @@ if (isset($_GET['message'])) {
                                 </header>
                                 <section class="popover-section sm:px-[2rem] px-4 py-[1.5rem]">
                                     <!-- Action Buttons -->
-                                        <div class="grid lg:grid-cols-2 lg:grid-rows-1 grid-cols-1 grid-rows-2 gap-4 pt-4 border-t border-gray-200 gap-4">
+                                        <div class="grid lg:grid-cols-2 lg:grid-rows-1 grid-cols-1 grid-rows-2 gap-4 pt-4 gap-4">
                                             <a class="block w-full px-4 py-3 rounded bg-blue-600 text-white text-center text-sm font-medium hover:bg-blue-700 transition-colors"
                                                 href="/recipe_edit.php?id=<?php echo (int) $r['id']; ?>">
                                                 <i class="fas fa-edit mr-2"></i>Bearbeiten
