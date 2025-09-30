@@ -143,9 +143,8 @@ include __DIR__ . '/includes/header.php';
     </div>
     <!-- Rezept Header -->
     <div class="mb-12">
-        <h1 class="md:text-4xl md:text-left text-center text-3xl font-semibold mb-6"><?php echo htmlspecialchars($recipe['title']); ?></h1>
-        <!-- PDF/Share Buttons und like-->
-        <div class="py-3 flex items-center justify-between">
+         <!-- PDF/Share Buttons und like-->
+        <div class="py-3 flex items-center justify-between flex-row-reverse">
             <div class="flex items-center gap-3 sm:gap-4">
                 <!-- PDF Button mit Popover -->
                 <div class="relative">
@@ -205,82 +204,17 @@ include __DIR__ . '/includes/header.php';
                     <span class="hidden sm:inline text-sm">Teilen</span>
                 </button>
             </div>
-
-            <!-- Füge dieses JavaScript hinzu (z.B. im <script> Bereich): -->
-            <script>
-                function togglePdfPopover() {
-                    const popover = document.getElementById('pdf-popover');
-                    const arrow = document.getElementById('pdf-arrow');
-                    const btn = document.getElementById('pdf-btn');
-
-                    if (popover.classList.contains('opacity-0')) {
-                        // Position berechnen
-                        positionPopover(btn, popover);
-
-                        // Öffnen
-                        popover.classList.remove('opacity-0', 'invisible', 'scale-95');
-                        popover.classList.add('opacity-100', 'visible', 'scale-100');
-                        arrow.classList.add('rotate-180');
-                    } else {
-                        // Schließen
-                        popover.classList.add('opacity-0', 'invisible', 'scale-95');
-                        popover.classList.remove('opacity-100', 'visible', 'scale-100');
-                        arrow.classList.remove('rotate-180');
-                    }
-                }
-
-                function positionPopover(btn, popover) {
-                    const btnRect = btn.getBoundingClientRect();
-                    const popoverWidth = 224; // 56 * 4 (w-56 in Tailwind)
-                    const viewportWidth = window.innerWidth;
-                    const spaceRight = viewportWidth - btnRect.right;
-                    const spaceLeft = btnRect.left;
-
-                    // Entferne alte Positionierungsklassen
-                    popover.classList.remove('right-0', 'left-0');
-
-                    // Prüfe ob genug Platz rechts ist
-                    if (spaceRight >= popoverWidth) {
-                        // Rechts ausrichten
-                        popover.classList.add('left-0');
-                    } else if (spaceLeft >= popoverWidth) {
-                        // Links ausrichten
-                        popover.classList.add('right-0');
-                    } else {
-                        // Wenn beides nicht geht, rechts ausrichten (Standard)
-                        popover.classList.add('right-0');
-                    }
-                }
-
-                // Schließen beim Klick außerhalb
-                document.addEventListener('click', function(event) {
-                    const popover = document.getElementById('pdf-popover');
-                    const btn = document.getElementById('pdf-btn');
-
-                    if (popover && btn && !popover.contains(event.target) && !btn.contains(event.target)) {
-                        popover.classList.add('opacity-0', 'invisible', 'scale-95');
-                        popover.classList.remove('opacity-100', 'visible', 'scale-100');
-                        document.getElementById('pdf-arrow')?.classList.remove('rotate-180');
-                    }
-                });
-
-                // Neupositionierung bei Resize
-                window.addEventListener('resize', function() {
-                    const popover = document.getElementById('pdf-popover');
-                    const btn = document.getElementById('pdf-btn');
-
-                    if (popover && btn && !popover.classList.contains('opacity-0')) {
-                        positionPopover(btn, popover);
-                    }
-                });
-            </script>
-            <!-- Like heart -->
-            <?php if ($user): ?>
-                <button id="like-btn-<?php echo (int)$recipe['id']; ?>" onclick="likeRecipe(<?php echo (int)$recipe['id']; ?>)" class="like-btn text-2xl <?php echo is_liked((int)$recipe['id'], (int)$user['id']) ? 'text-red-500' : 'text-white'; ?>">
-                    <i id="like-heart" class="icon-transition <?php echo is_liked((int)$recipe['id'], (int)$user['id']) ? 'fas' : 'far'; ?> fa-solid fa-heart"></i>
-                </button>
-            <?php endif; ?>
+            <!-- Like Button -->
+            <div>
+                <?php if ($user): ?>
+                    <button id="like-btn-<?php echo (int)$recipe['id']; ?>" onclick="likeRecipe(<?php echo (int)$recipe['id']; ?>)" class="like-btn text-2xl <?php echo is_liked((int)$recipe['id'], (int)$user['id']) ? 'text-red-500' : 'text-white'; ?>">
+                        <i id="like-heart" class="icon-transition <?php echo is_liked((int)$recipe['id'], (int)$user['id']) ? 'fas' : 'far'; ?> fa-solid fa-heart"></i>
+                    </button>
+                <?php endif; ?>
+            </div>
         </div>
+        <!-- Rezept Titel -->
+        <h1 class="md:text-4xl md:text-left text-center text-3xl font-semibold mb-6"><?php echo htmlspecialchars($recipe['title']); ?></h1>
         <!-- Rezept Beschreibung -->
         <div class="mb-12 md:text-left text-center">
             <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
@@ -434,16 +368,6 @@ include __DIR__ . '/includes/header.php';
 
 
 
-
-<article id="recipe-article" class="border rounded-lg overflow-hidden">
-
-
-
-</article>
-
-
-
-
 <section class="mt-6 border rounded-lg p-4">
     <h2 class="font-semibold mb-3">Kommentare</h2>
     <?php if ($user): ?>
@@ -539,8 +463,11 @@ include __DIR__ . '/includes/header.php';
     </div>
 </section>
 
+
+</main>
+
 <script>
-    function toggleReplyForm(commentId) {
+        function toggleReplyForm(commentId) {
         const form = document.getElementById(`reply-form-${commentId}`);
         if (form) {
             form.classList.toggle('hidden');
@@ -558,92 +485,6 @@ include __DIR__ . '/includes/header.php';
         }
         return true;
     }
-</script>
-</main>
-
-<style>
-    /* CSS für Zutaten-Funktionalität */
-    .ingredient-label {
-        transition: all 0.2s ease;
-    }
-
-    .ingredient-checkbox:checked+.ingredient-label {
-        text-decoration: line-through;
-        color: #9ca3af;
-        opacity: 0.6;
-    }
-
-    /* Heart animation */
-    .icon-transition {
-        transition: all 0.2s ease;
-    }
-
-    .heart-animation {
-        animation: heartBeat 0.3s ease;
-    }
-
-    @keyframes heartBeat {
-        0% {
-            transform: scale(1);
-        }
-
-        25% {
-            transform: scale(1.3);
-        }
-
-        50% {
-            transform: scale(1.1);
-        }
-
-        100% {
-            transform: scale(1);
-        }
-    }
-
-    /* Zoom Modal Styles */
-    #zoom-modal {
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px);
-    }
-
-    #zoom-modal img {
-        user-select: none;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-    }
-
-    .zoom-btn-overlay {
-        background: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px);
-    }
-
-    .zoom-btn-overlay:hover {
-        background: rgba(0, 0, 0, 0.7);
-    }
-
-    /* Mobile optimizations */
-    @media (max-width: 640px) {
-        #zoom-modal .absolute.top-4.left-4 {
-            top: 1rem;
-            left: 1rem;
-            font-size: 0.875rem;
-        }
-
-        #zoom-modal .absolute.top-4.right-4 {
-            top: 1rem;
-            right: 1rem;
-            font-size: 1.5rem;
-        }
-
-        #zoom-modal .absolute.bottom-4 {
-            display: none;
-        }
-    }
-</style>
-
-<script>
     // Like functionality
     const likeRecipe = async (recipeId) => {
         const likeBtn = document.querySelector(`#like-btn-${recipeId}`);
@@ -1252,6 +1093,71 @@ include __DIR__ . '/includes/header.php';
     document.addEventListener('DOMContentLoaded', () => {
         updateIngredientProgress();
     });
+                  function togglePdfPopover() {
+                    const popover = document.getElementById('pdf-popover');
+                    const arrow = document.getElementById('pdf-arrow');
+                    const btn = document.getElementById('pdf-btn');
+
+                    if (popover.classList.contains('opacity-0')) {
+                        // Position berechnen
+                        positionPopover(btn, popover);
+
+                        // Öffnen
+                        popover.classList.remove('opacity-0', 'invisible', 'scale-95');
+                        popover.classList.add('opacity-100', 'visible', 'scale-100');
+                        arrow.classList.add('rotate-180');
+                    } else {
+                        // Schließen
+                        popover.classList.add('opacity-0', 'invisible', 'scale-95');
+                        popover.classList.remove('opacity-100', 'visible', 'scale-100');
+                        arrow.classList.remove('rotate-180');
+                    }
+                }
+
+                function positionPopover(btn, popover) {
+                    const btnRect = btn.getBoundingClientRect();
+                    const popoverWidth = 224; // 56 * 4 (w-56 in Tailwind)
+                    const viewportWidth = window.innerWidth;
+                    const spaceRight = viewportWidth - btnRect.right;
+                    const spaceLeft = btnRect.left;
+
+                    // Entferne alte Positionierungsklassen
+                    popover.classList.remove('right-0', 'left-0');
+
+                    // Prüfe ob genug Platz rechts ist
+                    if (spaceRight >= popoverWidth) {
+                        // Rechts ausrichten
+                        popover.classList.add('left-0');
+                    } else if (spaceLeft >= popoverWidth) {
+                        // Links ausrichten
+                        popover.classList.add('right-0');
+                    } else {
+                        // Wenn beides nicht geht, rechts ausrichten (Standard)
+                        popover.classList.add('right-0');
+                    }
+                }
+
+                // Schließen beim Klick außerhalb
+                document.addEventListener('click', function(event) {
+                    const popover = document.getElementById('pdf-popover');
+                    const btn = document.getElementById('pdf-btn');
+
+                    if (popover && btn && !popover.contains(event.target) && !btn.contains(event.target)) {
+                        popover.classList.add('opacity-0', 'invisible', 'scale-95');
+                        popover.classList.remove('opacity-100', 'visible', 'scale-100');
+                        document.getElementById('pdf-arrow')?.classList.remove('rotate-180');
+                    }
+                });
+
+                // Neupositionierung bei Resize
+                window.addEventListener('resize', function() {
+                    const popover = document.getElementById('pdf-popover');
+                    const btn = document.getElementById('pdf-btn');
+
+                    if (popover && btn && !popover.classList.contains('opacity-0')) {
+                        positionPopover(btn, popover);
+                    }
+                });
 </script>
 <?php
 // Include global footer

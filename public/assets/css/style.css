@@ -421,3 +421,83 @@ button {
 .flash-message:nth-child(3) {
   top: 12rem;
 }
+
+/* CSS für Zutaten-Funktionalität */
+.ingredient-label {
+  transition: all 0.2s ease;
+}
+
+.ingredient-checkbox:checked + .ingredient-label {
+  text-decoration: line-through;
+  color: #9ca3af;
+  opacity: 0.6;
+}
+
+/* Heart animation */
+.icon-transition {
+  transition: all 0.2s ease;
+}
+
+.heart-animation {
+  animation: heartBeat 0.3s ease;
+}
+
+@keyframes heartBeat {
+  0% {
+    transform: scale(1);
+  }
+
+  25% {
+    transform: scale(1.3);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Zoom Modal Styles */
+#zoom-modal {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+#zoom-modal img {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.zoom-btn-overlay {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.zoom-btn-overlay:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  #zoom-modal .absolute.top-4.left-4 {
+    top: 1rem;
+    left: 1rem;
+    font-size: 0.875rem;
+  }
+
+  #zoom-modal .absolute.top-4.right-4 {
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.5rem;
+  }
+
+  #zoom-modal .absolute.bottom-4 {
+    display: none;
+  }
+}
