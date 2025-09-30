@@ -295,7 +295,7 @@ if (isset($_GET['message'])) {
 
                 <!-- Card Content -->
                 <div class="px-4 flex flex-col">
-                    <div class="flex flex-col min-h-[150px]">
+                    <div class="flex flex-col lg:min-h-[150px]">
                         <a href="<?php echo htmlspecialchars(recipe_url($r)); ?>">
                             <h3 class="font-bold text-lg my-2">
                                 <?php echo htmlspecialchars($r['title']); ?>

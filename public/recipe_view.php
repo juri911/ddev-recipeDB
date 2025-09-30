@@ -146,8 +146,8 @@ include __DIR__ . '/includes/header.php';
     <!-- Rezept Header -->
     <div class="mb-12">
         <!-- PDF/Share Buttons und like-->
-        <div class="py-3 flex items-center justify-between flex-row-reverse">
-            <div class="flex items-center gap-3 sm:gap-4">
+        <div class="grid grid-cols-2 mb-10">
+                  <div class="flex items-center justify-start gap-x-2">
                 <!-- PDF Button mit Popover -->
                 <div class="relative">
                     <button type="button"
@@ -162,7 +162,7 @@ include __DIR__ . '/includes/header.php';
                     </button>
 
                     <!-- Popover -->
-                    <div id="pdf-popover"
+                     <div id="pdf-popover"
                         class="absolute top-full mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden opacity-0 invisible transform scale-95 transition-all duration-200 z-50">
                         <div class="p-2 space-y-1">
                             <a href="/recipe_pdf.php?id=<?php echo (int)$recipe['id']; ?>&images=1"
@@ -194,6 +194,7 @@ include __DIR__ . '/includes/header.php';
                             </a>
                         </div>
                     </div>
+                    
                 </div>
 
                 <!-- Share Button -->
@@ -206,15 +207,9 @@ include __DIR__ . '/includes/header.php';
                     <span class="hidden sm:inline text-sm">Teilen</span>
                 </button>
             </div>
-            <div>
+                       <div class="flex items-center justify-end">
                 <?php if ($user): ?>
                     <div class="flex items-center gap-3">
-                        <!-- Like Button -->
-                        <button id="like-btn-<?php echo (int)$recipe['id']; ?>"
-                            onclick="likeRecipe(<?php echo (int)$recipe['id']; ?>)"
-                            class="like-btn text-2xl <?php echo is_liked((int)$recipe['id'], (int)$user['id']) ? 'text-red-500' : 'text-white'; ?>">
-                            <i id="like-heart" class="icon-transition <?php echo is_liked((int)$recipe['id'], (int)$user['id']) ? 'fas' : 'far'; ?> fa-solid fa-heart"></i>
-                        </button>
                         <!-- User Avatare die geliked haben -->
                         <div id="liked-avatars-<?php echo (int)$recipe['id']; ?>" class="flex items-center -space-x-2 hover:-space-x-1 transition-all duration-300">
                             <?php
@@ -242,7 +237,12 @@ include __DIR__ . '/includes/header.php';
                                 </div>
                             <?php endif; ?>
                         </div>
-
+ <!-- Like Button -->
+                        <button id="like-btn-<?php echo (int)$recipe['id']; ?>"
+                            onclick="likeRecipe(<?php echo (int)$recipe['id']; ?>)"
+                            class="like-btn text-2xl <?php echo is_liked((int)$recipe['id'], (int)$user['id']) ? 'text-red-500' : 'text-white'; ?>">
+                            <i id="like-heart" class="icon-transition <?php echo is_liked((int)$recipe['id'], (int)$user['id']) ? 'fas' : 'far'; ?> fa-solid fa-heart"></i>
+                        </button>
                     </div>
                 <?php endif; ?>
             </div>
@@ -403,7 +403,7 @@ include __DIR__ . '/includes/header.php';
 
 
 
-<section class="mt-6 border rounded-lg p-4">
+<section class="border rounded-lg  w-full md:px-[50px] px-[10px] ">
     <h2 class="font-semibold mb-3">Kommentare</h2>
     <?php if ($user): ?>
         <?php if ($commentError): ?>
