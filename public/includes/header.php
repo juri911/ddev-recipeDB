@@ -194,7 +194,7 @@ $seo = [
                                 class="flex items-center bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1 border-[#2d7ef7] font-semibold hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent 
                                 text-white p-4 lg:py-1 lg:px-3 lg:rounded rounded-none transition duration-600 aspect-square lg:aspect-auto">
                                 <i class="fa-solid fa-arrow-right-from-bracket lg:text-base text-2xl pr-0 lg:pr-2"></i>
-                                <p class="lg:inline hidden">Login</p>
+                                <p class="lg:inline hidden">Log In</p>
                             </a>
 
                             <a class="flex items-center lg:gap-x-1 font-semibold text-white lg:text-[#2d7ef7] relative after:absolute 

@@ -1,6 +1,6 @@
 <?php if (is_admin()): ?>
     <!-- Admin Navigation Bar -->
-    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-b border-slate-700 shadow-lg sticky top-0">
+    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-b border-slate-700 shadow-lg sticky top-0 px-4 z-2">
         <div class="container mx-auto">
             <nav class="flex items-center justify-between h-16">
                 <!-- Left Side - Admin Branding -->
@@ -68,7 +68,7 @@
 
                         <!-- Dropdown Menu -->
                         <div id="admin-more-dropdown" 
-                             class="hidden absolute right-0 mt-2 w-56 bg-slate-800 border border-slate-700 rounded-lg shadow-2xl overflow-hidden z-50">
+                             class="hidden absolute right-0 mt-2 w-56 bg-slate-800 border border-slate-700 rounded-lg shadow-2xl overflow-hidden z-[999999]">
                             <div class="py-1">
                                 <a href="/admin/comments.php" 
                                    class="flex items-center gap-3 px-4 py-2.5 text-slate-300 hover:bg-slate-700 hover:text-white transition-colors">
