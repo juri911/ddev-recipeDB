@@ -117,7 +117,7 @@ if (isset($_GET['message'])) {
     <div class="grid md:grid-cols-2 grid-cols-1 gap-6 max-w-6xl mx-auto">
         <?php foreach ($recipes as $r): ?>
             <!-- Card 1 -->
-            <div class="border-b-[2px] border-black overflow-hidden shadow-xl/30">
+            <div class="border bg-gray-800 border-gray-600 overflow-hidden shadow-xl/30 rounded-lg">
                 <!-- Card Header -->
                 <div class="flex items-center justify-between p-4">
                     <div class="flex items-center">
@@ -309,9 +309,19 @@ if (isset($_GET['message'])) {
 
                 <!-- Card Content -->
                 <div class="px-4 flex flex-col">
-                    <div class="flex items-end justify-between text-sm text-gray-500 pb-2 border-b-1 border-gray-100">
+                    <div class="flex flex-col min-h-[150px]">
+                        <a href="<?php echo htmlspecialchars(recipe_url($r)); ?>">
+                            <h3 class="font-bold text-lg my-2">
+                                <?php echo htmlspecialchars($r['title']); ?>
+                            </h3>
+                            <p class="mb-3 lg:line-clamp-3 hidden text-pretty hyphens-all">
+                                <?php echo nl2br(htmlspecialchars($r['description'])); ?>
+                            </p>
+                        </a>
+                    </div>
+<div class="flex items-end justify-between text-sm text-gray-500 pb-2">
                         <span>
-                            <i class="fas fa-clock mr-1"></i>Zubereitungszeit:
+                            <i class="fas fa-clock mr-1"></i><p class="lg:inline hidden">Zubereitungszeit:</p>
                             <strong>
                                 <?php
                                 $duration_minutes = (int) $r['duration_minutes']; // Get the duration in minutes
@@ -331,7 +341,7 @@ if (isset($_GET['message'])) {
                         </span>
 
                         <span>
-                            <i class="fas fa-cog mr-1"></i>Schwierigkeit:
+                            <i class="fas fa-cog mr-1"></i><p class="lg:inline hidden">Schwierigkeit:</p>
                             <strong>
                                 <?php
                                 echo match ($r['difficulty']) {
@@ -344,17 +354,6 @@ if (isset($_GET['message'])) {
                             </strong>
                         </span>
                     </div>
-                    <div class="flex flex-col">
-                        <a href="<?php echo htmlspecialchars(recipe_url($r)); ?>">
-                            <h3 class="font-bold text-lg my-2">
-                                <?php echo htmlspecialchars($r['title']); ?>
-                            </h3>
-                            <p class="mb-3 lg:line-clamp-3 hidden text-pretty hyphens-all">
-                                <?php echo nl2br(htmlspecialchars($r['description'])); ?>
-                            </p>
-                        </a>
-                    </div>
-
                 </div>
             </div>
         <?php endforeach; ?>

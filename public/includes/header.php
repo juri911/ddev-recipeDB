@@ -99,7 +99,7 @@ $seo = [
     <!-- Header -->
     <header
         class="flex lg:sticky lg:top-0 fixed bottom-0 left-0 right-0 z-10 container-fluid min-h-[80px] mx-auto justify-between 
-               items-center border-b-[1px] bg-[var(--rh-bg)]/40 border-[var(--rh-bg-secondary)] backdrop-blur-lg">
+               items-center border-b-[1px] bg-[var(--rh-bg)]/40 border-[var(--rh-bg-secondary)] backdrop-blur-lg z-[40]">
         <!-- Logo -->
         <div class="lg:flex hidden content-start">
             <a href="/"
