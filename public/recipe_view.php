@@ -99,7 +99,7 @@ include __DIR__ . '/includes/header.php';
                 </a>
             </h2>
             <p class="text-gray-600 dark:text-gray-400"><?php echo htmlspecialchars($recipe['user_titel']); ?></p>
-
+            <!-- Social links -->
             <?php if ($recipeAuthor && (!empty($recipeAuthor['blog_url']) || !empty($recipeAuthor['website_url']) || !empty($recipeAuthor['instagram_url']) || !empty($recipeAuthor['twitter_url']) || !empty($recipeAuthor['facebook_url']) || !empty($recipeAuthor['tiktok_url']) || !empty($recipeAuthor['youtube_url']))): ?>
                 <div class="flex gap-4 items-center justify-center md:justify-start mt-6">
                     <?php if (!empty($recipeAuthor['blog_url'])): ?>
@@ -144,7 +144,31 @@ include __DIR__ . '/includes/header.php';
     <!-- Rezept Header -->
     <div class="mb-12">
         <h1 class="md:text-4xl md:text-left text-center text-3xl font-semibold mb-6"><?php echo htmlspecialchars($recipe['title']); ?></h1>
-
+        <!-- PDF/Share Buttons und like-->
+        <div class="px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-2 sm:gap-3">
+                <label class="flex items-center gap-2 text-sm select-none cursor-pointer">
+                    <input type="checkbox" id="pdf-images-toggle" class="sr-only peer" checked>
+                    <span class="relative inline-flex h-5 w-9 items-center rounded-full bg-gray-300 peer-checked:bg-emerald-600 transition-colors duration-200 ease-in-out focus:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-400">
+                        <span class="absolute left-0.5 h-4 w-4 rounded-full bg-white shadow transform transition-transform duration-200 ease-in-out peer-checked:translate-x-4"></span>
+                    </span>
+                    <span class="hidden sm:inline">Mit Bildern</span>
+                </label>
+                <a id="pdf-download-link" href="/recipe_pdf.php?id=<?php echo (int)$recipe['id']; ?>&images=1" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-3 py-2 border rounded-md text-sm hover:bg-gray-50 shadow-sm" title="Als PDF herunterladen" aria-label="Als PDF herunterladen">
+                    <i class="fas fa-file-pdf text-red-600"></i>
+                    <span class="hidden sm:inline">PDF</span>
+                </a>
+                <button type="button" onclick="shareRecipe()" class="inline-flex items-center gap-2 px-3 py-2 border rounded-md text-sm hover:bg-gray-50 shadow-sm" title="Rezept teilen" aria-label="Rezept teilen">
+                    <i class="fas fa-share-alt"></i>
+                    <span class="hidden sm:inline">Teilen</span>
+                </button>
+            </div>
+            <?php if ($user): ?>
+                <button id="like-btn-<?php echo (int)$recipe['id']; ?>" onclick="likeRecipe(<?php echo (int)$recipe['id']; ?>)" class="like-btn text-2xl <?php echo is_liked((int)$recipe['id'], (int)$user['id']) ? 'text-red-500' : 'text-white'; ?>">
+                    <i id="like-heart" class="icon-transition <?php echo is_liked((int)$recipe['id'], (int)$user['id']) ? 'fas' : 'far'; ?> fa-solid fa-heart"></i>
+                </button>
+            <?php endif; ?>
+        </div>
         <!-- Rezept Beschreibung -->
         <div class="mb-12 md:text-left text-center">
             <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
@@ -268,7 +292,7 @@ include __DIR__ . '/includes/header.php';
                     <button
                         type="button"
                         onclick="resetIngredients()"
-                        class="text-emerald-600 hover:text-emerald-800 underline">
+                        class="text-[var(--rh-primary)] hover:text-[var(--rh-primary-hover)]">
                         Alle zurücksetzen
                     </button>
                 </div>
@@ -300,31 +324,7 @@ include __DIR__ . '/includes/header.php';
 
 
 <article id="recipe-article" class="border rounded-lg overflow-hidden">
-    <div class="px-4 py-3 flex items-center justify-between">
 
-        <div class="flex items-center gap-2 sm:gap-3">
-            <label class="flex items-center gap-2 text-sm select-none cursor-pointer">
-                <input type="checkbox" id="pdf-images-toggle" class="sr-only peer" checked>
-                <span class="relative inline-flex h-5 w-9 items-center rounded-full bg-gray-300 peer-checked:bg-emerald-600 transition-colors duration-200 ease-in-out focus:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-400">
-                    <span class="absolute left-0.5 h-4 w-4 rounded-full bg-white shadow transform transition-transform duration-200 ease-in-out peer-checked:translate-x-4"></span>
-                </span>
-                <span class="hidden sm:inline">Mit Bildern</span>
-            </label>
-            <a id="pdf-download-link" href="/recipe_pdf.php?id=<?php echo (int)$recipe['id']; ?>&images=1" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-3 py-2 border rounded-md text-sm hover:bg-gray-50 shadow-sm" title="Als PDF herunterladen" aria-label="Als PDF herunterladen">
-                <i class="fas fa-file-pdf text-red-600"></i>
-                <span class="hidden sm:inline">PDF</span>
-            </a>
-            <button type="button" onclick="shareRecipe()" class="inline-flex items-center gap-2 px-3 py-2 border rounded-md text-sm hover:bg-gray-50 shadow-sm" title="Rezept teilen" aria-label="Rezept teilen">
-                <i class="fas fa-share-alt"></i>
-                <span class="hidden sm:inline">Teilen</span>
-            </button>
-        </div>
-         <?php if ($user): ?>
-                <button id="like-btn-<?php echo (int)$recipe['id']; ?>" onclick="likeRecipe(<?php echo (int)$recipe['id']; ?>)" class="like-btn text-2xl <?php echo is_liked((int)$recipe['id'], (int)$user['id']) ? 'text-red-500' : 'text-white'; ?>">
-                    <i id="like-heart" class="icon-transition <?php echo is_liked((int)$recipe['id'], (int)$user['id']) ? 'fas' : 'far'; ?> fa-solid fa-heart"></i>
-                </button>
-            <?php endif; ?>
-    </div>
 
 
 </article>

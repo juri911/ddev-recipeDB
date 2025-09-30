@@ -72,22 +72,7 @@ $seo = [
     <?php endif; ?>
 
      <style>
-        /* Active Link Styles */
-
-        @media (max-width: 1024px) {
-            .nav-link-active {
-                background-color: transparent !important;
-                color: var(--rh-primary) !important;
-               
-            }
-        }
-        
-        .mobile-nav-link-active {
-            background-color: oklch(96.7% 0.003 264.542) !important;
-            font-weight: 600 !important;
-            border-left: 4px solid #2d7ef7 !important;
-            color: var(--rh-primary) !important;
-        }
+      
     </style>
 </head>
 
