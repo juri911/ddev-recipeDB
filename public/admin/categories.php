@@ -4,6 +4,8 @@ require_once __DIR__ . '/../../lib/auth.php';
 require_once __DIR__ . '/../../lib/recipes.php';
 require_once __DIR__ . '/../../lib/csrf.php';
 
+
+
 // Session starten
 session_start();
 
@@ -93,6 +95,8 @@ $faIcons = [
     'fa-apple-alt', 'fa-bread-slice', 'fa-cheese', 'fa-fish', 'fa-hamburger',
     'fa-hotdog', 'fa-pizza-slice', 'fa-seedling'
 ];
+
+$csrfToken = csrf_token();
 
 include __DIR__ . '/../includes/header.php';
 ?>

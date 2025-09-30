@@ -33,9 +33,6 @@ function csrf_validate_request(): bool {
 }
 
 
-
-
-
 function csrf_validate_token(string $token): bool {
     csrf_start();
     return hash_equals($_SESSION['csrf_token'], $token);

@@ -2,9 +2,12 @@
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../lib/auth.php';
 require_once __DIR__ . '/../lib/recipes.php';
+require_once __DIR__ . '/../lib/csrf.php';
 
 $currentUser = get_current_user();
 $selectedCategory = $_GET['category'] ?? null;
+
+csrf_start(); 
 
 // Hole alle Kategorien
 $categories = get_all_categories();
@@ -29,6 +32,8 @@ if ($selectedCategory) {
     ";
     $recipes = db_query($sql, [$selectedCategory])->fetchAll();
 }
+
+$csrfToken = csrf_token();
 
 include __DIR__ . '/includes/header.php';
 ?>

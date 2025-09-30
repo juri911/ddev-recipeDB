@@ -392,22 +392,43 @@ $seo = [
             const deleteAllButton = document.getElementById('delete-all-notifications');
             const notificationBadge = document.getElementById('notification-badge');
 
-            // Fetch notifications function
             async function fetchNotifications() {
                 if (!notificationList) return;
 
                 try {
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+                    const headers = {
+                        'Accept': 'application/json'
+                    };
+                    
+                    if (csrfToken) {
+                        headers['X-CSRF-Token'] = csrfToken;
+                    }
+
                     const response = await fetch('/api/get_notifications.php', {
-                        headers: {
-                            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || ''
-                        }
+                        method: 'GET',
+                        headers: headers,
+                        credentials: 'same-origin'
                     });
 
                     if (!response.ok) {
+                        console.error('Response not OK:', response.status, response.statusText);
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
 
+                    const contentType = response.headers.get("content-type");
+                    if (!contentType || !contentType.includes("application/json")) {
+                        const text = await response.text();
+                        console.error('Response is not JSON:', text);
+                        throw new Error('Server returned non-JSON response');
+                    }
+
                     const notifications = await response.json();
+                    
+                    if (!Array.isArray(notifications)) {
+                        console.error('Invalid notifications format:', notifications);
+                        throw new Error('Invalid response format');
+                    }
 
                     notificationList.innerHTML = '';
                     if (notifications.length === 0) {
