@@ -6,12 +6,26 @@ require_once __DIR__ . '/../config.php';
 start_session_if_needed();
 $error = '';
 csrf_start();
+
+// Gespeicherte E-Mail aus Cookie laden
+$saved_email = isset($_COOKIE['remember_email']) ? $_COOKIE['remember_email'] : '';
+$remember_checked = !empty($saved_email);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!csrf_validate_request()) {
         $error = 'Ungültiges CSRF-Token';
     } else {
         $res = login_user($_POST['email'] ?? '', $_POST['password'] ?? '');
         if ($res['ok']) {
+            // "Angemeldet bleiben" Funktion
+            if (isset($_POST['remember_me']) && $_POST['remember_me'] === '1') {
+                // E-Mail für 30 Tage speichern
+                setcookie('remember_email', $_POST['email'], time() + (30 * 24 * 60 * 60), '/', '', true, true);
+            } else {
+                // Cookie löschen, falls nicht aktiviert
+                setcookie('remember_email', '', time() - 3600, '/', '', true, true);
+            }
+            
             header('Location: /index.php?message=Welcome!');
             exit;
         } else {
@@ -19,7 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
-
 
 ?>
 <!DOCTYPE html>
@@ -32,6 +45,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="https://cdn.tailwindcss.com"></script>
      <link rel="stylesheet" href="/assets/fonts/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/style.css">
+    <style>
+        /* Toggle Switch Styling */
+        .toggle-checkbox {
+            transform: translateX(0);
+        }
+        .toggle-checkbox:checked {
+            transform: translateX(100%);
+            border-color: var(--rh-primary);
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: var(--rh-primary);
+        }
+    </style>
 </head>
 
 <body class="flex items-center justify-center">
@@ -53,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="text-emerald-700 mb-4">Profil wurde erfolgreich gelöscht.</div>
             <?php endif; ?>
             <div>
-                <input type="email" name="email" placeholder="E-Mail" required class="my-2 w-full border rounded px-3 py-2 appearance-none focus:outline-[var(--rh-primary)]" />
+                <input type="email" name="email" placeholder="E-Mail" value="<?php echo htmlspecialchars($saved_email); ?>" required class="my-2 w-full border rounded px-3 py-2 appearance-none focus:outline-[var(--rh-primary)]" />
             </div>
             <div>
                 <div class="relative">
@@ -66,6 +92,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </span>
                 </div>
             </div>
+            
+            <!-- Toggle Switch für "Angemeldet bleiben" -->
+            <div class="flex items-center justify-between my-4">
+                <span class="text-sm text-gray-700">Angemeldet bleiben</span>
+                <div class="relative inline-block w-12 align-middle select-none">
+                    <input type="checkbox" name="remember_me" id="remember_me" value="1" <?php echo $remember_checked ? 'checked' : ''; ?> class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-200 ease-in-out" style="right: 1.5rem;" />
+                    <label for="remember_me" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer transition-all duration-200 ease-in-out"></label>
+                </div>
+            </div>
+            
             <script>
                 function togglePasswordVisibility() {
                     const passwordField = document.getElementById('password');

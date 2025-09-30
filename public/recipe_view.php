@@ -145,24 +145,136 @@ include __DIR__ . '/includes/header.php';
     <div class="mb-12">
         <h1 class="md:text-4xl md:text-left text-center text-3xl font-semibold mb-6"><?php echo htmlspecialchars($recipe['title']); ?></h1>
         <!-- PDF/Share Buttons und like-->
-        <div class="px-4 py-3 flex items-center justify-between">
-            <div class="flex items-center gap-2 sm:gap-3">
-                <label class="flex items-center gap-2 text-sm select-none cursor-pointer">
-                    <input type="checkbox" id="pdf-images-toggle" class="sr-only peer" checked>
-                    <span class="relative inline-flex h-5 w-9 items-center rounded-full bg-gray-300 peer-checked:bg-emerald-600 transition-colors duration-200 ease-in-out focus:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-400">
-                        <span class="absolute left-0.5 h-4 w-4 rounded-full bg-white shadow transform transition-transform duration-200 ease-in-out peer-checked:translate-x-4"></span>
-                    </span>
-                    <span class="hidden sm:inline">Mit Bildern</span>
-                </label>
-                <a id="pdf-download-link" href="/recipe_pdf.php?id=<?php echo (int)$recipe['id']; ?>&images=1" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-3 py-2 border rounded-md text-sm hover:bg-gray-50 shadow-sm" title="Als PDF herunterladen" aria-label="Als PDF herunterladen">
-                    <i class="fas fa-file-pdf text-red-600"></i>
-                    <span class="hidden sm:inline">PDF</span>
-                </a>
-                <button type="button" onclick="shareRecipe()" class="inline-flex items-center gap-2 px-3 py-2 border rounded-md text-sm hover:bg-gray-50 shadow-sm" title="Rezept teilen" aria-label="Rezept teilen">
-                    <i class="fas fa-share-alt"></i>
-                    <span class="hidden sm:inline">Teilen</span>
+        <div class="py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3 sm:gap-4">
+                <!-- PDF Button mit Popover -->
+                <div class="relative">
+                    <button type="button"
+                        id="pdf-btn"
+                        onclick="togglePdfPopover()"
+                        class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 font-medium group"
+                        title="Als PDF herunterladen"
+                        aria-label="Als PDF herunterladen">
+                        <i class="fas fa-file-pdf text-lg group-hover:scale-110 transition-transform duration-200"></i>
+                        <span class="hidden sm:inline text-sm">PDF</span>
+                        <i class="fas fa-chevron-down text-xs ml-1 transition-transform duration-200" id="pdf-arrow"></i>
+                    </button>
+
+                    <!-- Popover -->
+                    <div id="pdf-popover"
+                        class="absolute top-full mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden opacity-0 invisible transform scale-95 transition-all duration-200 z-50">
+                        <div class="p-2 space-y-1">
+                            <a href="/recipe_pdf.php?id=<?php echo (int)$recipe['id']; ?>&images=1"
+                                target="_blank"
+                                rel="noopener"
+                                class="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 group">
+                                <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg flex items-center justify-center shadow-sm">
+                                    <i class="fas fa-images text-white text-sm"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">Mit Bildern</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Vollständiges PDF</div>
+                                </div>
+                                <i class="fas fa-download text-gray-400 group-hover:text-emerald-600 transition-colors"></i>
+                            </a>
+
+                            <a href="/recipe_pdf.php?id=<?php echo (int)$recipe['id']; ?>&images=0"
+                                target="_blank"
+                                rel="noopener"
+                                class="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 group">
+                                <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-gray-500 to-gray-600 rounded-lg flex items-center justify-center shadow-sm">
+                                    <i class="fas fa-file-alt text-white text-sm"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">Ohne Bilder</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Nur Text</div>
+                                </div>
+                                <i class="fas fa-download text-gray-400 group-hover:text-gray-600 transition-colors"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Share Button -->
+                <button type="button"
+                    onclick="shareRecipe()"
+                    class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#2d7ef7] to-[#1e5fd9] hover:from-[#1e5fd9] hover:to-[#0d4ab8] text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 font-medium group"
+                    title="Rezept teilen"
+                    aria-label="Rezept teilen">
+                    <i class="fas fa-share-alt text-lg group-hover:scale-110 transition-transform duration-200"></i>
+                    <span class="hidden sm:inline text-sm">Teilen</span>
                 </button>
             </div>
+
+            <!-- Füge dieses JavaScript hinzu (z.B. im <script> Bereich): -->
+            <script>
+                function togglePdfPopover() {
+                    const popover = document.getElementById('pdf-popover');
+                    const arrow = document.getElementById('pdf-arrow');
+                    const btn = document.getElementById('pdf-btn');
+
+                    if (popover.classList.contains('opacity-0')) {
+                        // Position berechnen
+                        positionPopover(btn, popover);
+
+                        // Öffnen
+                        popover.classList.remove('opacity-0', 'invisible', 'scale-95');
+                        popover.classList.add('opacity-100', 'visible', 'scale-100');
+                        arrow.classList.add('rotate-180');
+                    } else {
+                        // Schließen
+                        popover.classList.add('opacity-0', 'invisible', 'scale-95');
+                        popover.classList.remove('opacity-100', 'visible', 'scale-100');
+                        arrow.classList.remove('rotate-180');
+                    }
+                }
+
+                function positionPopover(btn, popover) {
+                    const btnRect = btn.getBoundingClientRect();
+                    const popoverWidth = 224; // 56 * 4 (w-56 in Tailwind)
+                    const viewportWidth = window.innerWidth;
+                    const spaceRight = viewportWidth - btnRect.right;
+                    const spaceLeft = btnRect.left;
+
+                    // Entferne alte Positionierungsklassen
+                    popover.classList.remove('right-0', 'left-0');
+
+                    // Prüfe ob genug Platz rechts ist
+                    if (spaceRight >= popoverWidth) {
+                        // Rechts ausrichten
+                        popover.classList.add('left-0');
+                    } else if (spaceLeft >= popoverWidth) {
+                        // Links ausrichten
+                        popover.classList.add('right-0');
+                    } else {
+                        // Wenn beides nicht geht, rechts ausrichten (Standard)
+                        popover.classList.add('right-0');
+                    }
+                }
+
+                // Schließen beim Klick außerhalb
+                document.addEventListener('click', function(event) {
+                    const popover = document.getElementById('pdf-popover');
+                    const btn = document.getElementById('pdf-btn');
+
+                    if (popover && btn && !popover.contains(event.target) && !btn.contains(event.target)) {
+                        popover.classList.add('opacity-0', 'invisible', 'scale-95');
+                        popover.classList.remove('opacity-100', 'visible', 'scale-100');
+                        document.getElementById('pdf-arrow')?.classList.remove('rotate-180');
+                    }
+                });
+
+                // Neupositionierung bei Resize
+                window.addEventListener('resize', function() {
+                    const popover = document.getElementById('pdf-popover');
+                    const btn = document.getElementById('pdf-btn');
+
+                    if (popover && btn && !popover.classList.contains('opacity-0')) {
+                        positionPopover(btn, popover);
+                    }
+                });
+            </script>
+            <!-- Like heart -->
             <?php if ($user): ?>
                 <button id="like-btn-<?php echo (int)$recipe['id']; ?>" onclick="likeRecipe(<?php echo (int)$recipe['id']; ?>)" class="like-btn text-2xl <?php echo is_liked((int)$recipe['id'], (int)$user['id']) ? 'text-red-500' : 'text-white'; ?>">
                     <i id="like-heart" class="icon-transition <?php echo is_liked((int)$recipe['id'], (int)$user['id']) ? 'fas' : 'far'; ?> fa-solid fa-heart"></i>
