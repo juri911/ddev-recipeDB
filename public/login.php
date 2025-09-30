@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <i class="fa-solid fa-xmark fa-xl m-3"></i>
             </a>
         </div>
-        <div method="post" class="w-full max-w-sm p-6 space-y-4 flex flex-col justify-center">
+        <form method="post" class="w-full max-w-sm p-6 space-y-4 flex flex-col justify-center">
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(csrf_token()); ?>">
             <h2 class="text-2xl font-semibold">Log In</h2>
             <?php if ($error): ?>
