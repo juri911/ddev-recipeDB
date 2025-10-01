@@ -15,14 +15,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!csrf_validate_request()) {
         $error = 'Ungültiges CSRF-Token';
     } else {
-        $res = login_user($_POST['email'] ?? '', $_POST['password'] ?? '');
+        $remember_me = isset($_POST['remember_me']) && $_POST['remember_me'] === '1';
+        $res = login_user($_POST['email'] ?? '', $_POST['password'] ?? '', $remember_me);
         if ($res['ok']) {
-            // "Angemeldet bleiben" Funktion
-            if (isset($_POST['remember_me']) && $_POST['remember_me'] === '1') {
-                // E-Mail für 30 Tage speichern
+            // E-Mail für "Angemeldet bleiben" speichern (nur für UX)
+            if ($remember_me) {
                 setcookie('remember_email', $_POST['email'], time() + (30 * 24 * 60 * 60), '/', '', true, true);
             } else {
-                // Cookie löschen, falls nicht aktiviert
                 setcookie('remember_email', '', time() - 3600, '/', '', true, true);
             }
             

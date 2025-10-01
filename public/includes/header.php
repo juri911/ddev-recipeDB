@@ -88,7 +88,7 @@ $seo = [
         class="flex lg:sticky lg:top-0 fixed bottom-0 left-0 right-0 z-10 container-fluid min-h-[80px] mx-auto justify-between 
                items-center border-b-[1px] bg-[var(--rh-bg)]/40 border-[var(--rh-bg-secondary)] backdrop-blur-lg z-[40]">
         <!-- Logo -->
-        <div class="lg:flex hidden content-start">
+        <div class="lg:flex hidden content-start relative">
             <a href="/"
                 class="flex items-center z-[9999] navbar-brand hover:scale-150 origin-left transition duration-300 ease-in-out pl-3">
                 <?php //echo get_app_logo_html(); 
@@ -96,6 +96,7 @@ $seo = [
                 <svg fill="currentColor" width="160px" height="50px">
                     <use href="#logo"></use>
                 </svg>
+                <p class="absolute bottom-[-8px] right-[-32px] montserrat bg-black z-[99991] text-[12px] p-[2px_4px]">beta</p>
             </a>
         </div>
 
@@ -669,12 +670,13 @@ $seo = [
 
     <?php include __DIR__ . '/admin_nav.php'; ?>
 
-    <div class="flex content-start w-full flex lg:hidden px-4 py-4">
+    <div class="flex content-start w-full flex lg:hidden px-4 py-4 relative">
         <a href="/"
             class="flex items-center navbar-brand hover:scale-150 origin-left transition duration-300 ease-in-out">
             <svg fill="currentColor" width="160px" height="50px">
                 <use href="#logo"></use>
             </svg>
+            <p class="absolute bottom-0 left-4 montserrat bg-black  p-[2px_4px]">beta</p>
         </a>
     </div>
     <!-- Main Content Container -->

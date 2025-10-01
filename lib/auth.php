@@ -10,7 +10,35 @@ function start_session_if_needed(): void {
 
 function current_user(): ?array {
 	start_session_if_needed();
-	return $_SESSION['user'] ?? null;
+	
+	// Wenn bereits eingeloggt, User zurückgeben
+	if (isset($_SESSION['user'])) {
+		return $_SESSION['user'];
+	}
+	
+	// Remember Me Token prüfen
+	if (isset($_COOKIE['remember_token'])) {
+		$token = $_COOKIE['remember_token'];
+		$user = db_query('SELECT u.* FROM users u 
+			JOIN remember_tokens rt ON u.id = rt.user_id 
+			WHERE rt.token = ? AND rt.expires_at > NOW()', [$token])->fetch();
+		
+		if ($user) {
+			// User automatisch einloggen
+			$_SESSION['user'] = [
+				'id' => (int)$user['id'],
+				'name' => $user['name'],
+				'email' => $user['email'],
+				'avatar_path' => $user['avatar_path'] ?? null
+			];
+			return $_SESSION['user'];
+		} else {
+			// Ungültiger Token, Cookie löschen
+			setcookie('remember_token', '', time() - 3600, '/', '', true, true);
+		}
+	}
+	
+	return null;
 }
 
 function require_login(): void {
@@ -43,7 +71,7 @@ function register_user(string $name, string $email, string $password): array {
 	}
 }
 
-function login_user(string $email, string $password): array {
+function login_user(string $email, string $password, bool $remember_me = false): array {
 	start_session_if_needed();
 	$email = trim(strtolower($email));
 	$user = db_query('SELECT * FROM users WHERE email = ?', [$email])->fetch();
@@ -59,6 +87,12 @@ function login_user(string $email, string $password): array {
 		'email' => $user['email'],
 		'avatar_path' => $user['avatar_path'] ?? null
 	];
+	
+	// Remember Me Token erstellen
+	if ($remember_me) {
+		create_remember_token((int)$user['id']);
+	}
+	
 	return ['ok' => true];
 }
 
@@ -169,6 +203,12 @@ function reset_password(string $email, string $token, string $newPassword): arra
 
 function logout_user(): void {
 	start_session_if_needed();
+	
+	// Remember Me Tokens löschen
+	if (isset($_SESSION['user']['id'])) {
+		clear_remember_token((int)$_SESSION['user']['id']);
+	}
+	
 	$_SESSION = [];
 	if (ini_get('session.use_cookies')) {
 		$params = session_get_cookie_params();
@@ -191,5 +231,29 @@ function require_admin(): void {
         header('Location: /');
         exit;
     }
+}
+
+function create_remember_token(int $user_id): void {
+	// Alte Tokens für diesen User löschen
+	db_query('DELETE FROM remember_tokens WHERE user_id = ?', [$user_id]);
+	
+	// Neuen Token generieren
+	$token = bin2hex(random_bytes(32));
+	$expires_at = date('Y-m-d H:i:s', time() + (30 * 24 * 60 * 60)); // 30 Tage
+	
+	// Token in Datenbank speichern
+	db_query('INSERT INTO remember_tokens (user_id, token, expires_at) VALUES (?, ?, ?)', 
+		[$user_id, $token, $expires_at]);
+	
+	// Cookie setzen
+	setcookie('remember_token', $token, time() + (30 * 24 * 60 * 60), '/', '', true, true);
+}
+
+function clear_remember_token(int $user_id): void {
+	// Alle Remember Me Tokens für diesen User löschen
+	db_query('DELETE FROM remember_tokens WHERE user_id = ?', [$user_id]);
+	
+	// Cookie löschen
+	setcookie('remember_token', '', time() - 3600, '/', '', true, true);
 }
 

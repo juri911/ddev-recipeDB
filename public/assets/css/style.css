@@ -1,6 +1,6 @@
 /* Global stylesheet for RecipeHub */
 @import url("./../fonts/fonts.css");
-@import url(props.css);
+@import url("props.css");
 
 :root {
   --rh-bg: #222831;
@@ -58,9 +58,7 @@ body {
 .montserrat {
   font-family: "Montserrat", sans-serif;
   font-optical-sizing: auto;
-  font-weight: 500;
   font-style: normal;
-  font-size: 1.05rem;
 }
 
 /* Links */
