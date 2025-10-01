@@ -4,7 +4,7 @@ require_once __DIR__ . '/../lib/csrf.php';
 require_once __DIR__ . '/../lib/auth.php';
 require_once __DIR__ . '/../config.php';
 
-$error = '';
+$error = null;
 $message = '';
 
 csrf_start();
@@ -127,7 +127,7 @@ if (isset($_POST['verify_otp']) && !empty($_POST['otp_code'])) {
                 <div class="text-green-600 text-sm bg-green-50 border border-green-200 rounded p-3"><?php echo htmlspecialchars($message); ?></div>
             <?php endif; ?>
             
-            <?php if ($error): ?>
+            <?php if (!empty($error)): ?>
                 <div class="text-red-600 text-sm bg-red-50 border border-red-200 rounded p-3"><?php echo htmlspecialchars($error); ?></div>
             <?php endif; ?>
             <?php if (empty($email)): ?>

@@ -3,7 +3,7 @@ require_once __DIR__ . '/../lib/auth.php';
 require_once __DIR__ . '/../lib/csrf.php';
 require_once __DIR__ . '/../config.php';
 
-$error = '';
+$error = null;
 csrf_start();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!csrf_validate_request()) {
@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form method="post" class="w-full max-w-sm p-6 space-y-4 flex flex-col justify-center">
                 <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(csrf_token()); ?>">
                 <h1 class="text-xl font-semibold">Registrieren</h1>
-                <?php if ($error): ?>
+                <?php if (!empty($error)): ?>
                     <div class="text-red-600 text-sm"><?php echo htmlspecialchars($error); ?></div>
                 <?php endif; ?>
                 <div>

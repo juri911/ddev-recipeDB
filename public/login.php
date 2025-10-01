@@ -4,7 +4,7 @@ require_once __DIR__ . '/../lib/csrf.php';
 require_once __DIR__ . '/../config.php';
 
 start_session_if_needed();
-$error = '';
+$error = null;
 csrf_start();
 
 // Gespeicherte E-Mail aus Cookie laden
@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form method="post" class="w-full max-w-sm p-6 space-y-4 flex flex-col justify-center">
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(csrf_token()); ?>">
             <h2 class="text-2xl font-semibold">Log In</h2>
-            <?php if ($error): ?>
+            <?php if (!empty($error)): ?>
                 <div class="text-red-600 text-md"><?php echo htmlspecialchars($error); ?></div>
             <?php endif; ?>
             <?php if (isset($_GET['deleted'])): ?>

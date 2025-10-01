@@ -4,8 +4,8 @@ require_once __DIR__ . '/../lib/csrf.php';
 require_once __DIR__ . '/../config.php';
 
 start_session_if_needed();
-$error = '';
-$success = '';
+$error = null;
+$success = null;
 $email = trim($_GET['email'] ?? '');
 $token = trim($_GET['token'] ?? '');
 csrf_start();
@@ -53,10 +53,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($error)) {
             <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
 
             <h1 class="text-xl font-semibold">Passwort zurücksetzen</h1>
-            <?php if ($error): ?>
+            <?php if (!empty($error)): ?>
                 <div class="text-red-600 text-sm"><?php echo htmlspecialchars($error); ?></div>
             <?php endif; ?>
-            <?php if ($success): ?>
+            <?php if (!empty($success)): ?>
                 <div class="text-emerald-600 text-sm"><?php echo htmlspecialchars($success); ?> <a class="text-blue-600" href="/login.php">Zum Login</a></div>
             <?php endif; ?>
 

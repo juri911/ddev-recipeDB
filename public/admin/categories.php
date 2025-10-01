@@ -19,7 +19,7 @@ require_admin();
 $user = current_user();
 
 $message = '';
-$error = '';
+$error = null;
 
 // CSRF-Schutz
 csrf_start();
@@ -116,7 +116,7 @@ include __DIR__ . '/../includes/header.php';
         </div>
     <?php endif; ?>
 
-    <?php if ($error): ?>
+    <?php if (!empty($error)): ?>
         <div class="mb-4 p-4 bg-red-100 text-red-700 rounded">
             <?= htmlspecialchars($error) ?>
         </div>

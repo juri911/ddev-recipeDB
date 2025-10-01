@@ -4,8 +4,8 @@ require_once __DIR__ . '/../lib/csrf.php';
 require_once __DIR__ . '/../config.php';
 
 start_session_if_needed();
-$error = '';
-$success = '';
+$error = null;
+$success = null;
 csrf_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -40,10 +40,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form method="post" class="bg-white w-full max-w-sm border rounded-lg p-6 space-y-4">
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(csrf_token()); ?>">
             <h1 class="text-xl font-semibold">Passwort vergessen</h1>
-            <?php if ($error): ?>
+            <?php if (!empty($error)): ?>
                 <div class="text-red-600 text-sm"><?php echo htmlspecialchars($error); ?></div>
             <?php endif; ?>
-            <?php if ($success): ?>
+            <?php if (!empty($success)): ?>
                 <div class="text-emerald-600 text-sm"><?php echo htmlspecialchars($success); ?></div>
             <?php endif; ?>
             <div>

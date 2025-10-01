@@ -57,7 +57,7 @@ function login_user(string $email, string $password): array {
 		'id' => (int)$user['id'],
 		'name' => $user['name'],
 		'email' => $user['email'],
-		'avatar_path' => $user['avatar_path'] ?? SITE_URL . 'images/default_avatar.png'
+		'avatar_path' => $user['avatar_path'] ?? null
 	];
 	return ['ok' => true];
 }

@@ -87,7 +87,7 @@ $csrfToken = csrf_token();
 include __DIR__ . '/includes/header.php';
 
 ?>
-<section id="recipe-article" class="min-h-screen w-full md:px-[50px] px-[10px] mt-[50px]">
+<section id="recipe-article" class="min-h-screen container-fluid mx-auto lg:px-[50px] mt-[50px]">
     <!-- Autor Info -->
     <div class="flex flex-col md:flex-row gap-6 items-center mb-12">
         <div>
@@ -396,98 +396,124 @@ include __DIR__ . '/includes/header.php';
     </div>
 </section>
 
-
-
-
-
-
-
-
-<section class="border rounded-lg  w-full md:px-[50px] px-[10px] ">
-    <h2 class="font-semibold mb-3">Kommentare</h2>
+<section class="container-fluid mx-auto lg:px-[50px] mt-8">
+<!-- Comments Section with Messenger Design -->
+<section class="lg:dark:bg-gray-800 rounded-xl lg:p-6 lg:shadow-lg lg:border border-gray-200 dark:border-gray-600">
+    <h2 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white flex items-center gap-2">
+        <i class="fas fa-comments text-[#2d7ef7]"></i>
+        Kommentare
+    </h2>
+    <!-- Comment Input Form -->
     <?php if ($user): ?>
         <?php if ($commentError): ?>
-            <div class="text-red-600 text-sm mb-2"><?php echo htmlspecialchars($commentError); ?></div>
-        <?php endif; ?>
-        <form method="post" class="space-y-2">
-            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(csrf_token()); ?>">
-            <textarea name="content" rows="3" class="w-full border rounded px-3 py-2" placeholder="Kommentar schreiben..."></textarea>
-            <div class="flex justify-end">
-                <button class="px-4 py-2 bg-emerald-600 text-white rounded">Senden</button>
+            <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-lg mb-4 flex items-center gap-2">
+                <i class="fas fa-exclamation-circle"></i>
+                <?php echo htmlspecialchars($commentError); ?>
             </div>
-        </form>
+        <?php endif; ?>
+
+        <div class="bg-white/30 backdrop-blur-sm shadow-xl/30 lg:rounded-2xl rounded-full lg:p-4 mb-6">
+            <form method="post" class="flex items-center lg:gap-4 gap-1">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(csrf_token()); ?>">
+                <img src="<?php echo !empty($user['avatar_path']) ? absolute_url_from_path($user['avatar_path']) : '/images/default_avatar.png'; ?>"
+                     class="lg:w-10 lg:h-10 w-8 h-8 m-1 rounded-full object-cover flex-shrink-0 lg:outline-2 lg:outline-offset-2 lg:outline-[#2d7ef7]" alt="Avatar">
+                <textarea name="content" rows="1" 
+                          class="flex-1 px-4 py-3 lg:bg-gray-600 lg:border lg:border-gray-500 rounded-full focus:ring-2 focus:ring-[#2d7ef7] focus:border-transparent dark:text-white transition-all duration-200 resize-none overflow-hidden"
+                          placeholder="Schreibe einen Kommentar..."
+                          oninput="autoResize(this)"
+                          style="min-height: 48px; max-height: 120px;"></textarea>
+                <button type="submit" 
+                        class="w-12 h-12 bg-[#2d7ef7] text-white rounded-full hover:bg-blue-600 transition-colors flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex-shrink-0">
+                    <i class="fas fa-paper-plane text-lg"></i>
+                </button>
+            </form>
+        </div>
     <?php else: ?>
-        <div class="text-sm">Bitte <a class="text-blue-600" href="/login.php">anmelden</a>, um zu kommentieren.</div>
+        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6 text-center">
+            <i class="fas fa-lock text-gray-400 text-2xl mb-2"></i>
+            <p class="text-gray-600 dark:text-gray-400">
+                Bitte <a href="/login.php" class="text-[#2d7ef7] hover:underline">anmelden</a>, um zu kommentieren.
+            </p>
+        </div>
     <?php endif; ?>
-    <div class="mt-4 space-y-4">
+    
+    <!-- Comments List -->
+    <div class="space-y-4">
         <?php foreach ($comments as $c): ?>
-            <div class="border rounded overflow-hidden" id="comment-<?php echo (int)$c['id']; ?>">
-                <!-- Hauptkommentar -->
-                <div class="px-4 py-3">
-                    <div class="flex items-center gap-2">
-                        <img src="<?php echo !empty($c['author_avatar_path']) ? '/' . ltrim($c['author_avatar_path'], '/') : '/images/default_avatar.png'; ?>"
-                            class="w-8 h-8 rounded-full object-cover" alt="">
-                        <div>
-                            <div class="text-sm">
-                                <span class="font-semibold"><?php echo htmlspecialchars($c['author_name']); ?></span>
+            <div id="comment-<?php echo (int)$c['id']; ?>" class="comment-thread lg:px-[50px] px-[10px]">
+                <!-- Main Comment (Left side - like received message) -->
+                <div class="flex justify-start mb-3">
+                    <div class="flex gap-3 lg:max-w-[70%] max-w-[100%]">
+                        <img src="<?php echo !empty($c['author_avatar_path']) ? absolute_url_from_path($c['author_avatar_path']) : '/images/default_avatar.png'; ?>"
+                             class="w-8 h-8 rounded-full object-cover flex-shrink-0 outline-2 outline-offset-2 outline-[#2d7ef7]" alt="Avatar">
+                        <div class="bg-gray-100 dark:bg-gray-700 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="font-semibold text-sm text-gray-900 dark:text-white"><?php echo htmlspecialchars($c['author_name']); ?></span>
                                 <?php if ((int)$c['user_id'] === (int)$recipe['user_id']): ?>
-                                    <span class="ml-1 text-xs bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">Autor</span>
+                                    <span class="text-xs bg-[#2d7ef7] text-white px-2 py-0.5 rounded-full">Autor</span>
                                 <?php endif; ?>
+                                <span class="text-xs text-gray-500 dark:text-gray-400"><?php echo date('d.m.Y H:i', strtotime($c['created_at'])); ?></span>
                             </div>
-                            <div class="text-xs text-gray-500"><?php echo date('d.m.Y H:i', strtotime($c['created_at'])); ?></div>
+                            <div class="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-line"><?php echo nl2br(htmlspecialchars($c['content'])); ?></div>
                         </div>
                     </div>
-                    <div class="mt-2 text-sm whitespace-pre-line"><?php echo nl2br(htmlspecialchars($c['content'])); ?></div>
+                </div>
 
-                    <?php if ($user && (int)$recipe['user_id'] === (int)$user['id']): ?>
-                        <div class="mt-2">
-                            <button onclick="toggleReplyForm(<?php echo (int)$c['id']; ?>)"
-                                class="text-sm text-blue-600 hover:text-blue-800">
-                                Antworten
-                            </button>
-                        </div>
+                <!-- Reply Button (only for recipe author) -->
+                <?php if ($user && (int)$recipe['user_id'] === (int)$user['id']): ?>
+                    <div class="flex justify-start mb-2">
+                        <button onclick="toggleReplyForm(<?php echo (int)$c['id']; ?>)"
+                                class="text-sm text-[#2d7ef7] hover:text-blue-600 flex items-center gap-1 ml-11">
+                            <i class="fas fa-reply"></i>
+                            Antworten
+                        </button>
+                    </div>
 
-                        <!-- Antwortformular (standardmäßig versteckt) -->
-                        <form method="post" id="reply-form-<?php echo (int)$c['id']; ?>"
-                            class="mt-3 hidden" onsubmit="return validateReply(this);">
-                            <input type="hidden" name="csrf_token"
-                                value="<?php echo htmlspecialchars(csrf_token()); ?>">
-                            <input type="hidden" name="parent_id"
-                                value="<?php echo (int)$c['id']; ?>">
-                            <textarea name="content" rows="2"
-                                class="w-full border rounded px-3 py-2 text-sm"
-                                placeholder="Ihre Antwort..."></textarea>
-                            <div class="flex justify-end gap-2 mt-2">
-                                <button type="button"
-                                    onclick="toggleReplyForm(<?php echo (int)$c['id']; ?>)"
-                                    class="px-3 py-1 text-sm border rounded">
+                    <!-- Reply Form (hidden by default) -->
+                    <div id="reply-form-<?php echo (int)$c['id']; ?>" class="hidden mb-4">
+                        <form method="post" onsubmit="return validateReply(this);" class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4">
+                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(csrf_token()); ?>">
+                            <input type="hidden" name="parent_id" value="<?php echo (int)$c['id']; ?>">
+                            <div class="flex gap-3">
+                                <img src="<?php echo !empty($user['avatar_path']) ? absolute_url_from_path($user['avatar_path']) : '/images/default_avatar.png'; ?>"
+                                     class="w-8 h-8 rounded-full object-cover flex-shrink-0 outline-2 outline-offset-2 outline-[#2d7ef7]" alt="Avatar">
+                                <div class="flex-1">
+                                    <textarea name="content" rows="2"
+                                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#2d7ef7] focus:border-transparent dark:bg-gray-600 dark:text-white transition-colors resize-none"
+                                              placeholder="Ihre Antwort..."></textarea>
+                                </div>
+                            </div>
+                            <div class="flex justify-end gap-2 mt-3">
+                                <button type="button" onclick="toggleReplyForm(<?php echo (int)$c['id']; ?>)"
+                                        class="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
                                     Abbrechen
                                 </button>
-                                <button type="submit"
-                                    class="px-3 py-1 text-sm bg-blue-600 text-white rounded">
+                                <button type="submit" class="px-4 py-2 text-sm bg-[#2d7ef7] text-white rounded-lg hover:bg-blue-600 transition-colors">
                                     Antworten
                                 </button>
                             </div>
                         </form>
-                    <?php endif; ?>
-                </div>
+                    </div>
+                <?php endif; ?>
 
-                <!-- Antworten -->
+                <!-- Replies (Right side - like sent message) -->
                 <?php if (!empty($c['replies'])): ?>
-                    <div class="bg-gray-50 px-4 py-2 space-y-3">
+                    <div class="space-y-2 ml-11">
                         <?php foreach ($c['replies'] as $reply): ?>
-                            <div class="flex items-start gap-2" id="comment-<?php echo (int)$reply['id']; ?>">
-                                <img src="<?php echo !empty($reply['author_avatar_path']) ? '/' . ltrim($reply['author_avatar_path'], '/') : '/images/default_avatar.png'; ?>"
-                                    class="w-6 h-6 rounded-full object-cover" alt="">
-                                <div class="flex-1">
-                                    <div class="text-sm">
-                                        <span class="font-semibold"><?php echo htmlspecialchars($reply['author_name']); ?></span>
-                                        <?php if ((int)$reply['user_id'] === (int)$recipe['user_id']): ?>
-                                            <span class="ml-1 text-xs bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">Autor</span>
-                                        <?php endif; ?>
-                                        <span class="text-xs text-gray-500 ml-1"><?php echo date('d.m.Y H:i', strtotime($reply['created_at'])); ?></span>
+                            <div class="flex justify-end" id="comment-<?php echo (int)$reply['id']; ?>">
+                                <div class="flex gap-3 max-w-[70%] flex-row-reverse">
+                                    <img src="<?php echo !empty($reply['author_avatar_path']) ? absolute_url_from_path($reply['author_avatar_path']) : '/images/default_avatar.png'; ?>"
+                                         class="w-8 h-8 rounded-full object-cover flex-shrink-0 outline-2 outline-offset-2 outline-[#2d7ef7]" alt="Avatar">
+                                    <div class="bg-[#2d7ef7] text-white rounded-2xl rounded-tr-sm px-4 py-3 shadow-sm">
+                                        <div class="flex items-center gap-2 mb-1 flex-row-reverse">
+                                            <span class="font-semibold text-sm"><?php echo htmlspecialchars($reply['author_name']); ?></span>
+                                            <?php if ((int)$reply['user_id'] === (int)$recipe['user_id']): ?>
+                                                <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full">Autor</span>
+                                            <?php endif; ?>
+                                            <span class="text-xs text-white/70"><?php echo date('d.m.Y H:i', strtotime($reply['created_at'])); ?></span>
+                                        </div>
+                                        <div class="text-sm whitespace-pre-line"><?php echo nl2br(htmlspecialchars($reply['content'])); ?></div>
                                     </div>
-                                    <div class="text-sm whitespace-pre-line"><?php echo nl2br(htmlspecialchars($reply['content'])); ?></div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -521,6 +547,18 @@ function validateReply(form) {
         return false;
     }
     return true;
+}
+
+// Auto-resize textarea like WhatsApp
+function autoResize(textarea) {
+    // Reset height to auto to get the correct scrollHeight
+    textarea.style.height = 'auto';
+    
+    // Calculate the new height
+    const newHeight = Math.min(Math.max(textarea.scrollHeight, 48), 120);
+    
+    // Apply the new height
+    textarea.style.height = newHeight + 'px';
 }
 
 // Like functionality mit Avatar-Update

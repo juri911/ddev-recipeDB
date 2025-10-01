@@ -1,4 +1,6 @@
 <?php
+// Config einbinden
+require_once __DIR__ . '/../../config.php';
 // Flash Messages einbinden
 require_once __DIR__ . '/../../lib/flash.php';
 // Global header for all pages
@@ -39,7 +41,7 @@ $seo = [
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,  initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($seo['title']); ?></title>
 
     <!-- SEO -->
@@ -71,12 +73,9 @@ $seo = [
         <meta name="csrf-token" content="<?php echo htmlspecialchars($csrfToken); ?>">
     <?php endif; ?>
 <?php if ($user): ?>
-<meta name="user-avatar" content="<?php echo htmlspecialchars($user['avatar_path'] ? '/' . ltrim($user['avatar_path'], '/') : '/images/default_avatar.png'); ?>">
+<meta name="user-avatar" content="<?php echo htmlspecialchars(isset($user['avatar_path']) && $user['avatar_path'] ? absolute_url_from_path((string) $user['avatar_path']) : '/images/default_avatar.png'); ?>">
 <meta name="user-name" content="<?php echo htmlspecialchars($user['name']); ?>">
 <?php endif; ?>
-     <style>
-      
-    </style>
 </head>
 
 <body>
@@ -117,15 +116,15 @@ $seo = [
                     </button>
                     <!-- Categories -->
                     <a href="/categories.php" data-nav-link
-                        class="lg:block hidden bg-[#2d7ef7] border-1 border-[#2d7ef7] hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white lg:py-1 lg:px-3 p-4 lg:rounded-r transition duration-600 aspect-square lg:aspect-auto rounded-none"">
-                        <i class=" fa-solid fa-tags lg:text-base text-2xl"></i>
+                        class="lg:block hidden bg-[#2d7ef7] border-1 border-[#2d7ef7] hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white lg:py-1 lg:px-3 p-4 lg:rounded-r transition duration-600 aspect-square lg:aspect-auto rounded-none">
+                        <i class="fa-solid fa-tags lg:text-base text-2xl"></i>
                     </a>
                 </div>
-                <div class="flex items-center gap-x0 lg:gap-x-2 pr-0 lg:pr-3">
+                <div class="flex items-center gap-x-0 lg:gap-x-2 pr-0 lg:pr-3">
                     <?php if (isset($user) && $user): ?>
                         <!-- New Recipe Button -->
                         <a href="/recipe_new.php" data-nav-link
-                            class="bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1 bg-[#2d7ef7] border-[#2d7ef7] hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white p-4 lg:py-1 lg:px-3 aspect-square lg:aspect-auto rounded-none lg:rounded transition duration-600">
+                            class="bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1 border-[#2d7ef7] hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white p-4 lg:py-1 lg:px-3 aspect-square lg:aspect-auto rounded-none lg:rounded transition duration-600">
                             <i class="fa-solid fa-feather lg:text-base text-2xl p-0 lg:pr-2"></i>
                             <p class="lg:inline hidden">Neues Rezept</p>
                         </a>
@@ -137,7 +136,7 @@ $seo = [
                             $unreadCount = count_unread_notifications((int) $user['id']);
                         }
                         ?>
-                        <button popovertarget="notification-bell" class="bg-transparent lg:bg-[#2d7ef7]  relative text-white lg:text-gray-600 bg-[var(--rh-primary)] lg:bg-transparent hover:text-[var(--rh-text)] lg:p-0 p-4 aspect-square lg:aspect-auto hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent transition duration-600">
+                        <button popovertarget="notification-bell" class="bg-transparent relative text-white lg:text-gray-600 hover:text-[var(--rh-text)] lg:p-0 p-4 aspect-square lg:aspect-auto hover:border-[var(--rh-text)] hover:bg-transparent transition duration-600">
                             <i class="fa-solid fa-bell lg:text-[26px] text-2xl"></i>
                             <?php if ($unreadCount > 0): ?>
                                 <span id="notification-badge"
@@ -151,7 +150,7 @@ $seo = [
                             <button id="userMenuButton" class="flex items-center focus:outline-none lg:pr-4 p-4 aspect-square lg:aspect-auto">
                                 <div 
                                     class="h-10 w-10 rounded-full overflow-hidden outline-2 outline-offset-2 lg:outline-[#2d7ef7] hover:outline-[var(--rh-text)] transition duration-600 cursor-pointer">
-                                    <img src="<?php echo htmlspecialchars(isset($user['avatar_path']) && $user['avatar_path'] ? absolute_url_from_path((string) $user['avatar_path']) : SITE_URL . 'images/default_avatar.png'); ?>"
+                                    <img src="<?php echo htmlspecialchars(isset($user['avatar_path']) && $user['avatar_path'] ? absolute_url_from_path((string) $user['avatar_path']) : '/images/default_avatar.png'); ?>"
                                         class="h-10 w-10 rounded-full object-cover" alt="Avatar" />
                                 </div>
                                 <span
@@ -194,10 +193,10 @@ $seo = [
                     <?php endif; ?>
                 </div>
                 <!-- Mobile menu button -->
-                <button id="mobile-nav-btn" class="relative flex  items-end justify-center mr-0 lg:mr-3"
+                <button id="mobile-nav-btn" class="relative flex items-end justify-center mr-0 lg:mr-3"
                     aria-label="Menü öffnen" aria-expanded="false" aria-controls="mobile-nav-panel">
                     <i
-                        class="fa-solid fa-burger text-[36px] lg:text-[var(--rh-primary)] hover:text-[var(--rh-text)]  transition-all duration-300 ease-out aspect-square lg:aspect-auto lg:p-0 p-4"></i>
+                        class="fa-solid fa-burger text-[36px] lg:text-[var(--rh-primary)] hover:text-[var(--rh-text)] transition-all duration-300 ease-out aspect-square lg:aspect-auto lg:p-0 p-4"></i>
 
                 </button>
             </div>
@@ -256,7 +255,7 @@ $seo = [
                     </div>
                     
                     <!-- Action Buttons -->
-                    <div class="grid lg:grid-cols-2 lg:grid-rows-1 grid-cols-1 grid-rows-2 gap-4 pt-4 border-t border-gray-200 gap-4">
+                    <div class="grid lg:grid-cols-2 lg:grid-rows-1 grid-cols-1 grid-rows-2 gap-4 pt-4 border-t border-gray-200">
                         <button id="mark-all-read"
                             class="block w-full px-4 py-3 rounded bg-blue-600 text-white text-center text-sm font-medium hover:bg-blue-700 transition-colors">
                             <i class="fas fa-check-double mr-2"></i>
@@ -504,7 +503,7 @@ $seo = [
                         let icon = 'fa-bell';
                         
                         if (n.type === 'new_recipe' && n.entity_id) {
-                            link = `<a href="/recipe/${n.entity_id}" class="text-blue-600 hover:text-blue-800 hover:underline font-medium">${n.message}</a>`;
+                            link = `<a href="/recipe_view.php?id=${n.entity_id}" class="text-blue-600 hover:text-blue-800 hover:underline font-medium">${n.message}</a>`;
                             icon = 'fa-utensils';
                         } else {
                             link = `<span class="${n.is_read ? 'text-gray-700' : 'text-gray-900 font-medium'}">${n.message}</span>`;
