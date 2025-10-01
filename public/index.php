@@ -33,7 +33,7 @@ function displayNotification($message, $isLogin = true, $timeout = 5000)
     echo '<div id="' . $notificationId . '" class="fixed inset-x-0 top-4 z-50 flex items-start justify-center ' . $zIndex . '">
         <div class="lg:max-w-xl w-[80%] shadow-lg rounded px-4 py-3 relative bg-green-400 border-l-4 border-green-700 text-white transition-opacity duration-300">
             <div class="p-2 my-auto">
-                <div class="flex items-center justify-center">
+                <div class="flex items-start">
                     <div class="ml-3 w-0 flex-1 pt-0.5">
                         <p class="text-[20px] leading-5 font-medium">' . htmlspecialchars($message) . '</p>
                     </div>
