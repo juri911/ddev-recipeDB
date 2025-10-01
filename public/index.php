@@ -4,6 +4,7 @@ require_once __DIR__ . '/../lib/recipes.php';
 require_once __DIR__ . '/../lib/users.php';
 require_once __DIR__ . '/../lib/csrf.php';
 require_once __DIR__ . '/../lib/notifications.php';
+require_once __DIR__ . '/../lib/flash.php';
 require_once __DIR__ . '/../config.php';
 
 $user = current_user();
@@ -88,12 +89,17 @@ function displayNotification($message, $isLogin = true, $timeout = 5000)
     </script>';
 }
 
-if (isset($_GET['message'])) {
-    displayNotification($_GET['message'], true, 5000);
+// Flash Messages für Login/Logout (ohne URL-Parameter)
+if (has_flash_messages()) {
+    $messages = get_flash_messages();
+    foreach ($messages as $flash) {
+        displayNotification($flash['message'], true, 5000);
+    }
 }
 
+// Alte URL-basierte Benachrichtigungen (für andere Features)
 if (isset($_GET['message'])) {
-    displayNotification($_GET['message'], false, 5000);
+    displayNotification($_GET['message'], true, 5000);
 }
 ?>
 
