@@ -502,761 +502,891 @@ include __DIR__ . '/includes/header.php';
 </main>
 
 <script>
-    function toggleReplyForm(commentId) {
-        const form = document.getElementById(`reply-form-${commentId}`);
-        if (form) {
-            form.classList.toggle('hidden');
-            if (!form.classList.contains('hidden')) {
-                form.querySelector('textarea').focus();
-            }
+   // === KOMPLETTER SCRIPT-BEREICH FÜR RECIPE_VIEW.PHP ===
+
+function toggleReplyForm(commentId) {
+    const form = document.getElementById(`reply-form-${commentId}`);
+    if (form) {
+        form.classList.toggle('hidden');
+        if (!form.classList.contains('hidden')) {
+            form.querySelector('textarea').focus();
         }
     }
+}
 
-    function validateReply(form) {
-        const content = form.querySelector('textarea').value.trim();
-        if (content === '') {
-            alert('Bitte geben Sie eine Antwort ein.');
-            return false;
-        }
-        return true;
+function validateReply(form) {
+    const content = form.querySelector('textarea').value.trim();
+    if (content === '') {
+        alert('Bitte geben Sie eine Antwort ein.');
+        return false;
     }
+    return true;
+}
 
-    // Like functionality mit Avatar-Update
-    const likeRecipe = async (recipeId) => {
-        const likeBtn = document.querySelector(`#like-btn-${recipeId}`);
-        const likeIcon = likeBtn.querySelector('#like-heart');
+// Like functionality mit Avatar-Update
+const likeRecipe = async (recipeId) => {
+    const likeBtn = document.querySelector(`#like-btn-${recipeId}`);
+    const likeIcon = likeBtn.querySelector('#like-heart');
 
-        // Animation beim Klick
-        likeIcon.classList.add('heart-animation');
+    // Animation beim Klick
+    likeIcon.classList.add('heart-animation');
 
-        const res = await fetch('/like.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: 'recipe_id=' + encodeURIComponent(recipeId) + '&csrf_token=' + encodeURIComponent(document.querySelector('meta[name="csrf-token"]').content)
-        });
-        const data = await res.json();
-        if (data.ok) {
-            const likeCount = document.querySelector(`#like-count-${recipeId}`);
-            likeCount.textContent = data.likes;
+    const res = await fetch('/like.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: 'recipe_id=' + encodeURIComponent(recipeId) + '&csrf_token=' + encodeURIComponent(document.querySelector('meta[name="csrf-token"]').content)
+    });
+    const data = await res.json();
+    if (data.ok) {
+        const likeCount = document.querySelector(`#like-count-${recipeId}`);
+        likeCount.textContent = data.likes;
 
-            // Icon und Farbe ändern
-            if (data.liked) {
-                likeBtn.classList.remove('text-white');
-                likeBtn.classList.add('text-red-500');
-                likeIcon.classList.remove('far');
-                likeIcon.classList.add('fas');
+        // Icon und Farbe ändern
+        if (data.liked) {
+            likeBtn.classList.remove('text-white');
+            likeBtn.classList.add('text-red-500');
+            likeIcon.classList.remove('far');
+            likeIcon.classList.add('fas');
 
-                // Avatar hinzufügen
-                addCurrentUserAvatar(recipeId);
-            } else {
-                likeBtn.classList.remove('text-red-500');
-                likeBtn.classList.add('text-white');
-                likeIcon.classList.remove('fas');
-                likeIcon.classList.add('far');
+            // Avatar hinzufügen
+            addCurrentUserAvatar(recipeId);
+        } else {
+            likeBtn.classList.remove('text-red-500');
+            likeBtn.classList.add('text-white');
+            likeIcon.classList.remove('fas');
+            likeIcon.classList.add('far');
 
-                // Avatar entfernen
-                removeCurrentUserAvatar(recipeId);
-            }
-
-            // Animation entfernen
-            setTimeout(() => {
-                likeIcon.classList.remove('heart-animation');
-            }, 300);
-        } else if (data.redirect) {
-            window.location.href = data.redirect;
+            // Avatar entfernen
+            removeCurrentUserAvatar(recipeId);
         }
-    };
 
-    function addCurrentUserAvatar(recipeId) {
-        const avatarsContainer = document.getElementById(`liked-avatars-${recipeId}`);
-        if (!avatarsContainer) return;
-
-        // Aktuellen User Avatar und Name aus Meta-Tags holen (musst du im HTML hinzufügen)
-        const userAvatar = document.querySelector('meta[name="user-avatar"]')?.content || '/images/default_avatar.png';
-        const userName = document.querySelector('meta[name="user-name"]')?.content || 'Du';
-
-        // Neuen Avatar erstellen
-        const avatarDiv = document.createElement('div');
-        avatarDiv.className = 'relative group avatar-item';
-        avatarDiv.style.opacity = '0';
-        avatarDiv.style.transform = 'scale(0)';
-        avatarDiv.innerHTML = `
-            <img src="${userAvatar}" 
-                 alt="${userName}"
-                 class="w-10 h-10 outline-2 outline-offset-2 outline-[#2d7ef7] bg-white rounded-full object-cover transition-transform duration-200 group-hover:scale-150 group-hover:z-10 cursor-pointer shadow-sm"
-                 title="${userName}">
-            <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-none z-20">
-                ${userName}
-                <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
-            </div>
-        `;
-
-        // Am Anfang einfügen
-        avatarsContainer.insertBefore(avatarDiv, avatarsContainer.firstChild);
-
-        // Animation
+        // Animation entfernen
         setTimeout(() => {
-            avatarDiv.style.transition = 'all 0.3s ease';
-            avatarDiv.style.opacity = '1';
-            avatarDiv.style.transform = 'scale(1)';
-        }, 10);
+            likeIcon.classList.remove('heart-animation');
+        }, 300);
+    } else if (data.redirect) {
+        window.location.href = data.redirect;
+    }
+};
 
-        // Wenn mehr als 5 Avatare, letzten entfernen oder +X aktualisieren
-        const avatars = avatarsContainer.querySelectorAll('.avatar-item');
-        if (avatars.length > 5) {
-            const lastAvatar = avatars[avatars.length - 1];
-            lastAvatar.remove();
+function addCurrentUserAvatar(recipeId) {
+    const avatarsContainer = document.getElementById(`liked-avatars-${recipeId}`);
+    if (!avatarsContainer) return;
+
+    // Aktuellen User Avatar und Name aus Meta-Tags holen
+    const userAvatar = document.querySelector('meta[name="user-avatar"]')?.content || '/images/default_avatar.png';
+    const userName = document.querySelector('meta[name="user-name"]')?.content || 'Du';
+
+    // Neuen Avatar erstellen
+    const avatarDiv = document.createElement('div');
+    avatarDiv.className = 'relative group avatar-item';
+    avatarDiv.style.opacity = '0';
+    avatarDiv.style.transform = 'scale(0)';
+    avatarDiv.innerHTML = `
+        <img src="${userAvatar}" 
+             alt="${userName}"
+             class="w-10 h-10 outline-2 outline-offset-2 outline-[#2d7ef7] bg-white rounded-full object-cover transition-transform duration-200 group-hover:scale-150 group-hover:z-10 cursor-pointer shadow-sm"
+             title="${userName}">
+        <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-none z-20">
+            ${userName}
+            <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+        </div>
+    `;
+
+    // Am Anfang einfügen
+    avatarsContainer.insertBefore(avatarDiv, avatarsContainer.firstChild);
+
+    // Animation
+    setTimeout(() => {
+        avatarDiv.style.transition = 'all 0.3s ease';
+        avatarDiv.style.opacity = '1';
+        avatarDiv.style.transform = 'scale(1)';
+    }, 10);
+
+    // Wenn mehr als 5 Avatare, letzten entfernen
+    const avatars = avatarsContainer.querySelectorAll('.avatar-item');
+    if (avatars.length > 5) {
+        const lastAvatar = avatars[avatars.length - 1];
+        lastAvatar.remove();
+    }
+}
+
+function removeCurrentUserAvatar(recipeId) {
+    const avatarsContainer = document.getElementById(`liked-avatars-${recipeId}`);
+    if (!avatarsContainer) return;
+
+    // Ersten Avatar entfernen (der aktuelle User)
+    const firstAvatar = avatarsContainer.querySelector('.avatar-item');
+    if (firstAvatar) {
+        firstAvatar.style.transition = 'all 0.3s ease';
+        firstAvatar.style.opacity = '0';
+        firstAvatar.style.transform = 'scale(0)';
+        setTimeout(() => firstAvatar.remove(), 300);
+    }
+}
+
+// Instagram-ähnlicher, touch-fähiger Slider
+document.addEventListener('DOMContentLoaded', () => {
+    const sliders = document.querySelectorAll('[data-slider]');
+    sliders.forEach(initSlider);
+
+    // Initialize image zoom after slider
+    initImageZoom();
+});
+
+function initSlider(root) {
+    const track = root.querySelector('[data-track]');
+    const slides = Array.from(track ? track.children : []);
+    const prevBtn = root.querySelector('[data-prev]');
+    const nextBtn = root.querySelector('[data-next]');
+    const dotsContainer = root.querySelector('[data-dots]');
+    const slideCount = slides.length;
+    if (!track || slideCount === 0) return;
+
+    let currentIndex = 0;
+    let startX = 0;
+    let currentX = 0;
+    let isTouching = false;
+    let moved = false;
+
+    function getWidth() {
+        const box = root.querySelector('.aspect-square');
+        return box ? box.clientWidth : root.clientWidth || 1;
+    }
+
+    function goTo(index) {
+        currentIndex = Math.max(0, Math.min(index, slideCount - 1));
+        track.style.transform = `translateX(-${currentIndex * 100}%)`;
+        updateDots();
+    }
+
+    function updateDots() {
+        if (!dotsContainer) return;
+        dotsContainer.innerHTML = '';
+        for (let i = 0; i < slideCount; i++) {
+            const dot = document.createElement('button');
+            dot.type = 'button';
+            dot.className = `h-3 w-3 rounded-full ${i === currentIndex ? 'bg-[#2d7ef7]' : 'bg-[#2d7ef7]/50'}`;
+            dot.addEventListener('click', () => goTo(i));
+            dotsContainer.appendChild(dot);
         }
     }
 
-    function removeCurrentUserAvatar(recipeId) {
-        const avatarsContainer = document.getElementById(`liked-avatars-${recipeId}`);
-        if (!avatarsContainer) return;
+    // Pfeile
+    if (prevBtn) prevBtn.addEventListener('click', () => goTo(currentIndex - 1));
+    if (nextBtn) nextBtn.addEventListener('click', () => goTo(currentIndex + 1));
 
-        // Ersten Avatar entfernen (der aktuelle User)
-        const firstAvatar = avatarsContainer.querySelector('.avatar-item');
-        if (firstAvatar) {
-            firstAvatar.style.transition = 'all 0.3s ease';
-            firstAvatar.style.opacity = '0';
-            firstAvatar.style.transform = 'scale(0)';
-            setTimeout(() => firstAvatar.remove(), 300);
+    // Touch-Gesten
+    track.addEventListener('touchstart', (e) => {
+        if (!e.touches || e.touches.length !== 1) return;
+        startX = e.touches[0].clientX;
+        currentX = startX;
+        isTouching = true;
+        moved = false;
+        track.style.transition = 'none';
+    }, { passive: true });
+
+    track.addEventListener('touchmove', (e) => {
+        if (!isTouching) return;
+        const dx = e.touches[0].clientX - startX;
+        currentX = e.touches[0].clientX;
+        const percent = (dx / getWidth()) * 100;
+        track.style.transform = `translateX(calc(-${currentIndex * 100}% + ${percent}%))`;
+        if (Math.abs(dx) > 5) moved = true;
+    }, { passive: true });
+
+    track.addEventListener('touchend', () => {
+        if (!isTouching) return;
+        isTouching = false;
+        track.style.transition = '';
+        const dx = currentX - startX;
+        const threshold = getWidth() * 0.15;
+        if (Math.abs(dx) > threshold) {
+            if (dx < 0 && currentIndex < slideCount - 1) currentIndex++;
+            else if (dx > 0 && currentIndex > 0) currentIndex--;
         }
-    }
-
-    // Instagram-ähnlicher, touch-fähiger Slider
-    document.addEventListener('DOMContentLoaded', () => {
-        const sliders = document.querySelectorAll('[data-slider]');
-        sliders.forEach(initSlider);
-
-        // Initialize image zoom after slider
-        initImageZoom();
+        goTo(currentIndex);
     });
 
-    function initSlider(root) {
-        const track = root.querySelector('[data-track]');
-        const slides = Array.from(track ? track.children : []);
-        const prevBtn = root.querySelector('[data-prev]');
-        const nextBtn = root.querySelector('[data-next]');
-        const dotsContainer = root.querySelector('[data-dots]');
-        const slideCount = slides.length;
-        if (!track || slideCount === 0) return;
-
-        let currentIndex = 0;
-        let startX = 0;
-        let currentX = 0;
-        let isTouching = false;
-        let moved = false;
-
-        function getWidth() {
-            const box = root.querySelector('.aspect-square');
-            return box ? box.clientWidth : root.clientWidth || 1;
-        }
-
-        function goTo(index) {
-            currentIndex = Math.max(0, Math.min(index, slideCount - 1));
-            track.style.transform = `translateX(-${currentIndex * 100}%)`;
-            updateDots();
-        }
-
-        function updateDots() {
-            if (!dotsContainer) return;
-            dotsContainer.innerHTML = '';
-            for (let i = 0; i < slideCount; i++) {
-                const dot = document.createElement('button');
-                dot.type = 'button';
-                dot.className = `h-3 w-3 rounded-full ${i === currentIndex ? 'bg-[#2d7ef7]' : 'bg-[#2d7ef7]/50'}`;
-                dot.addEventListener('click', () => goTo(i));
-                dotsContainer.appendChild(dot);
-            }
-        }
-
-        // Pfeile
-        if (prevBtn) prevBtn.addEventListener('click', () => goTo(currentIndex - 1));
-        if (nextBtn) nextBtn.addEventListener('click', () => goTo(currentIndex + 1));
-
-        // Touch-Gesten
-        track.addEventListener('touchstart', (e) => {
-            if (!e.touches || e.touches.length !== 1) return;
-            startX = e.touches[0].clientX;
-            currentX = startX;
-            isTouching = true;
-            moved = false;
-            track.style.transition = 'none';
-        }, {
-            passive: true
-        });
-
-        track.addEventListener('touchmove', (e) => {
-            if (!isTouching) return;
-            const dx = e.touches[0].clientX - startX;
-            currentX = e.touches[0].clientX;
-            const percent = (dx / getWidth()) * 100;
-            track.style.transform = `translateX(calc(-${currentIndex * 100}% + ${percent}%))`;
-            if (Math.abs(dx) > 5) moved = true;
-        }, {
-            passive: true
-        });
-
-        track.addEventListener('touchend', () => {
-            if (!isTouching) return;
-            isTouching = false;
-            track.style.transition = '';
-            const dx = currentX - startX;
-            const threshold = getWidth() * 0.15;
-            if (Math.abs(dx) > threshold) {
-                if (dx < 0 && currentIndex < slideCount - 1) currentIndex++;
-                else if (dx > 0 && currentIndex > 0) currentIndex--;
-            }
-            goTo(currentIndex);
-        });
-
-        // Klicks auf Elemente beim Swipen unterbinden
-        slides.forEach((slideEl) => {
-            slideEl.addEventListener('click', (e) => {
-                if (moved) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            });
-        });
-
-        // Initial
-        goTo(0);
-    }
-
-    // Enhanced Image Zoom Functionality
-    function initImageZoom() {
-        // Create zoom modal HTML structure
-        const zoomModal = document.createElement('div');
-        zoomModal.id = 'zoom-modal';
-        zoomModal.className = 'fixed inset-0 bg-black/90 z-50 hidden items-center justify-center';
-        zoomModal.innerHTML = `
-                <button id="zoom-close" class="absolute top-4 right-4 text-white text-2xl hover:text-gray-300 z-10 p-2">
-                    <i class="fas fa-times"></i>
-                </button>
-                <div class="absolute top-4 left-4 text-white text-sm z-10">
-                    <span id="zoom-counter">1 / 1</span>
-                </div>
-                <div class="relative w-full h-full overflow-hidden">
-                    <div id="zoom-track" class="flex h-full transition-transform duration-300 ease-out">
-                        <!-- Zoom images will be inserted here -->
-                    </div>
-                    <!-- Navigation arrows for zoom modal -->
-                    <button id="zoom-prev" class="absolute left-4 top-1/2 -translate-y-1/2 text-white text-3xl hover:text-gray-300 bg-black/20 rounded-full w-12 h-12 flex items-center justify-center transition-all">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <button id="zoom-next" class="absolute right-4 top-1/2 -translate-y-1/2 text-white text-3xl hover:text-gray-300 bg-black/20 rounded-full w-12 h-12 flex items-center justify-center transition-all">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
-                <div class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-xs opacity-75">
-                    Pinch to zoom • Drag to pan • Click outside to close
-                </div>
-            `;
-        document.body.appendChild(zoomModal);
-
-        let currentZoomIndex = 0;
-        let images = [];
-        let zoomLevel = 1;
-        let panX = 0;
-        let panY = 0;
-        let isDragging = false;
-        let startX = 0;
-        let startY = 0;
-        let startPanX = 0;
-        let startPanY = 0;
-
-        // Initialize zoom functionality
-        function setupZoom() {
-            const slider = document.querySelector('[data-slider]');
-            if (!slider) return;
-
-            const slides = slider.querySelectorAll('[data-slide-index]');
-            images = Array.from(slides).map(slide => {
-                const img = slide.querySelector('img');
-                return img ? img.src : null;
-            }).filter(Boolean);
-
-            if (images.length === 0) return;
-
-            // Add zoom button to each slide
-            slides.forEach((slide, index) => {
-                const zoomBtn = document.createElement('button');
-                zoomBtn.className = 'absolute top-2 right-2 zoom-btn-overlay text-white rounded-full w-10 h-10 p-2 transition-all opacity-80 hover:opacity-100';
-                zoomBtn.innerHTML = '<i class="fas fa-search-plus text-sm"></i>';
-                zoomBtn.setAttribute('aria-label', 'Bild vergrößern');
-                zoomBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    openZoom(index);
-                });
-                slide.style.position = 'relative';
-                slide.appendChild(zoomBtn);
-            });
-
-            // Setup zoom modal content
-            setupZoomModal();
-        }
-
-        function setupZoomModal() {
-            const zoomTrack = document.getElementById('zoom-track');
-            const zoomClose = document.getElementById('zoom-close');
-            const zoomPrev = document.getElementById('zoom-prev');
-            const zoomNext = document.getElementById('zoom-next');
-            const modal = document.getElementById('zoom-modal');
-
-            // Create zoom images
-            zoomTrack.innerHTML = '';
-            images.forEach((src, index) => {
-                const slideDiv = document.createElement('div');
-                slideDiv.className = 'min-w-full h-full flex items-center justify-center relative overflow-hidden';
-
-                const img = document.createElement('img');
-                img.src = src;
-                img.className = 'max-w-full max-h-full object-contain cursor-move transition-transform duration-200 ease-out select-none';
-                img.style.transform = 'scale(1) translate(0px, 0px)';
-                img.draggable = false;
-
-                slideDiv.appendChild(img);
-                zoomTrack.appendChild(slideDiv);
-            });
-
-            // Event listeners
-            zoomClose.addEventListener('click', closeZoom);
-            zoomPrev.addEventListener('click', () => navigateZoom(-1));
-            zoomNext.addEventListener('click', () => navigateZoom(1));
-
-            // Close on backdrop click
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    closeZoom();
-                }
-            });
-
-            // Keyboard navigation
-            document.addEventListener('keydown', handleKeydown);
-
-            // Touch and mouse events for zoom and pan
-            setupZoomControls();
-        }
-
-        function setupZoomControls() {
-            const zoomTrack = document.getElementById('zoom-track');
-
-            // Mouse wheel zoom
-            zoomTrack.addEventListener('wheel', (e) => {
+    // Klicks auf Elemente beim Swipen unterbinden
+    slides.forEach((slideEl) => {
+        slideEl.addEventListener('click', (e) => {
+            if (moved) {
                 e.preventDefault();
-                const delta = e.deltaY > 0 ? -0.2 : 0.2;
-                adjustZoom(delta, e.clientX, e.clientY);
-            }, {
-                passive: false
-            });
-
-            // Touch zoom (pinch)
-            let initialDistance = 0;
-            let initialZoom = 1;
-
-            zoomTrack.addEventListener('touchstart', (e) => {
-                if (e.touches.length === 2) {
-                    // Pinch zoom start
-                    initialDistance = getDistance(e.touches[0], e.touches[1]);
-                    initialZoom = zoomLevel;
-                    e.preventDefault();
-                } else if (e.touches.length === 1 && zoomLevel > 1) {
-                    // Pan start
-                    startDrag(e.touches[0].clientX, e.touches[0].clientY);
-                }
-            }, {
-                passive: false
-            });
-
-            zoomTrack.addEventListener('touchmove', (e) => {
-                if (e.touches.length === 2) {
-                    // Pinch zoom
-                    const currentDistance = getDistance(e.touches[0], e.touches[1]);
-                    const scale = currentDistance / initialDistance;
-                    const newZoom = Math.max(1, Math.min(5, initialZoom * scale));
-                    setZoom(newZoom);
-                    e.preventDefault();
-                } else if (e.touches.length === 1 && zoomLevel > 1 && isDragging) {
-                    // Pan
-                    drag(e.touches[0].clientX, e.touches[0].clientY);
-                    e.preventDefault();
-                }
-            }, {
-                passive: false
-            });
-
-            zoomTrack.addEventListener('touchend', (e) => {
-                if (e.touches.length === 0) {
-                    endDrag();
-                }
-            });
-
-            // Mouse events for pan
-            zoomTrack.addEventListener('mousedown', (e) => {
-                if (zoomLevel > 1) {
-                    startDrag(e.clientX, e.clientY);
-                    e.preventDefault();
-                }
-            });
-
-            document.addEventListener('mousemove', (e) => {
-                if (isDragging) {
-                    drag(e.clientX, e.clientY);
-                }
-            });
-
-            document.addEventListener('mouseup', endDrag);
-        }
-
-        function getDistance(touch1, touch2) {
-            const dx = touch1.clientX - touch2.clientX;
-            const dy = touch1.clientY - touch2.clientY;
-            return Math.sqrt(dx * dx + dy * dy);
-        }
-
-        function adjustZoom(delta, centerX, centerY) {
-            const newZoom = Math.max(1, Math.min(5, zoomLevel + delta));
-            setZoom(newZoom, centerX, centerY);
-        }
-
-        function setZoom(newZoom, centerX = null, centerY = null) {
-            const oldZoom = zoomLevel;
-            zoomLevel = newZoom;
-
-            if (centerX !== null && centerY !== null && oldZoom !== newZoom) {
-                // Adjust pan to zoom towards cursor/touch point
-                const modal = document.getElementById('zoom-modal');
-                const rect = modal.getBoundingClientRect();
-                const centerXRel = (centerX - rect.left) / rect.width - 0.5;
-                const centerYRel = (centerY - rect.top) / rect.height - 0.5;
-
-                const zoomRatio = newZoom / oldZoom;
-                panX = panX * zoomRatio + centerXRel * (oldZoom - newZoom) * 200;
-                panY = panY * zoomRatio + centerYRel * (oldZoom - newZoom) * 200;
+                e.stopPropagation();
             }
+        });
+    });
 
-            // Reset pan if zoomed out completely
-            if (zoomLevel === 1) {
-                panX = 0;
-                panY = 0;
-            }
+    // Initial
+    goTo(0);
+}
 
-            updateTransform();
-            updateCursor();
-        }
+// === ENHANCED IMAGE ZOOM FUNCTIONALITY ===
+function initImageZoom() {
+    // Create zoom modal HTML structure
+    const zoomModal = document.createElement('div');
+    zoomModal.id = 'zoom-modal';
+    zoomModal.className = 'fixed inset-0 bg-black/90 z-50 hidden items-center justify-center';
+    zoomModal.innerHTML = `
+        <button id="zoom-close" class="absolute top-4 right-4 text-white text-2xl hover:text-gray-300 z-10 p-2">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="absolute top-4 left-4 text-white text-sm z-10">
+            <span id="zoom-counter">1 / 1</span>
+        </div>
+        <div class="relative w-full h-full overflow-hidden">
+            <div id="zoom-track" class="flex h-full transition-transform duration-300 ease-out">
+                <!-- Zoom images will be inserted here -->
+            </div>
+            <!-- Navigation arrows for zoom modal -->
+            <button id="zoom-prev" class="absolute left-4 top-1/2 -translate-y-1/2 text-white text-3xl hover:text-gray-300 bg-black/20 rounded-full w-12 h-12 flex items-center justify-center transition-all">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button id="zoom-next" class="absolute right-4 top-1/2 -translate-y-1/2 text-white text-3xl hover:text-gray-300 bg-black/20 rounded-full w-12 h-12 flex items-center justify-center transition-all">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-xs opacity-75">
+            Pinch to zoom • Drag to pan • Click outside to close
+        </div>
+    `;
+    document.body.appendChild(zoomModal);
 
-        function updateCursor() {
-            const currentImg = getCurrentZoomImage();
-            if (currentImg) {
-                currentImg.style.cursor = zoomLevel > 1 ? 'move' : 'zoom-in';
-            }
-        }
+    let currentZoomIndex = 0;
+    let images = [];
+    let zoomLevel = 1;
+    let panX = 0;
+    let panY = 0;
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    let startPanX = 0;
+    let startPanY = 0;
 
-        function startDrag(x, y) {
-            isDragging = true;
-            startX = x;
-            startY = y;
-            startPanX = panX;
-            startPanY = panY;
-            document.body.style.cursor = 'grabbing';
-        }
+    // Initialize zoom functionality
+    function setupZoom() {
+        const slider = document.querySelector('[data-slider]');
+        if (!slider) return;
 
-        function drag(x, y) {
-            if (!isDragging) return;
+        const slides = slider.querySelectorAll('[data-slide-index]');
+        images = Array.from(slides).map(slide => {
+            const img = slide.querySelector('img');
+            return img ? img.src : null;
+        }).filter(Boolean);
 
-            const dx = (x - startX) * (200 / window.innerWidth);
-            const dy = (y - startY) * (200 / window.innerHeight);
+        if (images.length === 0) return;
 
-            panX = startPanX + dx;
-            panY = startPanY + dy;
-
-            // Constrain pan within reasonable bounds
-            const maxPan = (zoomLevel - 1) * 100;
-            panX = Math.max(-maxPan, Math.min(maxPan, panX));
-            panY = Math.max(-maxPan, Math.min(maxPan, panY));
-
-            updateTransform();
-        }
-
-        function endDrag() {
-            isDragging = false;
-            document.body.style.cursor = '';
-            updateCursor();
-        }
-
-        function updateTransform() {
-            const currentImg = getCurrentZoomImage();
-            if (currentImg) {
-                currentImg.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
-            }
-        }
-
-        function getCurrentZoomImage() {
-            const zoomTrack = document.getElementById('zoom-track');
-            const slides = zoomTrack.children;
-            return slides[currentZoomIndex]?.querySelector('img');
-        }
-
-        function openZoom(index) {
-            currentZoomIndex = index;
-            zoomLevel = 1;
-            panX = 0;
-            panY = 0;
-
-            const modal = document.getElementById('zoom-modal');
-            const zoomTrack = document.getElementById('zoom-track');
-            const counter = document.getElementById('zoom-counter');
-            const prevBtn = document.getElementById('zoom-prev');
-            const nextBtn = document.getElementById('zoom-next');
-
-            // Update counter
-            counter.textContent = `${index + 1} / ${images.length}`;
-
-            // Show/hide navigation buttons
-            prevBtn.style.display = images.length > 1 ? 'flex' : 'none';
-            nextBtn.style.display = images.length > 1 ? 'flex' : 'none';
-
-            // Position track
-            zoomTrack.style.transform = `translateX(-${index * 100}%)`;
-
-            // Reset all image transforms
-            Array.from(zoomTrack.children).forEach(slide => {
-                const img = slide.querySelector('img');
-                if (img) {
-                    img.style.transform = 'scale(1) translate(0px, 0px)';
-                    img.style.cursor = 'zoom-in';
-                }
+        // Add zoom button to each slide
+        slides.forEach((slide, index) => {
+            const zoomBtn = document.createElement('button');
+            zoomBtn.className = 'absolute top-2 right-2 zoom-btn-overlay text-white rounded-full w-10 h-10 p-2 transition-all opacity-80 hover:opacity-100';
+            zoomBtn.innerHTML = '<i class="fas fa-search-plus text-sm"></i>';
+            zoomBtn.setAttribute('aria-label', 'Bild vergrößern');
+            zoomBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                openZoom(index);
             });
+            slide.style.position = 'relative';
+            slide.appendChild(zoomBtn);
+        });
 
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            document.body.style.overflow = 'hidden';
+        // Setup zoom modal content
+        setupZoomModal();
+    }
 
-            // Double-click to zoom
-            setTimeout(() => {
-                const currentImg = getCurrentZoomImage();
-                if (currentImg) {
-                    currentImg.addEventListener('dblclick', () => {
-                        if (zoomLevel === 1) {
-                            setZoom(2.5);
-                        } else {
-                            setZoom(1);
-                        }
-                    });
-                }
-            }, 100);
-        }
+    function setupZoomModal() {
+        const zoomTrack = document.getElementById('zoom-track');
+        const zoomClose = document.getElementById('zoom-close');
+        const zoomPrev = document.getElementById('zoom-prev');
+        const zoomNext = document.getElementById('zoom-next');
+        const modal = document.getElementById('zoom-modal');
 
-        function closeZoom() {
-            const modal = document.getElementById('zoom-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            document.body.style.overflow = '';
+        // Create zoom images
+        zoomTrack.innerHTML = '';
+        images.forEach((src, index) => {
+            const slideDiv = document.createElement('div');
+            slideDiv.className = 'min-w-full h-full flex items-center justify-center relative overflow-hidden';
 
-            // Reset zoom state
-            zoomLevel = 1;
-            panX = 0;
-            panY = 0;
-        }
+            const img = document.createElement('img');
+            img.src = src;
+            img.className = 'max-w-full max-h-full object-contain cursor-move transition-transform duration-200 ease-out select-none';
+            img.style.transform = 'scale(1) translate(0px, 0px)';
+            img.draggable = false;
 
-        function navigateZoom(direction) {
-            const newIndex = currentZoomIndex + direction;
-            if (newIndex >= 0 && newIndex < images.length) {
-                openZoom(newIndex);
+            slideDiv.appendChild(img);
+            zoomTrack.appendChild(slideDiv);
+        });
+
+        // Event listeners
+        zoomClose.addEventListener('click', closeZoom);
+        zoomPrev.addEventListener('click', () => navigateZoom(-1));
+        zoomNext.addEventListener('click', () => navigateZoom(1));
+
+        // Close on backdrop click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeZoom();
             }
-        }
+        });
 
-        function handleKeydown(e) {
-            const modal = document.getElementById('zoom-modal');
-            if (modal.classList.contains('hidden')) return;
+        // Keyboard navigation
+        document.addEventListener('keydown', handleKeydown);
 
-            switch (e.key) {
-                case 'Escape':
-                    closeZoom();
-                    break;
-                case 'ArrowLeft':
-                    navigateZoom(-1);
-                    break;
-                case 'ArrowRight':
-                    navigateZoom(1);
-                    break;
-                case '+':
-                case '=':
-                    adjustZoom(0.3);
-                    break;
-                case '-':
-                    adjustZoom(-0.3);
-                    break;
-                case '0':
-                    setZoom(1);
-                    break;
-            }
+        // Touch and mouse events for zoom and pan
+        setupZoomControls();
+    }
+
+    function setupZoomControls() {
+        const zoomTrack = document.getElementById('zoom-track');
+        
+        // Mouse wheel zoom
+        zoomTrack.addEventListener('wheel', (e) => {
             e.preventDefault();
-        }
+            const delta = e.deltaY > 0 ? -0.2 : 0.2;
+            adjustZoom(delta, e.clientX, e.clientY);
+        }, { passive: false });
 
-        // Initialize zoom functionality
-        setupZoom();
+        // Touch-Variablen
+        let initialDistance = 0;
+        let initialZoom = 1;
+        let lastTapTime = 0;
+        let touchStartTime = 0;
+        let lastTouchCenter = { x: 0, y: 0 };
+        let swipeStartX = 0;
+        let swipeStartY = 0;
+        let hasMoved = false;
+        let isHorizontalSwipe = false;
+        
+        // Touch Start Handler
+        zoomTrack.addEventListener('touchstart', (e) => {
+            touchStartTime = Date.now();
+            hasMoved = false;
+            isHorizontalSwipe = false;
+            
+            if (e.touches.length === 2) {
+                // === PINCH-TO-ZOOM START ===
+                e.preventDefault();
+                initialDistance = getDistance(e.touches[0], e.touches[1]);
+                initialZoom = zoomLevel;
+                
+                // Berechne Mittelpunkt zwischen beiden Fingern
+                lastTouchCenter = getTouchCenter(e.touches[0], e.touches[1]);
+                
+            } else if (e.touches.length === 1) {
+                const currentTime = Date.now();
+                const tapTimeDiff = currentTime - lastTapTime;
+                const touch = e.touches[0];
+                
+                swipeStartX = touch.clientX;
+                swipeStartY = touch.clientY;
+                
+                // === DOUBLE-TAP TO ZOOM ===
+                if (tapTimeDiff < 300 && tapTimeDiff > 0) {
+                    e.preventDefault();
+                    
+                    const centerX = touch.clientX;
+                    const centerY = touch.clientY;
+                    
+                    // Toggle zwischen Zoom 1x und 2.5x
+                    if (zoomLevel === 1) {
+                        setZoom(2.5, centerX, centerY);
+                    } else {
+                        setZoom(1);
+                    }
+                    
+                    lastTapTime = 0;
+                } else {
+                    lastTapTime = currentTime;
+                    
+                    // === PAN/SWIPE START ===
+                    if (zoomLevel > 1) {
+                        e.preventDefault();
+                        startDrag(touch.clientX, touch.clientY);
+                    }
+                }
+            }
+        }, { passive: false });
+
+        // Touch Move Handler
+        zoomTrack.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2) {
+                // === PINCH-TO-ZOOM ===
+                e.preventDefault();
+                
+                const currentDistance = getDistance(e.touches[0], e.touches[1]);
+                const currentCenter = getTouchCenter(e.touches[0], e.touches[1]);
+                
+                // Berechne Zoom-Faktor
+                const scale = currentDistance / initialDistance;
+                let newZoom = Math.max(1, Math.min(5, initialZoom * scale));
+                
+                // Sanfte Zoom-Übergänge
+                newZoom = Math.round(newZoom * 10) / 10;
+                
+                // Zoom mit Fokus auf Touch-Mittelpunkt
+                setZoom(newZoom, currentCenter.x, currentCenter.y);
+                
+                // Update Center
+                lastTouchCenter = currentCenter;
+                
+            } else if (e.touches.length === 1) {
+                const touch = e.touches[0];
+                const deltaX = touch.clientX - swipeStartX;
+                const deltaY = touch.clientY - swipeStartY;
+                
+                if (!hasMoved && (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10)) {
+                    hasMoved = true;
+                    // Bestimme ob horizontaler oder vertikaler Swipe
+                    isHorizontalSwipe = Math.abs(deltaX) > Math.abs(deltaY);
+                }
+                
+                if (zoomLevel === 1 && hasMoved && isHorizontalSwipe) {
+                    // === BILD-NAVIGATION (nur wenn nicht gezoomt) ===
+                    e.preventDefault();
+                    // Visuelles Feedback für Swipe
+                    const slideWidth = zoomTrack.parentElement.offsetWidth;
+                    const maxSwipe = slideWidth * 0.3; // Max 30% des Bildschirms
+                    const constrainedDelta = Math.max(-maxSwipe, Math.min(maxSwipe, deltaX));
+                    const currentOffset = -currentZoomIndex * 100;
+                    const swipePercent = (constrainedDelta / slideWidth) * 100;
+                    zoomTrack.style.transition = 'none';
+                    zoomTrack.style.transform = `translateX(${currentOffset + swipePercent}%)`;
+                    
+                } else if (zoomLevel > 1 && isDragging) {
+                    // === PAN (wenn gezoomt) ===
+                    e.preventDefault();
+                    drag(touch.clientX, touch.clientY);
+                }
+            }
+        }, { passive: false });
+
+        // Touch End Handler
+        zoomTrack.addEventListener('touchend', (e) => {
+            const touchDuration = Date.now() - touchStartTime;
+            
+            if (e.touches.length === 0) {
+                // Prüfe ob ein Swipe zum nächsten/vorherigen Bild erfolgen soll
+                if (zoomLevel === 1 && hasMoved && isHorizontalSwipe) {
+                    const touch = e.changedTouches[0];
+                    const deltaX = touch.clientX - swipeStartX;
+                    const slideWidth = zoomTrack.parentElement.offsetWidth;
+                    const threshold = slideWidth * 0.2; // 20% für Bildwechsel
+                    
+                    zoomTrack.style.transition = 'transform 0.3s ease-out';
+                    
+                    if (deltaX < -threshold && currentZoomIndex < images.length - 1) {
+                        // Swipe nach links - nächstes Bild
+                        navigateZoom(1);
+                    } else if (deltaX > threshold && currentZoomIndex > 0) {
+                        // Swipe nach rechts - vorheriges Bild
+                        navigateZoom(-1);
+                    } else {
+                        // Zurück zur aktuellen Position
+                        zoomTrack.style.transform = `translateX(-${currentZoomIndex * 100}%)`;
+                    }
+                }
+                
+                endDrag();
+                
+                // Snap zu vernünftigen Zoom-Stufen
+                if (touchDuration < 300 && initialDistance > 0) {
+                    const zoomSteps = [1, 1.5, 2, 2.5, 3, 4, 5];
+                    const closest = zoomSteps.reduce((prev, curr) => 
+                        Math.abs(curr - zoomLevel) < Math.abs(prev - zoomLevel) ? curr : prev
+                    );
+                    
+                    if (Math.abs(closest - zoomLevel) < 0.3) {
+                        setZoom(closest);
+                    }
+                }
+                
+                initialDistance = 0;
+            } else if (e.touches.length === 1) {
+                // Ein Finger bleibt
+                if (zoomLevel > 1) {
+                    const touch = e.touches[0];
+                    startDrag(touch.clientX, touch.clientY);
+                }
+            }
+        });
+
+        // Touch Cancel Handler
+        zoomTrack.addEventListener('touchcancel', () => {
+            endDrag();
+            initialDistance = 0;
+            // Zurück zur aktuellen Position
+            const track = document.getElementById('zoom-track');
+            if (track) {
+                track.style.transition = 'transform 0.3s ease-out';
+                track.style.transform = `translateX(-${currentZoomIndex * 100}%)`;
+            }
+        });
+
+        // === MOUSE EVENTS FÜR DESKTOP ===
+        zoomTrack.addEventListener('mousedown', (e) => {
+            if (zoomLevel > 1) {
+                startDrag(e.clientX, e.clientY);
+                e.preventDefault();
+            }
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                drag(e.clientX, e.clientY);
+            }
+        });
+
+        document.addEventListener('mouseup', endDrag);
+        
+        // Doppelklick für Desktop
+        zoomTrack.addEventListener('dblclick', (e) => {
+            e.preventDefault();
+            if (zoomLevel === 1) {
+                setZoom(2.5, e.clientX, e.clientY);
+            } else {
+                setZoom(1);
+            }
+        });
     }
 
-    // Share
-    const shareRecipe = async () => {
-        const shareData = {
-            title: <?php echo json_encode((string)$recipe['title']); ?>,
-            text: 'Schau dir dieses Rezept an!',
-            url: window.location.href
+    // === HILFSFUNKTIONEN ===
+    
+    function getDistance(touch1, touch2) {
+        const dx = touch1.clientX - touch2.clientX;
+        const dy = touch1.clientY - touch2.clientY;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    function getTouchCenter(touch1, touch2) {
+        return {
+            x: (touch1.clientX + touch2.clientX) / 2,
+            y: (touch1.clientY + touch2.clientY) / 2
         };
-        if (navigator.share) {
-            try {
-                await navigator.share(shareData);
-            } catch (err) {
-                // Nutzer hat abgebrochen oder Fehler – nichts tun
-            }
-        } else {
-            const url = window.location.href;
-            try {
-                await navigator.clipboard.writeText(url);
-                alert('Link kopiert: ' + url);
-            } catch (e) {
-                const temp = document.createElement('input');
-                temp.value = url;
-                document.body.appendChild(temp);
-                temp.select();
-                document.execCommand('copy');
-                document.body.removeChild(temp);
-                alert('Link kopiert: ' + url);
+    }
+
+    function adjustZoom(delta, centerX, centerY) {
+        const newZoom = Math.max(1, Math.min(5, zoomLevel + delta));
+        setZoom(newZoom, centerX, centerY);
+    }
+
+    function setZoom(newZoom, centerX = null, centerY = null) {
+        const oldZoom = zoomLevel;
+        zoomLevel = newZoom;
+
+        if (centerX !== null && centerY !== null && oldZoom !== newZoom) {
+            // Zoom zum spezifischen Punkt
+            const modal = document.getElementById('zoom-modal');
+            const rect = modal.getBoundingClientRect();
+            
+            const centerXRel = (centerX - rect.left) / rect.width - 0.5;
+            const centerYRel = (centerY - rect.top) / rect.height - 0.5;
+
+            const zoomRatio = newZoom / oldZoom;
+            
+            panX = panX * zoomRatio + centerXRel * (oldZoom - newZoom) * 200;
+            panY = panY * zoomRatio + centerYRel * (oldZoom - newZoom) * 200;
+        }
+
+        // Reset Pan bei 1x Zoom
+        if (zoomLevel === 1) {
+            panX = 0;
+            panY = 0;
+        }
+
+        updateTransform();
+        updateCursor();
+        
+        // Haptic Feedback
+        if (window.navigator && window.navigator.vibrate) {
+            window.navigator.vibrate(10);
+        }
+    }
+
+    function updateCursor() {
+        const currentImg = getCurrentZoomImage();
+        if (currentImg) {
+            if (zoomLevel > 1) {
+                currentImg.style.cursor = isDragging ? 'grabbing' : 'grab';
+            } else {
+                currentImg.style.cursor = 'zoom-in';
             }
         }
+    }
+
+    function startDrag(x, y) {
+        isDragging = true;
+        startX = x;
+        startY = y;
+        startPanX = panX;
+        startPanY = panY;
+        
+        const currentImg = getCurrentZoomImage();
+        if (currentImg) {
+            currentImg.style.cursor = 'grabbing';
+        }
+    }
+
+    function drag(x, y) {
+        if (!isDragging) return;
+
+        const sensitivity = 1.5;
+        const dx = (x - startX) * sensitivity;
+        const dy = (y - startY) * sensitivity;
+
+        panX = startPanX + dx;
+        panY = startPanY + dy;
+
+        // Begrenze Pan
+        const maxPan = (zoomLevel - 1) * 150;
+        panX = Math.max(-maxPan, Math.min(maxPan, panX));
+        panY = Math.max(-maxPan, Math.min(maxPan, panY));
+
+        updateTransform();
+    }
+
+    function endDrag() {
+        isDragging = false;
+        updateCursor();
+    }
+
+    function updateTransform() {
+        const currentImg = getCurrentZoomImage();
+        if (currentImg) {
+            currentImg.style.transition = isDragging ? 'none' : 'transform 0.2s ease-out';
+            currentImg.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
+        }
+    }
+
+    function getCurrentZoomImage() {
+        const zoomTrack = document.getElementById('zoom-track');
+        const slides = zoomTrack?.children;
+        return slides?.[currentZoomIndex]?.querySelector('img');
+    }
+
+    function openZoom(index) {
+        currentZoomIndex = index;
+        zoomLevel = 1;
+        panX = 0;
+        panY = 0;
+
+        const modal = document.getElementById('zoom-modal');
+        const zoomTrack = document.getElementById('zoom-track');
+        const counter = document.getElementById('zoom-counter');
+        const prevBtn = document.getElementById('zoom-prev');
+        const nextBtn = document.getElementById('zoom-next');
+
+        // Update counter
+        counter.textContent = `${index + 1} / ${images.length}`;
+
+        // Show/hide navigation buttons
+        prevBtn.style.display = images.length > 1 ? 'flex' : 'none';
+        nextBtn.style.display = images.length > 1 ? 'flex' : 'none';
+
+        // Position track
+        zoomTrack.style.transform = `translateX(-${index * 100}%)`;
+
+        // Reset all image transforms
+        Array.from(zoomTrack.children).forEach(slide => {
+            const img = slide.querySelector('img');
+            if (img) {
+                img.style.transform = 'scale(1) translate(0px, 0px)';
+                img.style.cursor = 'zoom-in';
+            }
+        });
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeZoom() {
+        const modal = document.getElementById('zoom-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.style.overflow = '';
+
+        // Reset zoom state
+        zoomLevel = 1;
+        panX = 0;
+        panY = 0;
+    }
+
+    function navigateZoom(direction) {
+        const newIndex = currentZoomIndex + direction;
+        if (newIndex >= 0 && newIndex < images.length) {
+            openZoom(newIndex);
+        }
+    }
+
+    function handleKeydown(e) {
+        const modal = document.getElementById('zoom-modal');
+        if (modal.classList.contains('hidden')) return;
+
+        switch (e.key) {
+            case 'Escape':
+                closeZoom();
+                break;
+            case 'ArrowLeft':
+                navigateZoom(-1);
+                break;
+            case 'ArrowRight':
+                navigateZoom(1);
+                break;
+            case '+':
+            case '=':
+                adjustZoom(0.3);
+                break;
+            case '-':
+                adjustZoom(-0.3);
+                break;
+            case '0':
+                setZoom(1);
+                break;
+        }
+        e.preventDefault();
+    }
+
+    // Initialize zoom functionality
+    setupZoom();
+}
+
+// === SHARE FUNCTIONALITY ===
+const shareRecipe = async () => {
+    const shareData = {
+        title: document.querySelector('h1').textContent,
+        text: 'Schau dir dieses Rezept an!',
+        url: window.location.href
     };
+    if (navigator.share) {
+        try {
+            await navigator.share(shareData);
+        } catch (err) {
+            // Nutzer hat abgebrochen
+        }
+    } else {
+        const url = window.location.href;
+        try {
+            await navigator.clipboard.writeText(url);
+            alert('Link kopiert: ' + url);
+        } catch (e) {
+            const temp = document.createElement('input');
+            temp.value = url;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+            alert('Link kopiert: ' + url);
+        }
+    }
+};
 
-    // Toggle PDF images option
-    document.addEventListener('DOMContentLoaded', () => {
-        const toggle = document.getElementById('pdf-images-toggle');
-        const link = document.getElementById('pdf-download-link');
-        if (!toggle || !link) return;
-        const baseUrl = '/recipe_pdf.php?id=<?php echo (int)$recipe['id']; ?>';
-        const updateHref = () => {
-            const withImages = toggle.checked ? '1' : '0';
-            link.href = baseUrl + '&images=' + withImages;
-        };
-        toggle.addEventListener('change', updateHref);
-        updateHref();
+// === ZUTATEN FUNKTIONALITÄT ===
+function toggleIngredient(index) {
+    const checkbox = document.getElementById(`ingredient-${index}`);
+    const label = document.getElementById(`ingredient-label-${index}`);
+
+    if (checkbox.checked) {
+        label.classList.add('line-through', 'text-gray-400', 'opacity-60');
+    } else {
+        label.classList.remove('line-through', 'text-gray-400', 'opacity-60');
+    }
+
+    updateIngredientProgress();
+}
+
+function updateIngredientProgress() {
+    const checkboxes = document.querySelectorAll('.ingredient-checkbox');
+    const checked = document.querySelectorAll('.ingredient-checkbox:checked').length;
+    const total = checkboxes.length;
+    const progressElement = document.getElementById('ingredient-progress');
+
+    if (progressElement) {
+        progressElement.textContent = `${checked} von ${total} Zutaten bereit`;
+    }
+}
+
+function resetIngredients() {
+    const checkboxes = document.querySelectorAll('.ingredient-checkbox');
+    const labels = document.querySelectorAll('.ingredient-label');
+
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
     });
 
-    // Zutaten-Funktionalität
-    function toggleIngredient(index) {
-        const checkbox = document.getElementById(`ingredient-${index}`);
-        const label = document.getElementById(`ingredient-label-${index}`);
-
-        if (checkbox.checked) {
-            label.classList.add('line-through', 'text-gray-400', 'opacity-60');
-        } else {
-            label.classList.remove('line-through', 'text-gray-400', 'opacity-60');
-        }
-
-        updateIngredientProgress();
-    }
-
-    function updateIngredientProgress() {
-        const checkboxes = document.querySelectorAll('.ingredient-checkbox');
-        const checked = document.querySelectorAll('.ingredient-checkbox:checked').length;
-        const total = checkboxes.length;
-        const progressElement = document.getElementById('ingredient-progress');
-
-        if (progressElement) {
-            progressElement.textContent = `${checked} von ${total} Zutaten bereit`;
-        }
-    }
-
-    function resetIngredients() {
-        const checkboxes = document.querySelectorAll('.ingredient-checkbox');
-        const labels = document.querySelectorAll('.ingredient-label');
-
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = false;
-        });
-
-        labels.forEach(label => {
-            label.classList.remove('line-through', 'text-gray-400', 'opacity-60');
-        });
-
-        updateIngredientProgress();
-    }
-
-    // Initial progress update
-    document.addEventListener('DOMContentLoaded', () => {
-        updateIngredientProgress();
+    labels.forEach(label => {
+        label.classList.remove('line-through', 'text-gray-400', 'opacity-60');
     });
 
-    function togglePdfPopover() {
-        const popover = document.getElementById('pdf-popover');
-        const arrow = document.getElementById('pdf-arrow');
-        const btn = document.getElementById('pdf-btn');
+    updateIngredientProgress();
+}
 
-        if (popover.classList.contains('opacity-0')) {
-            // Position berechnen
-            positionPopover(btn, popover);
+// === PDF POPOVER ===
+function togglePdfPopover() {
+    const popover = document.getElementById('pdf-popover');
+    const arrow = document.getElementById('pdf-arrow');
+    const btn = document.getElementById('pdf-btn');
 
-            // Öffnen
-            popover.classList.remove('opacity-0', 'invisible', 'scale-95');
-            popover.classList.add('opacity-100', 'visible', 'scale-100');
-            arrow.classList.add('rotate-180');
-        } else {
-            // Schließen
-            popover.classList.add('opacity-0', 'invisible', 'scale-95');
-            popover.classList.remove('opacity-100', 'visible', 'scale-100');
-            arrow.classList.remove('rotate-180');
-        }
+    if (popover.classList.contains('opacity-0')) {
+        positionPopover(btn, popover);
+        popover.classList.remove('opacity-0', 'invisible', 'scale-95');
+        popover.classList.add('opacity-100', 'visible', 'scale-100');
+        arrow.classList.add('rotate-180');
+    } else {
+        popover.classList.add('opacity-0', 'invisible', 'scale-95');
+        popover.classList.remove('opacity-100', 'visible', 'scale-100');
+        arrow.classList.remove('rotate-180');
     }
+}
 
-    function positionPopover(btn, popover) {
-        const btnRect = btn.getBoundingClientRect();
-        const popoverWidth = 224; // 56 * 4 (w-56 in Tailwind)
-        const viewportWidth = window.innerWidth;
-        const spaceRight = viewportWidth - btnRect.right;
-        const spaceLeft = btnRect.left;
+function positionPopover(btn, popover) {
+    const btnRect = btn.getBoundingClientRect();
+    const popoverWidth = 224;
+    const viewportWidth = window.innerWidth;
+    const spaceRight = viewportWidth - btnRect.right;
+    const spaceLeft = btnRect.left;
 
-        // Entferne alte Positionierungsklassen
-        popover.classList.remove('right-0', 'left-0');
+    popover.classList.remove('right-0', 'left-0');
 
-        // Prüfe ob genug Platz rechts ist
-        if (spaceRight >= popoverWidth) {
-            // Rechts ausrichten
-            popover.classList.add('left-0');
-        } else if (spaceLeft >= popoverWidth) {
-            // Links ausrichten
-            popover.classList.add('right-0');
-        } else {
-            // Wenn beides nicht geht, rechts ausrichten (Standard)
-            popover.classList.add('right-0');
-        }
+    if (spaceRight >= popoverWidth) {
+        popover.classList.add('left-0');
+    } else if (spaceLeft >= popoverWidth) {
+        popover.classList.add('right-0');
+    } else {
+        popover.classList.add('right-0');
     }
+}
 
-    // Schließen beim Klick außerhalb
-    document.addEventListener('click', function(event) {
-        const popover = document.getElementById('pdf-popover');
-        const btn = document.getElementById('pdf-btn');
+// Schließen beim Klick außerhalb
+document.addEventListener('click', function(event) {
+    const popover = document.getElementById('pdf-popover');
+    const btn = document.getElementById('pdf-btn');
 
-        if (popover && btn && !popover.contains(event.target) && !btn.contains(event.target)) {
-            popover.classList.add('opacity-0', 'invisible', 'scale-95');
-            popover.classList.remove('opacity-100', 'visible', 'scale-100');
-            document.getElementById('pdf-arrow')?.classList.remove('rotate-180');
-        }
-    });
+    if (popover && btn && !popover.contains(event.target) && !btn.contains(event.target)) {
+        popover.classList.add('opacity-0', 'invisible', 'scale-95');
+        popover.classList.remove('opacity-100', 'visible', 'scale-100');
+        document.getElementById('pdf-arrow')?.classList.remove('rotate-180');
+    }
+});
 
-    // Neupositionierung bei Resize
-    window.addEventListener('resize', function() {
-        const popover = document.getElementById('pdf-popover');
-        const btn = document.getElementById('pdf-btn');
+// Neupositionierung bei Resize
+window.addEventListener('resize', function() {
+    const popover = document.getElementById('pdf-popover');
+    const btn = document.getElementById('pdf-btn');
 
-        if (popover && btn && !popover.classList.contains('opacity-0')) {
-            positionPopover(btn, popover);
-        }
-    });
+    if (popover && btn && !popover.classList.contains('opacity-0')) {
+        positionPopover(btn, popover);
+    }
+});
+
+// Initial progress update
+document.addEventListener('DOMContentLoaded', () => {
+    updateIngredientProgress();
+});
 </script>
 <?php
 // Include global footer

@@ -6,9 +6,7 @@ require_once __DIR__ . '/../lib/csrf.php';
 require_once __DIR__ . '/../lib/notifications.php';
 require_once __DIR__ . '/../config.php';
 
-
 $user = current_user();
-
 
 $q = isset($_GET['q']) ? trim((string) $_GET['q']) : '';
 $page = max(1, (int) ($_GET['page'] ?? 1));
@@ -19,24 +17,17 @@ $recipes = get_feed_recipes($perPage, $offset, $q !== '' ? $q : null);
 $totalPages = max(1, (int) ceil($total / $perPage));
 csrf_start();
 
-
-// Set page title and CSRF token for header
 $pageTitle = APP_NAME;
 $csrfToken = csrf_token();
 
-
-
-
-// Include global header
 include __DIR__ . '/includes/header.php';
 ?>
 
 <?php
-// Function to display notification messages with auto-close timeout
 function displayNotification($message, $isLogin = true, $timeout = 5000)
 {
     $zIndex = $isLogin ? 'z-50' : '';
-    $notificationId = 'notification_' . uniqid(); // Unique ID for each notification
+    $notificationId = 'notification_' . uniqid();
 
     echo '<div id="' . $notificationId . '" class="fixed inset-x-0 top-4 z-50 flex items-start justify-center ' . $zIndex . '">
         <div class="lg:max-w-xl w-[80%] shadow-lg rounded px-4 py-3 relative bg-green-400 border-l-4 border-green-700 text-white transition-opacity duration-300">
@@ -76,53 +67,56 @@ function displayNotification($message, $isLogin = true, $timeout = 5000)
     background: oklch(79.2% 0.209 151.711);
   }
 }
-
             </style>
         </div>
     </div>
     
     <script>
-        // Auto-close notification after specified timeout
         setTimeout(function() {
             closeNotification("' . $notificationId . '");
         }, ' . $timeout . ');
         
-        // Function to close notification with fade effect
         function closeNotification(notificationId) {
             const notification = document.getElementById(notificationId);
             if (notification) {
                 notification.style.opacity = "0";
                 setTimeout(function() {
                     notification.remove();
-                }, 300); // Wait for fade transition to complete
+                }, 300);
             }
         }
     </script>';
 }
 
-// Display login message
 if (isset($_GET['message'])) {
-    displayNotification($_GET['message'], true, 5000); // 5 seconds timeout
+    displayNotification($_GET['message'], true, 5000);
 }
 
-// Display logout message
 if (isset($_GET['message'])) {
-    displayNotification($_GET['message'], false, 5000); // 4 seconds timeout
+    displayNotification($_GET['message'], false, 5000);
 }
 ?>
 
+<style>
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    .snap-item {
+        scroll-margin-top: 100px;
+    }
+</style>
 
 <!-- card wrapper -->
-<section class="container-fluid mx-auto mt-5">
+<section class="container-fluid mx-auto mt-5" id="feed-container">
     <div class="grid md:grid-cols-2 grid-cols-1 gap-6 max-w-6xl mx-auto">
         <?php foreach ($recipes as $r): ?>
             <!-- Card 1 -->
-            <div class="border bg-gray-800 border-gray-600 overflow-hidden shadow-xl/30 rounded-lg">
+            <div class="border bg-gray-800 border-gray-600 overflow-hidden shadow-xl/30 rounded-lg snap-item">
                 <!-- Card Header -->
                 <div class="flex items-center justify-between p-4">
                     <div class="flex items-center">
-                        <div
-                            class="h-10 w-10 rounded-full overflow-hidden outline-2 outline-offset-2 outline-[#2d7ef7] hover:scale-125 transition duration-300">
+                        <div class="h-10 w-10 rounded-full overflow-hidden outline-2 outline-offset-2 outline-[#2d7ef7] hover:scale-125 transition duration-300">
                             <img src="<?php echo htmlspecialchars($r['author_avatar_path'] ?? SITE_URL . 'images/default_avatar.png'); ?>"
                                 class="h-full w-full object-cover" alt="Avatar" />
                         </div>
@@ -140,7 +134,6 @@ if (isset($_GET['message'])) {
                     </div>
 
                     <?php if ($user && $user['id'] !== (int) $r['user_id']): ?>
-                        <!-- Follow Button -->
                         <button data-user-id="<?php echo (int) $r['user_id']; ?>"
                             onclick="toggleFollow(<?php echo (int) $r['user_id']; ?>)"
                             class="follow-btn px-3 py-1 rounded text-sm font-medium transition-colors duration-200
@@ -163,7 +156,6 @@ if (isset($_GET['message'])) {
                             </button>
                         </div>
 
-                        <!-- Recipe action Popover -->
                         <div popover id="recipe-actions-<?php echo (int) $r['id']; ?>" 
                              class="popover container mx-auto lg:max-w-4xl min-h-[50%] max-h-full z-[99]">
                             <div class="popover-content-wrapper">
@@ -182,7 +174,6 @@ if (isset($_GET['message'])) {
                                     </button>
                                 </header>
                                 <section class="popover-section sm:px-[2rem] px-4 py-[1.5rem]">
-                                    <!-- Action Buttons -->
                                         <div class="grid lg:grid-cols-2 lg:grid-rows-1 grid-cols-1 grid-rows-2 gap-4 pt-4 gap-4">
                                             <a class="block w-full px-4 py-3 rounded bg-blue-600 text-white text-center text-sm font-medium hover:bg-blue-700 transition-colors"
                                                 href="/recipe_edit.php?id=<?php echo (int) $r['id']; ?>">
@@ -213,7 +204,6 @@ if (isset($_GET['message'])) {
 
                 <!-- Card Image -->
                 <div class="aspect-square relative group">
-
                     <?php if (!empty($r['images'])): ?>
                         <div class="relative" data-slider>
                             <div class="aspect-square overflow-hidden bg-black">
@@ -261,13 +251,11 @@ if (isset($_GET['message'])) {
                     <?php else: ?>
                         <div class="aspect-square bg-gray-100 flex items-center justify-center text-gray-400">Kein Bild</div>
                     <?php endif; ?>
-
                 </div>
 
                 <!-- Card Actions -->
                 <div class="p-4">
                     <div class="flex items-center">
-
                         <button id="like-btn-<?php echo (int) $r['id']; ?>"
                             onclick="likeRecipe(<?php echo (int) $r['id']; ?>)"
                             class="like-btn pr-1 <?php echo $user ? '' : 'cursor-not-allowed'; ?> 
@@ -289,7 +277,6 @@ if (isset($_GET['message'])) {
                                     class="icon-transition <?php echo is_favorited((int) $r['id'], (int) $user['id']) ? 'fas' : 'far'; ?> fa-solid fa-bookmark fa-xl"></i>
                             </button>
                         <?php endif; ?>
-
                     </div>
                 </div>
 
@@ -305,16 +292,15 @@ if (isset($_GET['message'])) {
                             </p>
                         </a>
                     </div>
-<div class="flex items-end justify-between text-sm text-gray-500 pb-2">
+                    <div class="flex items-end justify-between text-sm text-gray-500 pb-2">
                         <span>
                             <i class="fas fa-clock mr-1"></i><p class="lg:inline hidden">Zubereitungszeit:</p>
                             <strong>
                                 <?php
-                                $duration_minutes = (int) $r['duration_minutes']; // Get the duration in minutes
-                                $hours = floor($duration_minutes / 60); // Calculate hours
-                                $minutes = $duration_minutes % 60; // Calculate remaining minutes
+                                $duration_minutes = (int) $r['duration_minutes'];
+                                $hours = floor($duration_minutes / 60);
+                                $minutes = $duration_minutes % 60;
 
-                                // Display with German units
                                 if ($hours > 0 && $minutes > 0) {
                                     echo $hours . " Std. " . $minutes . " Min.";
                                 } elseif ($hours > 0) {
@@ -345,12 +331,9 @@ if (isset($_GET['message'])) {
         <?php endforeach; ?>
     </div>
 </section>
-<!-- card wrapper end -->
-
 
 <div id="feed-sentinel" class="h-8"></div>
 
-<!-- Pagination -->
 <div id="pagination" class="flex items-center justify-center gap-2 mt-8">
     <?php if ($page > 1): ?>
         <a class="px-3 py-1 border rounded"
@@ -363,22 +346,72 @@ if (isset($_GET['message'])) {
     <?php endif; ?>
 </div>
 
-<!-- Page specific JavaScript -->
 <script>
+    // ============================================
+    // CARD MAGNET SCROLL - HAUPTFUNKTION
+    // ============================================
+    function initCardMagnet() {
+        let scrollTimeout;
+        
+       window.addEventListener('scroll', () => {
+            // Prüfe ob Mobile (unter 1024px)
+            if (window.innerWidth >= 1024) return;
+            
+            clearTimeout(scrollTimeout);
+            
+            scrollTimeout = setTimeout(() => {
+                snapToNearestCard();
+            }, 150);
+        });
+        
+        function snapToNearestCard() {
+            const cards = document.querySelectorAll('.snap-item');
+            if (cards.length === 0) return;
+            
+            const windowHeight = window.innerHeight;
+            const scrollTop = window.pageYOffset;
+            
+            let targetCard = null;
+            let minDistance = Infinity;
+            
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const cardTop = rect.top + scrollTop;
+                const cardCenter = rect.top + (rect.height / 2);
+                const viewportCenter = windowHeight / 2;
+                const distance = Math.abs(cardCenter - viewportCenter);
+                
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    targetCard = card;
+                }
+            });
+            
+            if (targetCard && minDistance < windowHeight * 0.5) {
+                const rect = targetCard.getBoundingClientRect();
+                const targetTop = rect.top + scrollTop - 20;
+                
+                window.scrollTo({
+                    top: targetTop,
+                    behavior: 'smooth'
+                });
+            }
+        }
+    }
+
+    // ============================================
+    // LIKE RECIPE
+    // ============================================
     const likeRecipe = async (recipeId) => {
-        // Prüfen ob User angemeldet ist
         const isLoggedIn = <?php echo $user ? 'true' : 'false'; ?>;
 
         if (!isLoggedIn) {
-            // Nachricht anzeigen, dass Anmeldung erforderlich ist
             showLoginRequiredMessage();
             return;
         }
 
         const likeBtn = document.querySelector(`#like-btn-${recipeId}`);
         const likeIcon = likeBtn.querySelector('#like-heart');
-
-        // Animation beim Klick
         likeIcon.classList.add('heart-animation');
 
         const res = await fetch('/like.php', {
@@ -405,7 +438,6 @@ if (isset($_GET['message'])) {
                     likeWrapper.classList.add('hidden');
             }
 
-            // Icon und Farbe ändern
             if (data.liked) {
                 likeBtn.classList.remove('text-white');
                 likeBtn.classList.add('text-red-600');
@@ -418,7 +450,6 @@ if (isset($_GET['message'])) {
                 likeIcon.classList.add('far');
             }
 
-            // Animation entfernen
             setTimeout(() => {
                 likeBtn.classList.remove('heart-animation');
             }, 300);
@@ -427,12 +458,8 @@ if (isset($_GET['message'])) {
         }
     };
 
-    // Funktion zum Anzeigen der Anmelde-Nachricht
     function showLoginRequiredMessage() {
-        // Prüfen ob bereits eine Nachricht angezeigt wird
-        if (document.getElementById('login-required-message')) {
-            return;
-        }
+        if (document.getElementById('login-required-message')) return;
 
         const messageHtml = `
         <div id="login-required-message" class="fixed inset-x-0 top-4 z-50 flex items-start justify-center">
@@ -459,60 +486,49 @@ if (isset($_GET['message'])) {
                         </div>
                     </div>
                 </div>
-                            <div class="w-full h-[4px] bg-stone-200 rounded">
-                <div class="prog-status"></div>
+                <div class="w-full h-[4px] bg-stone-200 rounded">
+                    <div class="prog-status"></div>
+                </div>
+                <style>
+                .prog-status {
+                    height: 4px;
+                    width: 0%;
+                    border-radius: 20px;
+                    background: red;
+                    animation: 5s linear load infinite;
+                }
+                @keyframes load {
+                    50% {
+                        width: 50%;
+                        background: oklch(70.7% 0.165 254.624);
+                    }
+                    100% {
+                        width: 100%;
+                        background: #2196F3;
+                    }
+                }
+                </style>
             </div>
-            <style>
-            .prog-status {
-  height: 4px;
-  width: 0%;
-  border-radius: 20px;
-  background: red;
-  animation: 5s linear load infinite;
-}
-@keyframes load {
-  50% {
-    width: 50%;
-    background: oklch(70.7% 0.165 254.624);
-  }
-  100% {
-    width: 100%;
-    background: #2196F3;
-  }
-}
-
-            </style>
-            </div>
-        </div>
-    `;
+        </div>`;
 
         document.body.insertAdjacentHTML('afterbegin', messageHtml);
-
-        // Nachricht nach 5 Sekunden automatisch entfernen
         setTimeout(removeLoginRequiredMessage, 5000);
     }
 
-    // Funktion zum Entfernen der Anmelde-Nachricht
     function removeLoginRequiredMessage() {
         const message = document.getElementById('login-required-message');
-        if (message) {
-            message.remove();
-        }
+        if (message) message.remove();
     }
 
     const toggleFavorite = async (recipeId) => {
         const favoriteBtn = document.querySelector(`#favorite-btn-${recipeId}`);
         const favoriteIcon = favoriteBtn.querySelector('#like-bookmark');
-
-        // Animation beim Klick
         favoriteIcon.classList.add('star-animation');
 
         try {
             const response = await fetch('/api/toggle_favorite.php', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     recipe_id: recipeId,
                     csrf_token: document.querySelector('meta[name="csrf-token"]').content
@@ -536,24 +552,25 @@ if (isset($_GET['message'])) {
                 alert('Fehler: ' + result.error);
             }
 
-            // Animation entfernen
             setTimeout(() => {
                 favoriteIcon.classList.remove('star-animation');
             }, 300);
         } catch (error) {
             console.error('Error:', error);
             alert('Netzwerkfehler beim Favorisieren.');
-
-            // Animation entfernen bei Fehler
             setTimeout(() => {
                 favoriteIcon.classList.remove('star-animation');
             }, 300);
         }
     };
-    // Instagram-ähnlicher, touch-fähiger Slider
+
+    // Image Slider
     document.addEventListener('DOMContentLoaded', () => {
         const sliders = document.querySelectorAll('[data-slider]');
         sliders.forEach(initSlider);
+        
+        // INITIALISIERE CARD MAGNET
+        initCardMagnet();
     });
 
     function initSlider(root) {
@@ -595,11 +612,9 @@ if (isset($_GET['message'])) {
             }
         }
 
-        // Pfeile
         if (prevBtn) prevBtn.addEventListener('click', () => goTo(currentIndex - 1));
         if (nextBtn) nextBtn.addEventListener('click', () => goTo(currentIndex + 1));
 
-        // Touch-Gesten
         track.addEventListener('touchstart', (e) => {
             if (!e.touches || e.touches.length !== 1) return;
             startX = e.touches[0].clientX;
@@ -607,9 +622,7 @@ if (isset($_GET['message'])) {
             isTouching = true;
             moved = false;
             track.style.transition = 'none';
-        }, {
-            passive: true
-        });
+        }, {passive: true});
 
         track.addEventListener('touchmove', (e) => {
             if (!isTouching) return;
@@ -618,9 +631,7 @@ if (isset($_GET['message'])) {
             const percent = (dx / getWidth()) * 100;
             track.style.transform = `translateX(calc(-${currentIndex * 100}% + ${percent}%))`;
             if (Math.abs(dx) > 5) moved = true;
-        }, {
-            passive: true
-        });
+        }, {passive: true});
 
         track.addEventListener('touchend', () => {
             if (!isTouching) return;
@@ -635,7 +646,6 @@ if (isset($_GET['message'])) {
             goTo(currentIndex);
         });
 
-        // Klicks auf Links beim Swipen unterbinden
         slides.forEach((slideEl) => {
             slideEl.addEventListener('click', (e) => {
                 if (moved) {
@@ -645,7 +655,6 @@ if (isset($_GET['message'])) {
             });
         });
 
-        // Initial
         goTo(0);
         root.setAttribute('data-initialized', '1');
     }
@@ -673,14 +682,11 @@ if (isset($_GET['message'])) {
                 if (!res.ok) throw new Error('Network error');
                 const data = await res.json();
                 if (data && data.html) {
-                    // Append HTML safely using a fragment
                     const tmp = document.createElement('div');
                     tmp.innerHTML = data.html;
-                    // Initialize sliders before attaching? Need in DOM for sizes, so after attach.
                     while (tmp.firstChild) {
                         feedContainer.appendChild(tmp.firstChild);
                     }
-                    // Initialize any new sliders
                     feedContainer.querySelectorAll('[data-slider]').forEach((slider) => initSlider(slider));
                 }
                 hasMore = Boolean(data && data.hasMore);
@@ -700,21 +706,15 @@ if (isset($_GET['message'])) {
                         loadMore();
                     }
                 });
-            }, {
-                rootMargin: '400px 0px'
-            });
+            }, {rootMargin: '400px 0px'});
             observer.observe(sentinel);
         }
     });
 
-    // Follow/Unfollow functionality
     const toggleFollow = async (profileId) => {
-        // Find ALL follow buttons for this user
         const followBtns = document.querySelectorAll(`[data-user-id="${profileId}"].follow-btn`);
-
         if (followBtns.length === 0) return;
 
-        // Disable all buttons during request
         followBtns.forEach(btn => {
             btn.disabled = true;
             btn.style.opacity = '0.6';
@@ -723,9 +723,7 @@ if (isset($_GET['message'])) {
         try {
             const response = await fetch('/api/toggle_follow.php', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     profile_id: profileId,
                     csrf_token: document.querySelector('meta[name="csrf-token"]').content
@@ -735,17 +733,14 @@ if (isset($_GET['message'])) {
             const result = await response.json();
 
             if (result.ok) {
-                // Update ALL follow buttons for this user
                 followBtns.forEach(followBtn => {
                     const followText = followBtn.querySelector('.follow-text');
 
                     if (result.following) {
-                        // Now following
                         followBtn.classList.remove('bg-[#2d7ef7]', 'text-white', 'hover:bg-blue-600');
                         followBtn.classList.add('bg-gray-200', 'text-gray-800', 'hover:bg-gray-300');
                         followText.textContent = 'Entfolgen';
                     } else {
-                        // Not following anymore
                         followBtn.classList.remove('bg-gray-200', 'text-gray-800', 'hover:bg-gray-300');
                         followBtn.classList.add('bg-[#2d7ef7]', 'text-white', 'hover:bg-blue-600');
                         followText.textContent = 'Folgen';
@@ -759,7 +754,6 @@ if (isset($_GET['message'])) {
             console.error('Network error:', error);
             alert('Netzwerkfehler beim Folgen/Entfolgen.');
         } finally {
-            // Re-enable all buttons
             followBtns.forEach(btn => {
                 btn.disabled = false;
                 btn.style.opacity = '1';
@@ -769,6 +763,5 @@ if (isset($_GET['message'])) {
 </script>
 
 <?php
-// Include global footer
 include __DIR__ . '/includes/footer.php';
 ?>
