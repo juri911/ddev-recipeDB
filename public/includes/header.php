@@ -68,7 +68,7 @@ $seo = [
     <script src="/assets/css/tailwindV4.css"></script>
     <link rel="stylesheet" href="/assets/fonts/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/style.css">
-
+    
     <?php if (isset($csrfToken)): ?>
         <meta name="csrf-token" content="<?php echo htmlspecialchars($csrfToken); ?>">
     <?php endif; ?>
@@ -83,20 +83,74 @@ $seo = [
     <!-- Top gradient -->
     <div class="w-full h-[6px] bg-gradient-to-r from-[#2d7ef7] to-fuchsia-400 fixed top-0 z-[99999]"></div>
 
-    <!-- Header -->
+    <!-- Mobile Header (≤1024px) -->
+    <header id="mobile-header" class="mobile-header hidden lg:hidden items-center justify-between px-4 py-3">
+        <!-- Logo -->
+        <div class="flex items-center">
+            <a href="/" class="flex items-center">
+                <svg fill="currentColor" width="120px" height="35px" style="color: var(--rh-primary);">
+                    <use href="#logo"></use>
+                </svg>
+                <span class="ml-2 text-xs px-2 py-1 rounded" style="background-color: var(--rh-primary); color: white;">beta</span>
+            </a>
+        </div>
+
+        <!-- Mobile Actions -->
+        <div class="flex items-center gap-2">
+            <!-- Theme Toggle -->
+            <button id="mobile-theme-toggle" class="p-2 rounded-lg transition-colors" style="color: var(--rh-text);" aria-label="Theme wechseln">
+                <i class="fas fa-moon text-lg"></i>
+            </button>
+
+            <!-- Search -->
+            <button popovertarget="search-popover" class="p-2 rounded-lg transition-colors" style="color: var(--rh-text);" aria-label="Suchen">
+                <i class="fas fa-magnifying-glass text-lg"></i>
+            </button>
+
+            <?php if (isset($user) && $user): ?>
+                <!-- Notifications -->
+                <button popovertarget="notification-bell" class="p-2 rounded-lg transition-colors relative" style="color: var(--rh-text);" aria-label="Benachrichtigungen">
+                    <i class="fas fa-bell text-lg"></i>
+                    <?php if ($unreadCount > 0): ?>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-xs rounded-full h-4 w-4 flex items-center justify-center text-white"><?php echo $unreadCount; ?></span>
+                    <?php endif; ?>
+                </button>
+
+                <!-- User Avatar -->
+                <button id="mobile-user-menu" class="p-1 rounded-lg transition-colors" style="color: var(--rh-text);" aria-label="Benutzermenü">
+                    <div class="h-8 w-8 rounded-full overflow-hidden">
+                        <img src="<?php echo htmlspecialchars(isset($user['avatar_path']) && $user['avatar_path'] ? absolute_url_from_path((string) $user['avatar_path']) : '/images/default_avatar.png'); ?>"
+                            class="h-8 w-8 rounded-full object-cover" alt="Avatar" />
+                    </div>
+                </button>
+            <?php else: ?>
+                <!-- Login Button -->
+                <a href="/login.php" class="p-2 rounded-lg transition-colors" style="color: var(--rh-text);" aria-label="Anmelden">
+                    <i class="fas fa-user text-lg"></i>
+                </a>
+            <?php endif; ?>
+
+            <!-- Mobile Menu -->
+            <button id="mobile-menu-toggle" class="p-2 rounded-lg transition-colors" style="color: var(--rh-text);" aria-label="Menü">
+                <i class="fas fa-bars text-lg"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Desktop Header -->
     <header
         class="flex lg:sticky lg:top-0 fixed bottom-0 left-0 right-0 z-10 container-fluid min-h-[80px] mx-auto justify-between 
                items-center border-b-[1px] bg-[var(--rh-bg)]/40 border-[var(--rh-bg-secondary)] backdrop-blur-lg z-[40]">
         <!-- Logo -->
         <div class="lg:flex hidden content-start relative">
             <a href="/"
-                class="flex items-center z-[9999] navbar-brand hover:scale-150 origin-left transition duration-300 ease-in-out pl-3">
+                class="flex items-center z-[9999] navbar-brand  origin-left transition duration-300 ease-in-out pl-3">
                 <?php //echo get_app_logo_html(); 
                 ?>
                 <svg fill="currentColor" width="160px" height="50px">
                     <use href="#logo"></use>
                 </svg>
-                <p class="absolute bottom-[-8px] right-[-32px] montserrat bg-black z-[99991] text-[12px] p-[2px_4px]">beta</p>
+                <p class="absolute bottom-[-8px] right-[-32px] montserrat text-white bg-black z-[99991] text-[12px] p-[2px_4px]">beta</p>
             </a>
         </div>
 
@@ -107,25 +161,31 @@ $seo = [
                 <div class="flex justify-center items-center">
                     <!-- Home -->
                     <a href="/" data-nav-link
-                        class="bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1 border-[#2d7ef7]  hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white lg:py-1 lg:px-3 p-4  lg:rounded-l transition duration-600 aspect-square lg:aspect-auto rounded-none">
+                        class="bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1 border-[#2d7ef7]  hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent  lg:py-1 lg:px-3 p-4  lg:rounded-l transition duration-600 aspect-square lg:aspect-auto rounded-none">
                         <i class="fa-solid fa-house lg:text-base text-2xl"></i>
                     </a>
                     <!-- Search -->
                     <button popovertarget="search-popover"
-                        class="bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1  border-[#2d7ef7] hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white lg:py-1 lg:px-3 p-4 transition duration-600 aspect-square lg:aspect-auto rounded-none">
+                        class="bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1  border-[#2d7ef7] hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent  lg:py-1 lg:px-3 p-4 transition duration-600 aspect-square lg:aspect-auto rounded-none">
                         <i class="fas fa-magnifying-glass lg:text-base text-2xl"></i>
                     </button>
                     <!-- Categories -->
                     <a href="/categories.php" data-nav-link
-                        class="lg:block hidden bg-[#2d7ef7] border-1 border-[#2d7ef7] hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white lg:py-1 lg:px-3 p-4 lg:rounded-r transition duration-600 aspect-square lg:aspect-auto rounded-none">
+                        class="lg:block hidden bg-[#2d7ef7] border-1 border-[#2d7ef7] hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent lg:py-1 lg:px-3 p-4 lg:rounded-r transition duration-600 aspect-square lg:aspect-auto rounded-none">
                         <i class="fa-solid fa-tags lg:text-base text-2xl"></i>
                     </a>
                 </div>
                 <div class="flex items-center gap-x-0 lg:gap-x-2 pr-0 lg:pr-3">
+                    <!-- Theme Toggle Button -->
+                    <button id="theme-toggle" class="theme-toggle bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1 border-[#2d7ef7] hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent  p-4 lg:py-1 lg:px-3 aspect-square lg:aspect-auto rounded-none lg:rounded transition duration-600" aria-label="Theme wechseln" title="Theme wechseln">
+                        <i class="fas fa-moon lg:text-base text-2xl"></i>
+                        <span class="hidden lg:inline ml-2">Dark</span>
+                    </button>
+                    
                     <?php if (isset($user) && $user): ?>
                         <!-- New Recipe Button -->
                         <a href="/recipe_new.php" data-nav-link
-                            class="bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1 border-[#2d7ef7] hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent text-white p-4 lg:py-1 lg:px-3 aspect-square lg:aspect-auto rounded-none lg:rounded transition duration-600">
+                            class="bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1 border-[#2d7ef7] hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent p-4 lg:py-1 lg:px-3 aspect-square lg:aspect-auto rounded-none lg:rounded transition duration-600">
                             <i class="fa-solid fa-feather lg:text-base text-2xl p-0 lg:pr-2"></i>
                             <p class="lg:inline hidden">Neues Rezept</p>
                         </a>
@@ -137,11 +197,11 @@ $seo = [
                             $unreadCount = count_unread_notifications((int) $user['id']);
                         }
                         ?>
-                        <button popovertarget="notification-bell" class="bg-transparent relative text-white lg:text-gray-600 hover:text-[var(--rh-text)] lg:p-0 p-4 aspect-square lg:aspect-auto hover:border-[var(--rh-text)] hover:bg-transparent transition duration-600">
+                        <button popovertarget="notification-bell" class="bg-transparent relative lg:text-gray-600 hover:text-[var(--rh-text)] lg:p-0 p-4 aspect-square lg:aspect-auto hover:border-[var(--rh-text)] hover:bg-transparent transition duration-600">
                             <i class="fa-solid fa-bell lg:text-[26px] text-2xl"></i>
                             <?php if ($unreadCount > 0): ?>
                                 <span id="notification-badge"
-                                    class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center"><?php echo $unreadCount; ?></span>
+                                    class="absolute -top-1 -right-1 bg-red-500 text-xs rounded-full h-4 w-4 flex items-center justify-center"><?php echo $unreadCount; ?></span>
                             <?php endif; ?>
                         </button>
 
@@ -180,12 +240,12 @@ $seo = [
                         <div class="flex items-center gap-x-0 lg:gap-x-5 text-[16px]">
                             <a href="/login.php" data-nav-link
                                 class="flex items-center bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1 border-[#2d7ef7] font-semibold hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent 
-                                text-white p-4 lg:py-1 lg:px-3 lg:rounded rounded-none transition duration-600 aspect-square lg:aspect-auto">
+                                p-4 lg:py-1 lg:px-3 lg:rounded rounded-none transition duration-600 aspect-square lg:aspect-auto">
                                 <i class="fa-solid fa-arrow-right-from-bracket lg:text-base text-2xl pr-0 lg:pr-2"></i>
                                 <p class="lg:inline hidden">Log In</p>
                             </a>
 
-                            <a class="flex items-center lg:gap-x-1 font-semibold text-white lg:text-[#2d7ef7] relative after:absolute 
+                            <a class="flex items-center lg:gap-x-1 font-semibold lg:text-[#2d7ef7] relative after:absolute 
                                     after:bg-[#2d7ef7] after:h-[2px] after:w-0 after:left-1/2 after:-translate-x-1/2 after:bottom-0 lg:hover:after:w-full after:transition-all after:duration-300 aspect-square lg:aspect-auto lg:p-0 p-4"
                                 href="/register.php" data-nav-link>
                                 <p class="lg:inline hidden">Registrieren</p><i class="fa-solid fa-pencil lg:text-base text-2xl"></i>
@@ -194,10 +254,10 @@ $seo = [
                     <?php endif; ?>
                 </div>
                 <!-- Mobile menu button -->
-                <button id="mobile-nav-btn" class="relative flex items-end justify-center mr-0 lg:mr-3"
+                <button id="mobile-nav-btn" class="relative flex items-end justify-center mr-0 lg:mr-3  lg:inline hidden"
                     aria-label="Menü öffnen" aria-expanded="false" aria-controls="mobile-nav-panel">
                     <i
-                        class="fa-solid fa-burger text-[36px] lg:text-[var(--rh-primary)] hover:text-[var(--rh-text)] transition-all duration-300 ease-out aspect-square lg:aspect-auto lg:p-0 p-4"></i>
+                        class="fas fa-bars text-[36px] lg:text-[var(--rh-primary)] hover:text-[var(--rh-text)] transition-all duration-300 ease-out aspect-square lg:aspect-auto lg:p-0 p-4"></i>
 
                 </button>
             </div>
@@ -668,15 +728,120 @@ $seo = [
         });
     </script>
 
+    <!-- Theme System Script -->
+    <script src="/assets/js/theme.js"></script>
+
+    <!-- Mobile Header Scroll Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileHeader = document.getElementById('mobile-header');
+            let lastScrollTop = 0;
+            let isScrolling = false;
+
+            // Show mobile header on page load if screen is ≤1024px
+            function checkScreenSize() {
+                if (window.innerWidth <= 1024) {
+                    mobileHeader.classList.remove('hidden');
+                    mobileHeader.classList.add('visible');
+                } else {
+                    mobileHeader.classList.add('hidden');
+                    mobileHeader.classList.remove('visible');
+                }
+            }
+
+            // Handle scroll behavior
+            function handleScroll() {
+                if (window.innerWidth > 1024) return; // Only for mobile/tablet
+
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                
+                // Prevent scroll handling during rapid scrolling
+                if (!isScrolling) {
+                    window.requestAnimationFrame(function() {
+                        // Hide header when scrolling down, show when scrolling up
+                        if (scrollTop > lastScrollTop && scrollTop > 100) {
+                            // Scrolling down - hide header
+                            mobileHeader.classList.add('hidden');
+                            mobileHeader.classList.remove('visible');
+                        } else if (scrollTop < lastScrollTop || scrollTop <= 100) {
+                            // Scrolling up or near top - show header
+                            mobileHeader.classList.remove('hidden');
+                            mobileHeader.classList.add('visible');
+                        }
+                        
+                        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For Mobile or negative scrolling
+                        isScrolling = false;
+                    });
+                }
+                isScrolling = true;
+            }
+
+            // Mobile theme toggle
+            const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
+            if (mobileThemeToggle) {
+                mobileThemeToggle.addEventListener('click', function() {
+                    if (window.themeManager) {
+                        window.themeManager.toggleTheme();
+                    }
+                });
+            }
+
+            // Mobile menu toggle
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            if (mobileMenuToggle) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    // Trigger existing mobile nav
+                    const mobileNavBtn = document.getElementById('mobile-nav-btn');
+                    if (mobileNavBtn) {
+                        mobileNavBtn.click();
+                    }
+                });
+            }
+
+            // Mobile user menu
+            const mobileUserMenu = document.getElementById('mobile-user-menu');
+            if (mobileUserMenu) {
+                mobileUserMenu.addEventListener('click', function() {
+                    // Trigger existing user menu
+                    const userMenuButton = document.getElementById('userMenuButton');
+                    if (userMenuButton) {
+                        userMenuButton.click();
+                    }
+                });
+            }
+
+            // Initialize
+            checkScreenSize();
+            
+            // Event listeners
+            window.addEventListener('scroll', handleScroll, { passive: true });
+            window.addEventListener('resize', checkScreenSize);
+
+            // Update mobile theme toggle when theme changes
+            if (window.themeManager) {
+                const originalUpdateThemeToggle = window.themeManager.updateThemeToggle;
+                window.themeManager.updateThemeToggle = function(theme) {
+                    originalUpdateThemeToggle.call(this, theme);
+                    
+                    // Update mobile theme toggle
+                    const mobileIcon = mobileThemeToggle?.querySelector('i');
+                    if (mobileIcon) {
+                        mobileIcon.className = theme === 'dark' ? 'fas fa-sun text-lg' : 'fas fa-moon text-lg';
+                    }
+                };
+            }
+        });
+    </script>
+
     <?php include __DIR__ . '/admin_nav.php'; ?>
 
     <div class="flex content-start w-full flex lg:hidden px-4 py-4 relative">
         <a href="/"
-            class="flex items-center navbar-brand hover:scale-150 origin-left transition duration-300 ease-in-out">
+            class="flex items-center navbar-brand origin-left">
             <svg fill="currentColor" width="160px" height="50px">
                 <use href="#logo"></use>
             </svg>
-            <p class="absolute bottom-0 left-4 montserrat bg-black  p-[2px_4px]">beta</p>
+            <p class="absolute bottom-0 left-4 montserrat bg-black text-white p-[2px_4px]">beta</p>
         </a>
     </div>
     <!-- Main Content Container -->

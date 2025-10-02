@@ -3,15 +3,21 @@
 @import url("props.css");
 
 :root {
-  --rh-bg: #222831;
-  --rh-bg-secondary: #393e46;
-  --rh-text: #e5e7eb;
-  --rh-text-hover: #737f97;
-  --rh-text-black: #1f1f1f;
-  --rh-border: #e5e7eb;
-  --rh-muted: #6b7280;
-  --rh-primary: #2d7ef7;
-  --rh-primary-hover: #1c4b92;
+  /* Light Mode Colors */
+  --rh-bg: #FAF9F6;
+  --rh-bg-secondary: #2D7EF7;
+  --rh-text: #121212;
+  --rh-text-hover: #1C4B92;
+  --rh-text-black: #121212;
+  --rh-border: #2D7EF7;
+  --rh-muted: #1C4B92;
+  --rh-primary: #2D7EF7;
+  --rh-primary-hover: #1C4B92;
+  --rh-card-bg: #FFFFFF;
+  --rh-input-bg: #FFFFFF;
+  --rh-input-border: #E5E7EB;
+  --rh-shadow: rgba(0, 0, 0, 0.1);
+  --rh-hover-bg: #F3F4F6;
   --alert-danger: #f44336;
   --alert-danger-border: #8f1f1f;
   --alert-warning: #ff9800;
@@ -20,6 +26,24 @@
   --alert-info-border: #0e457c;
   --alert-success: #04aa6d;
   --alert-success-border: #01472c;
+}
+
+/* Dark Mode Colors */
+[data-theme="dark"] {
+  --rh-bg: #080808;
+  --rh-bg-secondary: #26415E;
+  --rh-text: #FAF9F6;
+  --rh-text-hover: #2D7EF7;
+  --rh-text-black: #FAF9F6;
+  --rh-border: #2D7EF7;
+  --rh-muted: #2D7EF7;
+  --rh-primary: #2D7EF7;
+  --rh-primary-hover: #FAF9F6;
+  --rh-card-bg: #1A1A1A;
+  --rh-input-bg: #2A2A2A;
+  --rh-input-border: #404040;
+  --rh-shadow: rgba(0, 0, 0, 0.3);
+  --rh-hover-bg: #333333;
 }
 
 html,
@@ -479,6 +503,96 @@ button {
 
 .zoom-btn-overlay:hover {
   background: rgba(0, 0, 0, 0.7);
+}
+
+/* Dark mode specific adjustments */
+[data-theme="dark"] .bg-white {
+  background-color: var(--rh-card-bg) !important;
+}
+
+[data-theme="dark"] .text-gray-600,
+[data-theme="dark"] .text-gray-700 {
+  color: var(--rh-text) !important;
+}
+
+[data-theme="dark"] .text-gray-500 {
+  color: var(--rh-muted) !important;
+}
+
+[data-theme="dark"] .border-gray-200 {
+  border-color: var(--rh-border) !important;
+}
+
+[data-theme="dark"] .hover\:bg-gray-100:hover {
+  background-color: var(--rh-hover-bg) !important;
+}
+
+[data-theme="dark"] .shadow-lg {
+  box-shadow: 0 10px 15px -3px var(--rh-shadow), 0 4px 6px -2px var(--rh-shadow) !important;
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  background-color: var(--rh-input-bg) !important;
+  border-color: var(--rh-input-border) !important;
+  color: var(--rh-text) !important;
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: var(--rh-muted) !important;
+}
+
+/* Mobile Header Styles */
+.mobile-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: var(--rh-bg);
+  border-bottom: 1px solid var(--rh-border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: transform 0.3s ease-in-out;
+  transform: translateY(0);
+}
+
+.mobile-header.hidden {
+  transform: translateY(-100%);
+}
+
+.mobile-header.visible {
+  transform: translateY(0);
+}
+
+/* Show mobile header only on screens ≤1024px */
+@media (max-width: 1024px) {
+  .mobile-header {
+    display: flex;
+  }
+  
+  /* Add top padding to body to account for fixed mobile header */
+  body {
+    padding-top: 60px;
+  }
+  
+  /* Hide the existing mobile logo section when mobile header is active */
+  .flex.content-start.w-full.flex.lg\:hidden {
+    display: none;
+  }
+}
+
+@media (min-width: 1025px) {
+  .mobile-header {
+    display: none;
+  }
+  
+  /* Remove top padding on desktop */
+  body {
+    padding-top: 0;
+  }
 }
 
 /* Mobile optimizations */
