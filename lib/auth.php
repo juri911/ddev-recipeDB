@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../lib/db.php';
 require_once __DIR__ . '/../lib/mailer.php';
+require_once __DIR__ . '/logger.php';
 
 function start_session_if_needed(): void {
 	if (session_status() !== PHP_SESSION_ACTIVE) {
@@ -60,8 +61,13 @@ function register_user(string $name, string $email, string $password): array {
 		$hash = password_hash($password, PASSWORD_DEFAULT);
 		$otp_code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 		$otp_expires = date('Y-m-d H:i:s', time() + 60 * 15); // OTP valid for 15 minutes
-		db_query('INSERT INTO users (name, email, password_hash, otp_code, otp_expires_at) VALUES (?,?,?,?,?)', [$name, $email, $hash, $otp_code, $otp_expires]);
+		$result = db_query('INSERT INTO users (name, email, password_hash, otp_code, otp_expires_at) VALUES (?,?,?,?,?)', [$name, $email, $hash, $otp_code, $otp_expires]);
+		$userId = db_connection()->lastInsertId();
 		$ok = send_mail($email, 'Dein Verifizierungscode', '<p>Dein einmaliger Verifizierungscode ist: <strong>' . htmlspecialchars($otp_code) . '</strong></p><p>Dieser Code ist 15 Minuten gültig.</p>');
+		
+		// Log registration
+		log_user_registration($userId, $name);
+		
 		return ['ok' => true, 'mail_sent' => $ok];
 	} catch (PDOException $e) {
 		if ($e->errorInfo[1] === 1062) {
@@ -76,6 +82,8 @@ function login_user(string $email, string $password, bool $remember_me = false):
 	$email = trim(strtolower($email));
 	$user = db_query('SELECT * FROM users WHERE email = ?', [$email])->fetch();
 	if (!$user || !password_verify($password, $user['password_hash'])) {
+		// Log failed login attempt
+		log_failed_login($email);
 		return ['ok' => false, 'error' => 'E-Mail oder Passwort falsch'];
 	}
 	if ($user['email_verified_at'] === null) {
@@ -92,6 +100,9 @@ function login_user(string $email, string $password, bool $remember_me = false):
 	if ($remember_me) {
 		create_remember_token((int)$user['id']);
 	}
+	
+	// Log successful login
+	log_user_login((int)$user['id'], $user['name']);
 	
 	return ['ok' => true];
 }
@@ -204,8 +215,9 @@ function reset_password(string $email, string $token, string $newPassword): arra
 function logout_user(): void {
 	start_session_if_needed();
 	
-	// Remember Me Tokens löschen
+	// Log logout before clearing session
 	if (isset($_SESSION['user']['id'])) {
+		log_user_logout((int)$_SESSION['user']['id'], $_SESSION['user']['name']);
 		clear_remember_token((int)$_SESSION['user']['id']);
 	}
 	

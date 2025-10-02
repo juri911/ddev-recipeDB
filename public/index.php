@@ -363,6 +363,10 @@ if (isset($_GET['message'])) {
             // Prüfe ob Mobile (unter 1024px)
             if (window.innerWidth >= 1024) return;
             
+            // Prüfe ob Card Magnet aktiviert ist
+            const magnetEnabled = localStorage.getItem('cardMagnetEnabled') !== 'false';
+            if (!magnetEnabled) return;
+            
             clearTimeout(scrollTimeout);
             
             scrollTimeout = setTimeout(() => {
@@ -395,7 +399,7 @@ if (isset($_GET['message'])) {
             
             if (targetCard && minDistance < windowHeight * 0.5) {
                 const rect = targetCard.getBoundingClientRect();
-                const targetTop = rect.top + scrollTop - 20;
+                const targetTop = rect.top + scrollTop - 80;
                 
                 window.scrollTo({
                     top: targetTop,

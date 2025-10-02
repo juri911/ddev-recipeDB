@@ -296,7 +296,137 @@ function get_user_favorites(int $userId, int $limit = 20, int $offset = 0): arra
 
 
 function count_user_recipes(int $userId): int {
-	return (int) db_query('SELECT COUNT(*) FROM recipes WHERE user_id = ?', [$userId])->fetchColumn();
+	return (int)db_query('SELECT COUNT(*) FROM recipes WHERE user_id = ?', [$userId])->fetchColumn();
+}
+
+// Admin functions for recipe management
+
+/**
+ * Get all recipes with pagination and search (admin function)
+ */
+function admin_get_all_recipes(int $limit = 20, int $offset = 0, string $search = '', string $orderBy = 'created_at', string $orderDir = 'DESC'): array {
+    $allowedOrderBy = ['id', 'title', 'created_at', 'likes_count', 'difficulty', 'duration_minutes', 'author_name'];
+    $allowedOrderDir = ['ASC', 'DESC'];
+    
+    if (!in_array($orderBy, $allowedOrderBy)) $orderBy = 'created_at';
+    if (!in_array($orderDir, $allowedOrderDir)) $orderDir = 'DESC';
+    
+    $sql = 'SELECT r.*, u.name AS author_name, u.avatar_path AS author_avatar_path FROM recipes r JOIN users u ON u.id = r.user_id';
+    $params = [];
+    
+    if (!empty($search)) {
+        $sql .= ' WHERE r.title LIKE ? OR r.description LIKE ? OR u.name LIKE ?';
+        $searchTerm = '%' . $search . '%';
+        $params = [$searchTerm, $searchTerm, $searchTerm];
+    }
+    
+    $sql .= " ORDER BY $orderBy $orderDir LIMIT ? OFFSET ?";
+    $params[] = $limit;
+    $params[] = $offset;
+    
+    $recipes = db_query($sql, $params)->fetchAll();
+    
+    // Add images for each recipe
+    foreach ($recipes as &$recipe) {
+        $recipe['images'] = db_query('SELECT * FROM recipe_images WHERE recipe_id = ? ORDER BY sort_order, id', [$recipe['id']])->fetchAll();
+    }
+    
+    return $recipes;
+}
+
+/**
+ * Count all recipes (with optional search)
+ */
+function admin_count_all_recipes(string $search = ''): int {
+    $sql = 'SELECT COUNT(*) FROM recipes r JOIN users u ON u.id = r.user_id';
+    $params = [];
+    
+    if (!empty($search)) {
+        $sql .= ' WHERE r.title LIKE ? OR r.description LIKE ? OR u.name LIKE ?';
+        $searchTerm = '%' . $search . '%';
+        $params = [$searchTerm, $searchTerm, $searchTerm];
+    }
+    
+    return (int)db_query($sql, $params)->fetchColumn();
+}
+
+/**
+ * Admin delete recipe (can delete any recipe)
+ */
+function admin_delete_recipe(int $recipeId): bool {
+    try {
+        $pdo = get_db_connection();
+        $pdo->beginTransaction();
+        
+        // Get and delete images
+        $images = db_query('SELECT * FROM recipe_images WHERE recipe_id = ?', [$recipeId])->fetchAll();
+        foreach ($images as $img) {
+            $path = __DIR__ . '/../public/' . ltrim($img['file_path'], '/');
+            if (is_file($path)) {
+                @unlink($path);
+            }
+        }
+        
+        // Delete recipe (cascading deletes will handle related data)
+        db_query('DELETE FROM recipes WHERE id = ?', [$recipeId]);
+        
+        $pdo->commit();
+        return true;
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        error_log("Error deleting recipe $recipeId: " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Get recipe statistics
+ */
+function get_recipe_stats(): array {
+    try {
+        $totalRecipes = (int)db_query('SELECT COUNT(*) FROM recipes')->fetchColumn();
+        $totalLikes = (int)db_query('SELECT SUM(likes_count) FROM recipes')->fetchColumn();
+        $recentRecipes = (int)db_query('SELECT COUNT(*) FROM recipes WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)')->fetchColumn();
+        $avgDuration = (int)db_query('SELECT AVG(duration_minutes) FROM recipes WHERE duration_minutes > 0')->fetchColumn();
+        
+        return [
+            'total' => $totalRecipes,
+            'total_likes' => $totalLikes,
+            'recent' => $recentRecipes,
+            'avg_duration' => $avgDuration
+        ];
+    } catch (Exception $e) {
+        error_log("Error getting recipe stats: " . $e->getMessage());
+        return ['total' => 0, 'total_likes' => 0, 'recent' => 0, 'avg_duration' => 0];
+    }
+}
+
+/**
+ * Admin update recipe (can edit any recipe)
+ */
+function admin_update_recipe(int $recipeId, array $data): bool {
+    try {
+        $allowedFields = ['title', 'description', 'difficulty', 'duration_minutes', 'portions', 'category'];
+        $sets = [];
+        $params = [];
+        
+        foreach ($allowedFields as $field) {
+            if (array_key_exists($field, $data)) {
+                $sets[] = "$field = ?";
+                $params[] = $data[$field];
+            }
+        }
+        
+        if (empty($sets)) return false;
+        
+        $params[] = $recipeId;
+        $sql = 'UPDATE recipes SET ' . implode(', ', $sets) . ' WHERE id = ?';
+        db_query($sql, $params);
+        return true;
+    } catch (Exception $e) {
+        error_log("Error updating recipe $recipeId: " . $e->getMessage());
+        return false;
+    }
 }
 
 function toggle_like(int $recipeId, int $userId): array {

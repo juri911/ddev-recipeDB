@@ -36,7 +36,7 @@
   --rh-text-hover: #2D7EF7;
   --rh-text-black: #FAF9F6;
   --rh-border: #2D7EF7;
-  --rh-muted: #2D7EF7;
+  --rh-muted: #1C4B92;
   --rh-primary: #2D7EF7;
   --rh-primary-hover: #FAF9F6;
   --rh-card-bg: #1A1A1A;
@@ -195,6 +195,11 @@ button {
     background-color: transparent !important;
     color: var(--rh-primary) !important;
   }
+}
+
+.nav-link-active {
+  background-color: transparent !important;
+  color: var(--rh-primary) !important;
 }
 
 .mobile-nav-link-active {
@@ -573,10 +578,6 @@ button {
     display: flex;
   }
   
-  /* Add top padding to body to account for fixed mobile header */
-  body {
-    padding-top: 60px;
-  }
   
   /* Hide the existing mobile logo section when mobile header is active */
   .flex.content-start.w-full.flex.lg\:hidden {
@@ -612,4 +613,82 @@ button {
   #zoom-modal .absolute.bottom-4 {
     display: none;
   }
+}
+
+/* Desktop Header Modern Styles */
+
+/* Dropdown animation */
+#userMenuDropdown {
+  transform: translateY(-10px) scale(0.95);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#userMenuDropdown:not(.hidden) {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Register button underline animation */
+.desktop-nav-btn:hover .absolute.bottom-0 {
+  width: 100% !important;
+}
+
+/* Notification badge pulse animation */
+.desktop-header .animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Mobile Magnet Toggle Styles */
+#mobile-magnet-toggle {
+  position: relative;
+  overflow: hidden;
+}
+
+#mobile-magnet-toggle:hover {
+  transform: scale(1.05);
+}
+
+#mobile-magnet-toggle:active {
+  transform: scale(0.95);
+}
+
+/* Magnet button active state */
+#mobile-magnet-toggle.active {
+  background-color: var(--rh-hover-bg) !important;
+  color: var(--rh-primary) !important;
+}
+
+/* Magnet feedback toast */
+.magnet-toast {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+/* Magnet rotate */
+.magnet-rotate {
+  -moz-transition: all .5s linear;
+  -webkit-transition: all .5s linear;
+  transition: all .5s linear;
+}
+
+.magnet-rotate.down {
+  -moz-transform:rotate(180deg);
+  -webkit-transform:rotate(180deg);
+  transform:rotate(180deg);
+
 }

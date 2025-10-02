@@ -25,12 +25,26 @@ if (!isset($user)) {
     }
 }
 
+// Load SEO settings from database
+require_once __DIR__ . '/../../lib/settings.php';
+require_once __DIR__ . '/../../lib/users.php';
+require_once __DIR__ . '/../../lib/logger.php';
+
+// Log page visit (only for non-AJAX requests)
+if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
+    $page_name = basename($_SERVER['PHP_SELF'], '.php');
+    if (!in_array($page_name, ['api', 'ajax'])) { // Skip API endpoints
+        log_page_visit($page_name);
+    }
+}
+$seoSettings = get_seo_settings();
+
 // SEO Defaults – können pro Seite überschrieben werden
 $seo = [
     'title' => $seo['title'] ?? $pageTitle ?? APP_NAME,
-    'description' => $seo['description'] ?? $pageDescription ?? 'Entdecke leckere Rezepte, Inspiration und Food-Tipps auf ' . APP_NAME . '.',
-    'keywords' => $seo['keywords'] ?? $pageKeywords ?? 'Rezepte, Kochen, Backen, Essen, Foodblog',
-    'author' => $seo['author'] ?? $pageAuthor ?? APP_NAME,
+    'description' => $seo['description'] ?? $pageDescription ?? $seoSettings['description'],
+    'keywords' => $seo['keywords'] ?? $pageKeywords ?? $seoSettings['keywords'],
+    'author' => $seo['author'] ?? $pageAuthor ?? $seoSettings['author'],
     'url' => $seo['url'] ?? $pageUrl ?? (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]",
     'image' => $seo['image'] ?? $pageImage ?? '/assets/default_og.png',
     'jsonLd' => $seo['jsonLd'] ?? null,
@@ -68,14 +82,15 @@ $seo = [
     <script src="/assets/css/tailwindV4.css"></script>
     <link rel="stylesheet" href="/assets/fonts/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/style.css">
-    
+
     <?php if (isset($csrfToken)): ?>
         <meta name="csrf-token" content="<?php echo htmlspecialchars($csrfToken); ?>">
     <?php endif; ?>
-<?php if ($user): ?>
-<meta name="user-avatar" content="<?php echo htmlspecialchars(isset($user['avatar_path']) && $user['avatar_path'] ? absolute_url_from_path((string) $user['avatar_path']) : '/images/default_avatar.png'); ?>">
-<meta name="user-name" content="<?php echo htmlspecialchars($user['name']); ?>">
-<?php endif; ?>
+    <?php if ($user): ?>
+        <meta name="user-avatar"
+            content="<?php echo htmlspecialchars(isset($user['avatar_path']) && $user['avatar_path'] ? absolute_url_from_path((string) $user['avatar_path']) : '/images/default_avatar.png'); ?>">
+        <meta name="user-name" content="<?php echo htmlspecialchars($user['name']); ?>">
+    <?php endif; ?>
 </head>
 
 <body>
@@ -91,47 +106,52 @@ $seo = [
                 <svg fill="currentColor" width="120px" height="35px" style="color: var(--rh-primary);">
                     <use href="#logo"></use>
                 </svg>
-                <span class="ml-2 text-xs px-2 py-1 rounded" style="background-color: var(--rh-primary); color: white;">beta</span>
+                <span class="ml-2 text-xs px-2 py-1 rounded bg-[var(--rh-primary)] text-white">beta</span>
             </a>
         </div>
 
         <!-- Mobile Actions -->
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-0">
             <!-- Theme Toggle -->
-            <button id="mobile-theme-toggle" class="p-2 rounded-lg transition-colors" style="color: var(--rh-text);" aria-label="Theme wechseln">
+            <button id="mobile-theme-toggle" class="p-2 rounded-lg transition-colors" style="color: var(--rh-text);"
+                aria-label="Theme wechseln">
                 <i class="fas fa-moon text-lg"></i>
             </button>
 
             <!-- Search -->
-            <button popovertarget="search-popover" class="p-2 rounded-lg transition-colors" style="color: var(--rh-text);" aria-label="Suchen">
+            <button popovertarget="search-popover" class="p-2 rounded-lg transition-colors"
+                style="color: var(--rh-text);" aria-label="Suchen">
                 <i class="fas fa-magnifying-glass text-lg"></i>
             </button>
 
+            <!-- Card Magnet Toggle -->
+            <button id="mobile-magnet-toggle" class="p-2 rounded-lg transition-colors magnet-rotate" style="color: var(--rh-text);"
+                aria-label="Card Magnet Modus" title="Card Magnet Modus">
+                <i class="fas fa-magnet text-lg transition-transform duration-300 ease-in-out"></i>
+            </button>
             <?php if (isset($user) && $user): ?>
-                <!-- Notifications -->
-                <button popovertarget="notification-bell" class="p-2 rounded-lg transition-colors relative" style="color: var(--rh-text);" aria-label="Benachrichtigungen">
-                    <i class="fas fa-bell text-lg"></i>
-                    <?php if ($unreadCount > 0): ?>
-                        <span class="absolute -top-1 -right-1 bg-red-500 text-xs rounded-full h-4 w-4 flex items-center justify-center text-white"><?php echo $unreadCount; ?></span>
-                    <?php endif; ?>
-                </button>
-
-                <!-- User Avatar -->
-                <button id="mobile-user-menu" class="p-1 rounded-lg transition-colors" style="color: var(--rh-text);" aria-label="Benutzermenü">
-                    <div class="h-8 w-8 rounded-full overflow-hidden">
-                        <img src="<?php echo htmlspecialchars(isset($user['avatar_path']) && $user['avatar_path'] ? absolute_url_from_path((string) $user['avatar_path']) : '/images/default_avatar.png'); ?>"
-                            class="h-8 w-8 rounded-full object-cover" alt="Avatar" />
-                    </div>
-                </button>
-            <?php else: ?>
-                <!-- Login Button -->
-                <a href="/login.php" class="p-2 rounded-lg transition-colors" style="color: var(--rh-text);" aria-label="Anmelden">
-                    <i class="fas fa-user text-lg"></i>
-                </a>
-            <?php endif; ?>
-
+            <!-- Notifications -->
+            <?php
+                    // Ensure function exists before calling
+                    $unreadCount = 0;
+                    if (function_exists('count_unread_notifications')) {
+                        $unreadCount = count_unread_notifications((int) $user['id']);
+                    }
+                    ?>
+                    <button popovertarget="notification-bell"
+                        class=" lg:p-3 p-2 lg:rounded-xl rounded-none transition-all duration-200  relative">
+                        <i class="fa-solid fa-bell lg:text-lg text-lg"></i>
+                        <?php if ($unreadCount > 0): ?>
+                            <span id="notification-badge"
+                                class="absolute -top-1 -right-1 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center text-white animate-pulse"
+                                style="background: linear-gradient(135deg, #ef4444, #ec4899); box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);">
+                                <?php echo $unreadCount; ?>
+                            </span>
+                        <?php endif; ?>
+                        <?php endif; ?>          
             <!-- Mobile Menu -->
-            <button id="mobile-menu-toggle" class="p-2 rounded-lg transition-colors" style="color: var(--rh-text);" aria-label="Menü">
+            <button id="mobile-menu-toggle" class="p-2 rounded-lg transition-colors" style="color: var(--rh-text);"
+                aria-label="Menü">
                 <i class="fas fa-bars text-lg"></i>
             </button>
         </div>
@@ -139,125 +159,150 @@ $seo = [
 
     <!-- Desktop Header -->
     <header
-        class="flex lg:sticky lg:top-0 fixed bottom-0 left-0 right-0 z-10 container-fluid min-h-[80px] mx-auto justify-between 
-               items-center border-b-[1px] bg-[var(--rh-bg)]/40 border-[var(--rh-bg-secondary)] backdrop-blur-lg z-[40]">
+        class="flex lg:sticky lg:top-0 fixed bottom-0 left-0 right-0 z-10 container-fluid min-h-[80px] mx-auto justify-between items-center z-[40] backdrop-blur-sm boder border-b border-[var(--rh-border)]">
         <!-- Logo -->
         <div class="lg:flex hidden content-start relative">
-            <a href="/"
-                class="flex items-center z-[9999] navbar-brand  origin-left transition duration-300 ease-in-out pl-3">
+            <a href="/" class="flex items-center z-[9999] origin-left pl-4 group">
                 <?php //echo get_app_logo_html(); 
                 ?>
                 <svg fill="currentColor" width="160px" height="50px">
-                    <use href="#logo"></use>
-                </svg>
-                <p class="absolute bottom-[-8px] right-[-32px] montserrat text-white bg-black z-[99991] text-[12px] p-[2px_4px]">beta</p>
+                    <use href="#logo"></use </svg>
+                    <span class="ml-2 text-xs px-2 py-1 rounded bg-[var(--rh-primary)] text-white">beta</span>
             </a>
         </div>
 
         <!-- Navigation -->
         <nav class="flex items-center justify-between lg:justify-end h-[75px] w-full">
-            <div class="flex justify-center lg:justify-end w-full items-center gap-x-0 lg:gap-x-5 text-[16px]">
+            <div class="flex lg:justify-end justify-between w-full items-center gap-x-0 lg:gap-x-5 text-[16px]">
                 <!-- Link group -->
-                <div class="flex justify-center items-center">
-                    <!-- Home -->
-                    <a href="/" data-nav-link
-                        class="bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1 border-[#2d7ef7]  hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent  lg:py-1 lg:px-3 p-4  lg:rounded-l transition duration-600 aspect-square lg:aspect-auto rounded-none">
-                        <i class="fa-solid fa-house lg:text-base text-2xl"></i>
+                <!-- Home -->
+                <a href="/" data-nav-link
+                    class=" lg:px-4 lg:py-2 p-4 lg:rounded-xl rounded-none transition-all duration-200 ">
+                    <i class="fa-solid fa-house lg:text-base text-2xl"></i>
+                </a>
+                <!-- Search -->
+                <button popovertarget="search-popover"
+                    class=" lg:px-4 lg:py-2 p-4 lg:rounded-xl rounded-none transition-all duration-200 ">
+                    <i class="fas fa-magnifying-glass lg:text-base text-2xl"></i>
+                </button>
+                <!-- Categories -->
+                <a href="/categories.php" data-nav-link
+                    class=" lg:block hidden lg:px-4 lg:py-2 p-4 lg:rounded-xl rounded-none transition-all duration-200 ">
+                    <i class="fa-solid fa-tags lg:text-base text-2xl"></i>
+                </a>
+
+                <!-- Theme Toggle Button -->
+                <button id="theme-toggle"
+                    class=" lg:px-4 lg:py-2 p-4 lg:rounded-xl rounded-none transition-all duration-200 "
+                    aria-label="Theme wechseln" title="Theme wechseln">
+                    <i class="fas fa-moon lg:text-base text-2xl"></i>
+                    <span class="hidden lg:inline ml-2 font-medium">Dark</span>
+                </button>
+
+                <?php if (isset($user) && $user): ?>
+                    <!-- New Recipe Button -->
+                    <a href="/recipe_new.php" data-nav-link
+                        class=" lg:px-4 lg:py-2 p-4 lg:rounded-xl rounded-none transition-all duration-200 "
+                        style="background: linear-gradient(135deg, var(--rh-primary), #10b981); color: white; box-shadow: 0 4px 6px rgba(45, 126, 247, 0.25);">
+                        <i class="fa-solid fa-feather lg:text-base text-2xl lg:mr-2"></i>
+                        <span class="lg:inline hidden font-medium">Neues Rezept</span>
                     </a>
-                    <!-- Search -->
-                    <button popovertarget="search-popover"
-                        class="bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1  border-[#2d7ef7] hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent  lg:py-1 lg:px-3 p-4 transition duration-600 aspect-square lg:aspect-auto rounded-none">
-                        <i class="fas fa-magnifying-glass lg:text-base text-2xl"></i>
+                    <!-- Notifications -->
+                    <?php
+                    // Ensure function exists before calling
+                    $unreadCount = 0;
+                    if (function_exists('count_unread_notifications')) {
+                        $unreadCount = count_unread_notifications((int) $user['id']);
+                    }
+                    ?>
+                    <button popovertarget="notification-bell"
+                        class=" lg:p-3 p-4 lg:rounded-xl rounded-none transition-all duration-200  relative">
+                        <i class="fa-solid fa-bell lg:text-lg text-2xl"></i>
+                        <?php if ($unreadCount > 0): ?>
+                            <span id="notification-badge"
+                                class="absolute -top-1 -right-1 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center text-white animate-pulse"
+                                style="background: linear-gradient(135deg, #ef4444, #ec4899); box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);">
+                                <?php echo $unreadCount; ?>
+                            </span>
+                        <?php endif; ?>
                     </button>
-                    <!-- Categories -->
-                    <a href="/categories.php" data-nav-link
-                        class="lg:block hidden bg-[#2d7ef7] border-1 border-[#2d7ef7] hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent lg:py-1 lg:px-3 p-4 lg:rounded-r transition duration-600 aspect-square lg:aspect-auto rounded-none">
-                        <i class="fa-solid fa-tags lg:text-base text-2xl"></i>
-                    </a>
-                </div>
-                <div class="flex items-center gap-x-0 lg:gap-x-2 pr-0 lg:pr-3">
-                    <!-- Theme Toggle Button -->
-                    <button id="theme-toggle" class="theme-toggle bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1 border-[#2d7ef7] hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent  p-4 lg:py-1 lg:px-3 aspect-square lg:aspect-auto rounded-none lg:rounded transition duration-600" aria-label="Theme wechseln" title="Theme wechseln">
-                        <i class="fas fa-moon lg:text-base text-2xl"></i>
-                        <span class="hidden lg:inline ml-2">Dark</span>
-                    </button>
-                    
-                    <?php if (isset($user) && $user): ?>
-                        <!-- New Recipe Button -->
-                        <a href="/recipe_new.php" data-nav-link
-                            class="bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1 border-[#2d7ef7] hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent p-4 lg:py-1 lg:px-3 aspect-square lg:aspect-auto rounded-none lg:rounded transition duration-600">
-                            <i class="fa-solid fa-feather lg:text-base text-2xl p-0 lg:pr-2"></i>
-                            <p class="lg:inline hidden">Neues Rezept</p>
-                        </a>
-                        <!-- Notifications -->
-                        <?php
-                        // Ensure function exists before calling
-                        $unreadCount = 0;
-                        if (function_exists('count_unread_notifications')) {
-                            $unreadCount = count_unread_notifications((int) $user['id']);
-                        }
-                        ?>
-                        <button popovertarget="notification-bell" class="bg-transparent relative lg:text-gray-600 hover:text-[var(--rh-text)] lg:p-0 p-4 aspect-square lg:aspect-auto hover:border-[var(--rh-text)] hover:bg-transparent transition duration-600">
-                            <i class="fa-solid fa-bell lg:text-[26px] text-2xl"></i>
-                            <?php if ($unreadCount > 0): ?>
-                                <span id="notification-badge"
-                                    class="absolute -top-1 -right-1 bg-red-500 text-xs rounded-full h-4 w-4 flex items-center justify-center"><?php echo $unreadCount; ?></span>
-                            <?php endif; ?>
+
+                    <!-- User Dropdown -->
+                    <div class="relative inline-block text-left ml-2">
+                        <!-- Avatar Button -->
+                        <button id="userMenuButton"
+                            class=" flex items-center focus:outline-none lg:p-2 p-4 lg:rounded-xl rounded-none transition-all duration-200 ">
+                            <div class="h-10 w-10 rounded-full overflow-hidden transition-all duration-200 cursor-pointer"
+                                style="border: 2px solid var(--rh-border); box-shadow: 0 2px 4px var(--rh-shadow);">
+                                <img src="<?php echo htmlspecialchars(isset($user['avatar_path']) && $user['avatar_path'] ? absolute_url_from_path((string) $user['avatar_path']) : '/images/default_avatar.png'); ?>"
+                                    class="h-10 w-10 rounded-full object-cover" alt="Avatar" />
+                            </div>
+                            <span class="ml-3 text-sm font-medium hidden lg:inline" style="color: var(--rh-text);">
+                                <?php echo htmlspecialchars($user['name']); ?>
+                            </span>
+                            <i class="fas fa-chevron-down ml-2 text-xs hidden lg:inline"
+                                style="color: var(--rh-muted);"></i>
                         </button>
 
-                        <!-- User Dropdown -->
-                        <div class="relative inline-block text-left ml-auto">
-                            <!-- Avatar Button -->
-                            <button id="userMenuButton" class="flex items-center focus:outline-none lg:pr-4 p-4 aspect-square lg:aspect-auto">
-                                <div 
-                                    class="h-10 w-10 rounded-full overflow-hidden outline-2 outline-offset-2 lg:outline-[#2d7ef7] hover:outline-[var(--rh-text)] transition duration-600 cursor-pointer">
-                                    <img src="<?php echo htmlspecialchars(isset($user['avatar_path']) && $user['avatar_path'] ? absolute_url_from_path((string) $user['avatar_path']) : '/images/default_avatar.png'); ?>"
-                                        class="h-10 w-10 rounded-full object-cover" alt="Avatar" />
-                                </div>
-                                <span
-                                    class="ml-2 text-sm font-medium hidden"><?php echo htmlspecialchars($user['name']); ?></span>
-                            </button>
-
-                            <!-- Dropdown - Updated classes for flexible positioning -->
-                            <div id="userMenuDropdown"
-                                class="hidden absolute right-0 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 transform transition-all duration-200 ease-out shadow-xl/30">
-                                <a href="<?php echo htmlspecialchars(profile_url(['id' => $user['id'], 'name' => $user['name']])); ?>" data-nav-link
-                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-lg transition-colors">
-                                    <i class="fas fa-user mr-2"></i>Profil ansehen
+                        <!-- Dropdown - Modern styling -->
+                        <div id="userMenuDropdown"
+                            class="hidden absolute right-0 w-56 rounded-xl z-50 transform transition-all duration-200 ease-out"
+                            style="background: var(--rh-card-bg); border: 1px solid var(--rh-border); box-shadow: 0 10px 25px -5px var(--rh-shadow); backdrop-filter: blur(20px);">
+                            <div class="p-2">
+                                <a href="<?php echo htmlspecialchars(profile_url(['id' => $user['id'], 'name' => $user['name']])); ?>"
+                                    data-nav-link
+                                    class="flex items-center px-4 py-3 text-sm rounded-lg transition-all duration-200 hover:scale-[1.02]"
+                                    style="color: var(--rh-text);"
+                                    onmouseover="this.style.backgroundColor='var(--rh-hover-bg)'"
+                                    onmouseout="this.style.backgroundColor='transparent'">
+                                    <i class="fas fa-user mr-3 w-4"></i>
+                                    <span class="font-medium">Profil ansehen</span>
                                 </a>
                                 <a href="/profile_edit.php" data-nav-link
-                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-                                    <i class="fas fa-edit mr-2"></i>Profil bearbeiten
+                                    class="flex items-center px-4 py-3 text-sm rounded-lg transition-all duration-200 hover:scale-[1.02]"
+                                    style="color: var(--rh-text);"
+                                    onmouseover="this.style.backgroundColor='var(--rh-hover-bg)'"
+                                    onmouseout="this.style.backgroundColor='transparent'">
+                                    <i class="fas fa-edit mr-3 w-4"></i>
+                                    <span class="font-medium">Profil bearbeiten</span>
                                 </a>
-                                <div class="border-t border-gray-200"></div>
+                                <div class="my-2" style="border-top: 1px solid var(--rh-border);"></div>
                                 <a href="/logout.php" data-nav-link
-                                    class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 rounded-b-lg transition-colors">
-                                    <i class="fa-solid fa-arrow-right-from-bracket mr-2 rotate-180"></i>Logout
+                                    class="flex items-center px-4 py-3 text-sm rounded-lg transition-all duration-200 hover:scale-[1.02]"
+                                    style="color: #ef4444;"
+                                    onmouseover="this.style.backgroundColor='rgba(239, 68, 68, 0.1)'"
+                                    onmouseout="this.style.backgroundColor='transparent'">
+                                    <i class="fa-solid fa-arrow-right-from-bracket mr-3 w-4 rotate-180"></i>
+                                    <span class="font-medium">Logout</span>
                                 </a>
                             </div>
                         </div>
-                    <?php else: ?>
-                        <div class="flex items-center gap-x-0 lg:gap-x-5 text-[16px]">
-                            <a href="/login.php" data-nav-link
-                                class="flex items-center bg-transparent lg:bg-[#2d7ef7] border-0 lg:border-1 border-[#2d7ef7] font-semibold hover:border-[var(--rh-text)] hover:text-[var(--rh-text)] hover:bg-transparent 
-                                p-4 lg:py-1 lg:px-3 lg:rounded rounded-none transition duration-600 aspect-square lg:aspect-auto">
-                                <i class="fa-solid fa-arrow-right-from-bracket lg:text-base text-2xl pr-0 lg:pr-2"></i>
-                                <p class="lg:inline hidden">Log In</p>
-                            </a>
+                    </div>
+                <?php else: ?>
 
-                            <a class="flex items-center lg:gap-x-1 font-semibold lg:text-[#2d7ef7] relative after:absolute 
-                                    after:bg-[#2d7ef7] after:h-[2px] after:w-0 after:left-1/2 after:-translate-x-1/2 after:bottom-0 lg:hover:after:w-full after:transition-all after:duration-300 aspect-square lg:aspect-auto lg:p-0 p-4"
-                                href="/register.php" data-nav-link>
-                                <p class="lg:inline hidden">Registrieren</p><i class="fa-solid fa-pencil lg:text-base text-2xl"></i>
-                            </a>
+                    <a href="/login.php" data-nav-link
+                        class="w-auto flex items-center lg:px-4 lg:py-2 p-4 lg:rounded-xl rounded-none transition-all duration-200 "
+                        style="background: linear-gradient(135deg, var(--rh-primary), #8b5cf6); color: white; box-shadow: 0 4px 6px rgba(45, 126, 247, 0.25);">
+                        <i class="fa-solid fa-arrow-right-from-bracket lg:text-base text-2xl lg:mr-2"></i>
+                        <span class="lg:inline hidden font-medium">Log In</span>
+                    </a>
+
+                    <a href="/register.php" data-nav-link
+                        class=" flex items-center lg:px-4 lg:py-2 p-4 lg:rounded-xl rounded-none transition-all duration-200  relative overflow-hidden">
+                        <span class="lg:inline hidden font-medium mr-2">Registrieren</span>
+                        <i class="fa-solid fa-pencil lg:text-base text-2xl"></i>
+                        <div class="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 transition-all duration-300 w-0 hover:w-full">
                         </div>
-                    <?php endif; ?>
-                </div>
+                    </a>
+
+                <?php endif; ?>
+
                 <!-- Mobile menu button -->
-                <button id="mobile-nav-btn" class="relative flex items-end justify-center mr-0 lg:mr-3  lg:inline hidden"
+                <button id="mobile-nav-btn"
+                    class="relative flex items-end justify-center mr-0 lg:mr-3  lg:inline hidden"
                     aria-label="Menü öffnen" aria-expanded="false" aria-controls="mobile-nav-panel">
                     <i
-                        class="fas fa-bars text-[36px] lg:text-[var(--rh-primary)] hover:text-[var(--rh-text)] transition-all duration-300 ease-out aspect-square lg:aspect-auto lg:p-0 p-4"></i>
+                        class="fas fa-bars text-[36px] lg:text-[var(--rh-primary)] hover:text-[var(--rh-text)] transition-all duration-300 ease-out  lg:p-0 p-4"></i>
 
                 </button>
             </div>
@@ -270,10 +315,8 @@ $seo = [
     </div>
 
     <!-- Drawer -->
-    <nav id="mobile-nav-panel"
-        class="fixed top-0 right-0 h-full w-full sm:w-[500px] bg-white text-[var(--rh-text-black)] shadow-2xl z-50 translate-x-full 
-                transition-transform duration-300 ease-in-out will-change-transform flex flex-col"
-        aria-hidden="true">
+    <nav id="mobile-nav-panel" class="fixed top-0 right-0 h-full w-full sm:w-[500px] bg-white text-[var(--rh-text-black)] shadow-2xl z-50 translate-x-full 
+                transition-transform duration-300 ease-in-out will-change-transform flex flex-col" aria-hidden="true">
         <div class="flex items-center justify-end p-4">
             <button id="mobile-nav-close"
                 class=" relative w-[46px] h-[46px] bg-[var(--rh-primary)] rounded-full flex flex-col items-center justify-center gap-1.5 active:scale-95 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50"
@@ -283,10 +326,14 @@ $seo = [
         </div>
 
         <ul class="flex-1 overflow-y-auto p-4 space-y-3 dark:text-black">
-            <li><a href="/" data-mobile-nav-link class="block px-3 py-2 rounded-lg hover:bg-gray-100 transition">Startseite</a></li>
-            <li><a href="/categories.php" data-mobile-nav-link class="block px-3 py-2 rounded-lg hover:bg-gray-100 transition">Rezepte</a></li>
-            <li><a href="/blog.php" data-mobile-nav-link class="block px-3 py-2 rounded-lg hover:bg-gray-100 transition">Blog</a></li>
-            <li><a href="/kontakt.php" data-mobile-nav-link class="block px-3 py-2 rounded-lg hover:bg-gray-100 transition">Kontakt</a></li>
+            <li><a href="/" data-mobile-nav-link
+                    class="block px-3 py-2 rounded-lg hover:bg-gray-100 transition">Startseite</a></li>
+            <li><a href="/categories.php" data-mobile-nav-link
+                    class="block px-3 py-2 rounded-lg hover:bg-gray-100 transition">Rezepte</a></li>
+            <li><a href="/blog.php" data-mobile-nav-link
+                    class="block px-3 py-2 rounded-lg hover:bg-gray-100 transition">Blog</a></li>
+            <li><a href="/kontakt.php" data-mobile-nav-link
+                    class="block px-3 py-2 rounded-lg hover:bg-gray-100 transition">Kontakt</a></li>
         </ul>
     </nav>
 
@@ -314,15 +361,16 @@ $seo = [
                             <span class="ml-3 text-gray-600">Lade Benachrichtigungen...</span>
                         </div>
                     </div>
-                    
+
                     <!-- Action Buttons -->
-                    <div class="grid lg:grid-cols-2 lg:grid-rows-1 grid-cols-1 grid-rows-2 gap-4 pt-4 border-t border-gray-200">
+                    <div
+                        class="grid lg:grid-cols-2 lg:grid-rows-1 grid-cols-1 grid-rows-2 gap-4 pt-4 border-t border-gray-200">
                         <button id="mark-all-read"
                             class="block w-full px-4 py-3 rounded bg-blue-600 text-white text-center text-sm font-medium hover:bg-blue-700 transition-colors">
                             <i class="fas fa-check-double mr-2"></i>
                             Alle als gelesen markieren
                         </button>
-                        <button id="delete-all-notifications" 
+                        <button id="delete-all-notifications"
                             class="w-full px-4 py-3 rounded bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-colors cursor-pointer">
                             <i class="fas fa-trash mr-2"></i>
                             Alle löschen
@@ -333,23 +381,24 @@ $seo = [
         </div>
     <?php endif; ?>
 
-  
+    <script src="/assets/js/theme.js"></script>
+    <script src="/assets/js/magnet-rotate.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-    
+        document.addEventListener("DOMContentLoaded", function () {
+
             // Mobile nav active
             function setActiveLinks() {
                 const currentPath = window.location.pathname;
                 const currentPage = currentPath.split('/').pop() || 'index.php';
-                
+
                 // Desktop navigation links
                 const navLinks = document.querySelectorAll('[data-nav-link]');
                 navLinks.forEach(link => {
                     const linkPath = link.getAttribute('href');
                     const linkPage = linkPath.split('/').pop() || 'index.php';
-                    
+
                     // Check if current page matches
-                    if (currentPath === linkPath || 
+                    if (currentPath === linkPath ||
                         (currentPath === '/' && linkPath === '/') ||
                         (currentPage === linkPage && linkPage !== '')) {
                         link.classList.add('nav-link-active');
@@ -357,14 +406,14 @@ $seo = [
                         link.classList.remove('nav-link-active');
                     }
                 });
-                
+
                 // Mobile navigation links
                 const mobileNavLinks = document.querySelectorAll('[data-mobile-nav-link]');
                 mobileNavLinks.forEach(link => {
                     const linkPath = link.getAttribute('href');
                     const linkPage = linkPath.split('/').pop() || 'index.php';
-                    
-                    if (currentPath === linkPath || 
+
+                    if (currentPath === linkPath ||
                         (currentPath === '/' && linkPath === '/') ||
                         (currentPage === linkPage && linkPage !== '')) {
                         link.classList.add('mobile-nav-link-active');
@@ -373,12 +422,12 @@ $seo = [
                     }
                 });
             }
-            
+
             // Set active links on page load
             setActiveLinks();
-            
+
             // Update active links when user clicks (for SPA-like behavior)
-            document.addEventListener('click', function(e) {
+            document.addEventListener('click', function (e) {
                 const clickedLink = e.target.closest('[data-nav-link], [data-mobile-nav-link]');
                 if (clickedLink) {
                     // Small delay to allow navigation to complete
@@ -514,7 +563,7 @@ $seo = [
                     const headers = {
                         'Accept': 'application/json'
                     };
-                    
+
                     if (csrfToken) {
                         headers['X-CSRF-Token'] = csrfToken;
                     }
@@ -538,7 +587,7 @@ $seo = [
                     }
 
                     const notifications = await response.json();
-                    
+
                     if (!Array.isArray(notifications)) {
                         console.error('Invalid notifications format:', notifications);
                         throw new Error('Invalid response format');
@@ -562,7 +611,7 @@ $seo = [
 
                         let link = '';
                         let icon = 'fa-bell';
-                        
+
                         if (n.type === 'new_recipe' && n.entity_id) {
                             link = `<a href="/recipe_view.php?id=${n.entity_id}" class="text-blue-600 hover:text-blue-800 hover:underline font-medium">${n.message}</a>`;
                             icon = 'fa-utensils';
@@ -580,12 +629,12 @@ $seo = [
                                     <div class="text-xs text-gray-500 mt-1">
                                         <i class="far fa-clock mr-1"></i>
                                         ${new Date(n.created_at).toLocaleString('de-DE', {
-                                            day: '2-digit',
-                                            month: '2-digit',
-                                            year: 'numeric',
-                                            hour: '2-digit',
-                                            minute: '2-digit'
-                                        })}
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        })}
                                     </div>
                                 </div>
                                 ${!n.is_read ? '<div class="flex-shrink-0"><div class="w-2 h-2 bg-blue-500 rounded-full"></div></div>' : ''}
@@ -696,25 +745,24 @@ $seo = [
             function showNotificationMessage(message, type = 'info') {
                 // Create a temporary toast notification
                 const toast = document.createElement('div');
-                toast.className = `fixed top-20 right-4 z-[9999] px-4 py-3 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full ${
-                    type === 'success' ? 'bg-green-500 text-white' : 
-                    type === 'error' ? 'bg-red-500 text-white' : 
-                    'bg-blue-500 text-white'
-                }`;
+                toast.className = `fixed top-20 right-4 z-[9999] px-4 py-3 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full ${type === 'success' ? 'bg-green-500 text-white' :
+                        type === 'error' ? 'bg-red-500 text-white' :
+                            'bg-blue-500 text-white'
+                    }`;
                 toast.innerHTML = `
                     <div class="flex items-center gap-2">
                         <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
                         <span>${message}</span>
                     </div>
                 `;
-                
+
                 document.body.appendChild(toast);
-                
+
                 // Animate in
                 setTimeout(() => {
                     toast.classList.remove('translate-x-full');
                 }, 100);
-                
+
                 // Animate out and remove
                 setTimeout(() => {
                     toast.classList.add('translate-x-full');
@@ -726,14 +774,8 @@ $seo = [
                 }, 3000);
             }
         });
-    </script>
 
-    <!-- Theme System Script -->
-    <script src="/assets/js/theme.js"></script>
-
-    <!-- Mobile Header Scroll Script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const mobileHeader = document.getElementById('mobile-header');
             let lastScrollTop = 0;
             let isScrolling = false;
@@ -754,10 +796,10 @@ $seo = [
                 if (window.innerWidth > 1024) return; // Only for mobile/tablet
 
                 const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                
+
                 // Prevent scroll handling during rapid scrolling
                 if (!isScrolling) {
-                    window.requestAnimationFrame(function() {
+                    window.requestAnimationFrame(function () {
                         // Hide header when scrolling down, show when scrolling up
                         if (scrollTop > lastScrollTop && scrollTop > 100) {
                             // Scrolling down - hide header
@@ -768,7 +810,7 @@ $seo = [
                             mobileHeader.classList.remove('hidden');
                             mobileHeader.classList.add('visible');
                         }
-                        
+
                         lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For Mobile or negative scrolling
                         isScrolling = false;
                     });
@@ -779,17 +821,106 @@ $seo = [
             // Mobile theme toggle
             const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
             if (mobileThemeToggle) {
-                mobileThemeToggle.addEventListener('click', function() {
+                mobileThemeToggle.addEventListener('click', function () {
                     if (window.themeManager) {
                         window.themeManager.toggleTheme();
                     }
                 });
             }
 
+            // Mobile magnet toggle
+            const mobileMagnetToggle = document.getElementById('mobile-magnet-toggle');
+            if (mobileMagnetToggle) {
+                // Initialize magnet state from localStorage
+                const magnetEnabled = localStorage.getItem('cardMagnetEnabled') !== 'false';
+                
+                // Set initial rotation immediately without transition
+                const icon = mobileMagnetToggle.querySelector('i');
+                if (icon) {
+                    icon.style.transition = 'none'; // Disable transition for initial setup
+                    icon.style.transform = magnetEnabled ? 'rotate(180deg)' : 'rotate(0deg)';
+                    // Re-enable transition after a brief delay
+                    setTimeout(() => {
+                        icon.style.transition = 'transform 0.3s ease-in-out';
+                    }, 50);
+                }
+                
+                updateMagnetToggle(magnetEnabled);
+
+                mobileMagnetToggle.addEventListener('click', function () {
+                    const currentState = localStorage.getItem('cardMagnetEnabled') !== 'false';
+                    const newState = !currentState;
+                    localStorage.setItem('cardMagnetEnabled', newState.toString());
+                    updateMagnetToggle(newState);
+
+                    // Show feedback
+                    showMagnetFeedback(newState);
+                });
+            }
+
+            function updateMagnetToggle(enabled) {
+                const button = document.getElementById('mobile-magnet-toggle');
+                if (button) {
+                    const icon = button.querySelector('i');
+                    if (icon) {
+                        // Update button styling
+                        if (enabled) {
+                            button.style.color = 'var(--rh-primary)';
+                            button.style.backgroundColor = 'transparent';
+                            button.title = 'Card Magnet: EIN';
+                        } else {
+                            button.style.color = '#000';
+                            button.style.backgroundColor = 'transparent';
+                            button.title = 'Card Magnet: AUS';
+                        }
+                        
+                        // Update icon classes (preserve existing transition)
+                        icon.className = 'fas fa-magnet text-lg transition-transform duration-300 ease-in-out';
+                        
+                        // Set rotation
+                        icon.style.transform = enabled ? 'rotate(180deg)' : 'rotate(0deg)';
+                    } else {
+                        console.warn('Magnet toggle icon not found');
+                    }
+                }
+            }
+
+            function showMagnetFeedback(enabled) {
+                // Create feedback toast
+                const toast = document.createElement('div');
+                toast.className = 'fixed top-20 left-1/2 z-50 px-4 py-2 rounded-lg text-white text-sm font-medium transition-all duration-300';
+                toast.style.background = enabled ? 'linear-gradient(135deg, var(--rh-primary), #10b981)' : 'linear-gradient(135deg, #6b7280, #9ca3af)';
+                toast.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-magnet"></i>
+                        <span>Card Magnet ${enabled ? 'aktiviert' : 'deaktiviert'}</span>
+                    </div>
+                `;
+
+                document.body.appendChild(toast);
+
+                // Animate in
+                setTimeout(() => {
+                    toast.style.transform = 'translate(-50%, 0)';
+                    toast.style.opacity = '1';
+                }, 10);
+
+                // Remove after 2 seconds
+                setTimeout(() => {
+                    toast.style.transform = 'translate(-50%, -20px)';
+                    toast.style.opacity = '0';
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.parentNode.removeChild(toast);
+                        }
+                    }, 300);
+                }, 2000);
+            }
+
             // Mobile menu toggle
             const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
             if (mobileMenuToggle) {
-                mobileMenuToggle.addEventListener('click', function() {
+                mobileMenuToggle.addEventListener('click', function () {
                     // Trigger existing mobile nav
                     const mobileNavBtn = document.getElementById('mobile-nav-btn');
                     if (mobileNavBtn) {
@@ -801,7 +932,7 @@ $seo = [
             // Mobile user menu
             const mobileUserMenu = document.getElementById('mobile-user-menu');
             if (mobileUserMenu) {
-                mobileUserMenu.addEventListener('click', function() {
+                mobileUserMenu.addEventListener('click', function () {
                     // Trigger existing user menu
                     const userMenuButton = document.getElementById('userMenuButton');
                     if (userMenuButton) {
@@ -812,17 +943,19 @@ $seo = [
 
             // Initialize
             checkScreenSize();
-            
+
             // Event listeners
-            window.addEventListener('scroll', handleScroll, { passive: true });
+            window.addEventListener('scroll', handleScroll, {
+                passive: true
+            });
             window.addEventListener('resize', checkScreenSize);
 
             // Update mobile theme toggle when theme changes
             if (window.themeManager) {
                 const originalUpdateThemeToggle = window.themeManager.updateThemeToggle;
-                window.themeManager.updateThemeToggle = function(theme) {
+                window.themeManager.updateThemeToggle = function (theme) {
                     originalUpdateThemeToggle.call(this, theme);
-                    
+
                     // Update mobile theme toggle
                     const mobileIcon = mobileThemeToggle?.querySelector('i');
                     if (mobileIcon) {
@@ -835,14 +968,5 @@ $seo = [
 
     <?php include __DIR__ . '/admin_nav.php'; ?>
 
-    <div class="flex content-start w-full flex lg:hidden px-4 py-4 relative">
-        <a href="/"
-            class="flex items-center navbar-brand origin-left">
-            <svg fill="currentColor" width="160px" height="50px">
-                <use href="#logo"></use>
-            </svg>
-            <p class="absolute bottom-0 left-4 montserrat bg-black text-white p-[2px_4px]">beta</p>
-        </a>
-    </div>
     <!-- Main Content Container -->
-    <main class="min-h-screen w-full md:px-[50px] px-[10px] mt-[20px]">
+    <main class="min-h-screen w-full lg:px-[50px] px-0 lg:mt-[20px] mt-[80px]">

@@ -253,3 +253,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }, FLASH_AUTO_HIDE_DELAY + (index * 500)); // Gestaffelt um 500ms
     });
 });
+
+
