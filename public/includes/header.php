@@ -124,25 +124,23 @@ $seo = [
                 <i class="fas fa-magnet text-lg transition-transform duration-300 ease-in-out"></i>
             </button>
             <?php if (isset($user) && $user): ?>
-            <!-- Notifications -->
-            <?php
-                    // Ensure function exists before calling
-                    $unreadCount = 0;
-                    if (function_exists('count_unread_notifications')) {
-                        $unreadCount = count_unread_notifications((int) $user['id']);
-                    }
-                    ?>
-                    <button popovertarget="notification-bell"
-                        class=" lg:p-3 p-2 lg:rounded-xl rounded-none transition-all duration-200  relative">
-                        <i class="fa-solid fa-bell lg:text-lg text-lg"></i>
-                        <?php if ($unreadCount > 0): ?>
-                            <span id="notification-badge"
-                                class="absolute -top-1 -right-1 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center text-white animate-pulse"
-                                style="background: linear-gradient(135deg, #ef4444, #ec4899); box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);">
-                                <?php echo $unreadCount; ?>
-                            </span>
-                        <?php endif; ?>
-                        <?php endif; ?>          
+                <!-- Mobile Notifications -->
+                <?php
+                $unreadCount = 0;
+                if (function_exists('count_unread_notifications')) {
+                    $unreadCount = count_unread_notifications((int) $user['id']);
+                }
+                ?>
+                <button popovertarget="notification-bell" class="p-2 rounded-lg transition-colors relative" style="color: var(--rh-text);" aria-label="Benachrichtigungen">
+                    <i class="fas fa-bell text-lg"></i>
+                    <?php if ($unreadCount > 0): ?>
+                        <span id="notification-badge-mobile" class="notification-badge absolute -top-1 -right-1 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center text-white animate-pulse"
+                            style="background: linear-gradient(135deg, #ef4444, #ec4899); box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);">
+                            <?php echo $unreadCount; ?>
+                        </span>
+                    <?php endif; ?>
+                </button>
+            <?php endif; ?>          
             <!-- Mobile Menu -->
             <button id="mobile-menu-toggle" class="p-2 rounded-lg transition-colors" style="color: var(--rh-text);"
                 aria-label="Menü">
@@ -208,11 +206,10 @@ $seo = [
                     }
                     ?>
                     <button popovertarget="notification-bell"
-                        class=" lg:p-3 p-4 lg:rounded-xl rounded-none transition-all duration-200  relative">
+                        class=" lg:p-3 p-4 lg:rounded-xl rounded-none transition-all duration-200  relative lg:inline hidden">
                         <i class="fa-solid fa-bell lg:text-lg text-1xl"></i>
                         <?php if ($unreadCount > 0): ?>
-                            <span id="notification-badge"
-                                class="absolute -top-1 -right-1 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center text-white animate-pulse"
+                            <span id="notification-badge-desktop" class="notification-badge absolute -top-1 -right-1 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center text-white animate-pulse"
                                 style="background: linear-gradient(135deg, #ef4444, #ec4899); box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);">
                                 <?php echo $unreadCount; ?>
                             </span>
@@ -605,7 +602,7 @@ $seo = [
                         let icon = 'fa-bell';
 
                         if (n.type === 'new_recipe' && n.entity_id) {
-                            link = `<a href="/recipe_view.php?id=${n.entity_id}" class="text-blue-600 hover:text-blue-800 hover:underline font-medium">${n.message}</a>`;
+                            link = `<a href="/recipe_view.php?id=${n.entity_id}" class="text-blue-600 hover:text-blue-800 hover:underline font-medium notification-link" data-notification-id="${n.id}">${n.message}</a>`;
                             icon = 'fa-utensils';
                         } else {
                             link = `<span class="${n.is_read ? 'text-gray-700' : 'text-gray-900 font-medium'}">${n.message}</span>`;
@@ -634,6 +631,19 @@ $seo = [
                         `;
                         notificationList.appendChild(notificationItem);
                     });
+
+                    // Add click handlers for notification links to update badges
+                    const notificationLinks = notificationList.querySelectorAll('.notification-link');
+                    notificationLinks.forEach(link => {
+                        link.addEventListener('click', () => {
+                            // Small delay to allow navigation, then update badges
+                            setTimeout(() => {
+                                if (window.NotificationBadgeManager) {
+                                    window.NotificationBadgeManager.fetchAndUpdate();
+                                }
+                            }, 500);
+                        });
+                    });
                 } catch (error) {
                     console.error('Error fetching notifications:', error);
                     notificationList.innerHTML = `
@@ -652,6 +662,11 @@ $seo = [
                 notificationPopover.addEventListener('toggle', (e) => {
                     if (e.newState === 'open') {
                         fetchNotifications();
+                    } else if (e.newState === 'closed') {
+                        // Update badges when popover is closed to reflect any changes
+                        if (window.NotificationBadgeManager) {
+                            window.NotificationBadgeManager.fetchAndUpdate();
+                        }
                     }
                 });
             }
@@ -678,9 +693,10 @@ $seo = [
                             const result = await response.json();
                             if (result.ok) {
                                 await fetchNotifications();
-                                // Remove notification badge
-                                if (notificationBadge) {
-                                    notificationBadge.remove();
+                                // Update ALL notification badges using the global manager
+                                if (window.NotificationBadgeManager) {
+                                    // Fetch fresh count from server to ensure accuracy
+                                    window.NotificationBadgeManager.fetchAndUpdate();
                                 }
                                 // Show success message
                                 showNotificationMessage('Alle Benachrichtigungen wurden als gelesen markiert.', 'success');
@@ -717,9 +733,10 @@ $seo = [
                             const result = await response.json();
                             if (result.ok) {
                                 await fetchNotifications();
-                                // Remove notification badge
-                                if (notificationBadge) {
-                                    notificationBadge.remove();
+                                // Update ALL notification badges using the global manager
+                                if (window.NotificationBadgeManager) {
+                                    // Fetch fresh count from server to ensure accuracy
+                                    window.NotificationBadgeManager.fetchAndUpdate();
                                 }
                                 showNotificationMessage('Alle Benachrichtigungen wurden erfolgreich gelöscht.', 'success');
                             } else {
@@ -957,6 +974,133 @@ $seo = [
             }
         });
     </script>
+
+    <!-- Global Notification Badge Update System -->
+    <script>
+        /**
+         * Global Notification Badge Management System
+         * Updates ALL notification badges across the entire website
+         */
+        window.NotificationBadgeManager = {
+            
+            /**
+             * Update all notification badges synchronously
+             */
+            updateAllBadges: function(count) {
+                console.log(`[BadgeManager] Updating all badges with count: ${count}`);
+                
+                // Find ALL notification badges across the entire page
+                const badges = document.querySelectorAll('.notification-badge');
+                
+                console.log(`[BadgeManager] Found ${badges.length} badges to update`);
+                
+                badges.forEach((badge, index) => {
+                    console.log(`[BadgeManager] Updating badge ${index + 1}:`, badge.id || badge.className);
+                    
+                    if (count > 0) {
+                        // Show badge with count
+                        badge.textContent = count;
+                        badge.style.display = 'flex';
+                        badge.style.opacity = '1';
+                        badge.style.transform = 'scale(1)';
+                        badge.style.visibility = 'visible';
+                    } else {
+                        // Hide badge with smooth animation
+                        badge.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                        badge.style.opacity = '0';
+                        badge.style.transform = 'scale(0.8)';
+                        
+                        // Remove after animation
+                        setTimeout(() => {
+                            if (badge && badge.parentNode) {
+                                badge.remove();
+                                console.log(`[BadgeManager] Badge ${index + 1} removed`);
+                            }
+                        }, 300);
+                    }
+                });
+            },
+            
+            /**
+             * Fetch current notification count from server
+             */
+            fetchAndUpdate: function() {
+                console.log('[BadgeManager] Fetching notification count...');
+                
+                return fetch('/api/get_unread_count.php')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('[BadgeManager] Server response:', data);
+                        this.updateAllBadges(data.count);
+                        return data.count;
+                    })
+                    .catch(error => {
+                        console.error('[BadgeManager] Error fetching count:', error);
+                        return 0;
+                    });
+            },
+            
+            /**
+             * Create a new badge element if needed
+             */
+            createBadge: function(parentElement, count, id = null) {
+                if (count <= 0) return null;
+                
+                const badge = document.createElement('span');
+                if (id) badge.id = id;
+                badge.className = 'notification-badge absolute -top-1 -right-1 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center text-white animate-pulse';
+                badge.style.background = 'linear-gradient(135deg, #ef4444, #ec4899)';
+                badge.style.boxShadow = '0 2px 4px rgba(239, 68, 68, 0.3)';
+                badge.textContent = count;
+                
+                parentElement.appendChild(badge);
+                console.log('[BadgeManager] New badge created:', id || 'unnamed');
+                return badge;
+            },
+            
+            /**
+             * Initialize badge management on page load
+             */
+            init: function() {
+                console.log('[BadgeManager] Initializing...');
+                
+                // Initial update
+                this.fetchAndUpdate();
+                
+                // Set up periodic updates (every 30 seconds)
+                setInterval(() => {
+                    this.fetchAndUpdate();
+                }, 30000);
+                
+                console.log('[BadgeManager] Initialized successfully');
+            }
+        };
+        
+        // Auto-initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Small delay to ensure all elements are loaded
+            setTimeout(() => {
+                window.NotificationBadgeManager.init();
+            }, 100);
+        });
+        
+        // Make it available globally for other scripts
+        window.updateNotificationBadges = function(count) {
+            window.NotificationBadgeManager.updateAllBadges(count);
+        };
+        
+        window.refreshNotificationBadges = function() {
+            return window.NotificationBadgeManager.fetchAndUpdate();
+        };
+    </script>
+
+    <!-- Notification Utilities -->
+    <script src="/assets/js/notification-utils.js"></script>
 
     <?php include __DIR__ . '/admin_nav.php'; ?>
 

@@ -61,8 +61,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <body class="flex items-center justify-center">
 <div class="flex items-center justify-center w-full min-h-screen shadow-[var(--shadow-6)]">   
-    <div class="min-h-screen lg:min-h-[calc(100vh-50px)] min-w-full lg:min-w-[450px] bg-center bg-no-repeat bg-cover bg-[var(--rh-primary)] bg-[url(/images/login.jpg)] bg-blend-multiply hidden lg:flex items-end"><a class="text-sm text-[var(--rh-text-black:)]" href="https://www.pexels.com/de-de/foto/luxurioses-nigiri-sushi-mit-frischem-truffel-30682879/" target="_blank">Foto von Airam Dato-on</a></div>
-    <div class="min-h-screen lg:min-h-[calc(100vh-50px)] min-w-full lg:min-w-[450px] bg-white text-[var(--rh-text-black)] flex justify-center items-start relative max-h-screen">
+    <div class="min-h-screen lg:min-h-[calc(100vh-150px)] min-w-full lg:min-w-[450px] bg-center bg-no-repeat bg-cover bg-[var(--rh-primary)] bg-[url(/images/login.jpg)] bg-blend-multiply hidden lg:flex items-end"><a class="text-sm text-[var(--rh-text-black:)]" href="https://www.pexels.com/de-de/foto/luxurioses-nigiri-sushi-mit-frischem-truffel-30682879/" target="_blank">Foto von Airam Dato-on</a></div>
+    <div class="min-h-screen lg:min-h-[calc(100vh-150px)] min-w-full lg:min-w-[450px] bg-white text-[var(--rh-text-black)] flex justify-center items-start relative max-h-screen">
         <div class="absolute top-0 right-0">
             <a href="/">
                 <i class="fa-solid fa-xmark fa-xl m-3"></i>

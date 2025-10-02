@@ -20,6 +20,23 @@ $user = current_user();
 $message = '';
 $error = '';
 
+// Check for session messages (from redirects)
+if (isset($_SESSION['notification_message'])) {
+    $message = $_SESSION['notification_message'];
+    unset($_SESSION['notification_message']);
+}
+
+if (isset($_SESSION['notification_error'])) {
+    $error = $_SESSION['notification_error'];
+    unset($_SESSION['notification_error']);
+}
+
+// Check if we should update the badge (after marking own notifications as read)
+$updateBadge = isset($_SESSION['update_badge']);
+if ($updateBadge) {
+    unset($_SESSION['update_badge']);
+}
+
 // CSRF-Schutz
 csrf_start();
 
@@ -62,32 +79,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                     
                     log_admin_action('broadcast_notification', "Broadcast-Nachricht an {$count} Benutzer gesendet: {$broadcastMessage}");
-                    $message = "Nachricht erfolgreich an {$count} Benutzer gesendet";
-                    break;
+                    
+                    // Redirect to prevent double submission
+                    $_SESSION['notification_message'] = "Nachricht erfolgreich an {$count} Benutzer gesendet";
+                    header('Location: /admin/notifications.php');
+                    exit;
                     
                 case 'mark_all_read':
                     $affected = db_query('UPDATE notifications SET is_read = 1 WHERE is_read = 0')->rowCount();
                     log_admin_action('mark_all_notifications_read', "Alle Benachrichtigungen als gelesen markiert ({$affected} Nachrichten)");
-                    $message = "{$affected} Benachrichtigungen als gelesen markiert";
-                    break;
+                    
+                    $_SESSION['notification_message'] = "{$affected} Benachrichtigungen (systemweit) als gelesen markiert";
+                    header('Location: /admin/notifications.php');
+                    exit;
+                    
+                case 'mark_my_read':
+                    $affected = db_query('UPDATE notifications SET is_read = 1 WHERE is_read = 0 AND user_id = ?', [$user['id']])->rowCount();
+                    log_admin_action('mark_my_notifications_read', "Eigene Benachrichtigungen als gelesen markiert ({$affected} Nachrichten)");
+                    
+                    $_SESSION['notification_message'] = "{$affected} Ihrer Benachrichtigungen als gelesen markiert";
+                    $_SESSION['update_badge'] = true; // Flag to update badge
+                    header('Location: /admin/notifications.php');
+                    exit;
                     
                 case 'delete_old':
                     $days = (int)($_POST['days'] ?? 30);
                     $affected = db_query('DELETE FROM notifications WHERE created_at < DATE_SUB(NOW(), INTERVAL ? DAY)', [$days])->rowCount();
                     log_admin_action('delete_old_notifications', "Alte Benachrichtigungen gelöscht ({$affected} Nachrichten älter als {$days} Tage)");
-                    $message = "{$affected} alte Benachrichtigungen gelöscht";
-                    break;
+                    
+                    $_SESSION['notification_message'] = "{$affected} alte Benachrichtigungen gelöscht";
+                    header('Location: /admin/notifications.php');
+                    exit;
                     
                 case 'delete_notification':
                     $notificationId = (int)($_POST['notification_id'] ?? 0);
                     $affected = db_query('DELETE FROM notifications WHERE id = ?', [$notificationId])->rowCount();
                     if ($affected > 0) {
                         log_admin_action('delete_notification', "Benachrichtigung gelöscht (ID: {$notificationId})");
-                        $message = 'Benachrichtigung gelöscht';
+                        $_SESSION['notification_message'] = 'Benachrichtigung gelöscht';
                     } else {
-                        throw new Exception('Benachrichtigung nicht gefunden');
+                        $_SESSION['notification_error'] = 'Benachrichtigung nicht gefunden';
                     }
-                    break;
+                    header('Location: /admin/notifications.php');
+                    exit;
                     
                 case 'bulk_action':
                     $bulkAction = $_POST['bulk_action'] ?? '';
@@ -102,17 +136,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     switch ($bulkAction) {
                         case 'mark_read':
                             $affected = db_query("UPDATE notifications SET is_read = 1 WHERE id IN ({$placeholders})", $selectedIds)->rowCount();
-                            $message = "{$affected} Benachrichtigungen als gelesen markiert";
+                            $_SESSION['notification_message'] = "{$affected} Benachrichtigungen als gelesen markiert";
                             break;
                             
                         case 'mark_unread':
                             $affected = db_query("UPDATE notifications SET is_read = 0 WHERE id IN ({$placeholders})", $selectedIds)->rowCount();
-                            $message = "{$affected} Benachrichtigungen als ungelesen markiert";
+                            $_SESSION['notification_message'] = "{$affected} Benachrichtigungen als ungelesen markiert";
                             break;
                             
                         case 'delete':
                             $affected = db_query("DELETE FROM notifications WHERE id IN ({$placeholders})", $selectedIds)->rowCount();
-                            $message = "{$affected} Benachrichtigungen gelöscht";
+                            $_SESSION['notification_message'] = "{$affected} Benachrichtigungen gelöscht";
                             break;
                             
                         default:
@@ -120,13 +154,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                     
                     log_admin_action('bulk_notification_action', "Bulk-Aktion '{$bulkAction}' auf {$affected} Benachrichtigungen angewendet");
-                    break;
+                    header('Location: /admin/notifications.php');
+                    exit;
                     
                 default:
                     throw new Exception('Unbekannte Aktion');
             }
         } catch (Exception $e) {
-            $error = $e->getMessage();
+            $_SESSION['notification_error'] = $e->getMessage();
+            header('Location: /admin/notifications.php');
+            exit;
         }
     }
 }
@@ -332,17 +369,27 @@ include __DIR__ . '/../includes/header.php';
                 <div class="border border-gray-200 rounded-lg p-4">
                     <h3 class="font-medium text-gray-900 mb-2">
                         <i class="fas fa-check-double text-green-600 mr-2"></i>
-                        Alle als gelesen markieren
+                        Als gelesen markieren
                     </h3>
-                    <p class="text-sm text-gray-600 mb-3">Markiert alle Benachrichtigungen als gelesen</p>
-                    <form method="POST" onsubmit="return confirm('Alle Benachrichtigungen als gelesen markieren?')">
-                        <?= csrf_field() ?>
-                        <input type="hidden" name="action" value="mark_all_read">
-                        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">
-                            <i class="fas fa-check mr-1"></i>
-                            Alle markieren
-                        </button>
-                    </form>
+                    <div class="space-y-2">
+                        <form method="POST" onsubmit="return markAllNotificationsRead(event)">
+                            <?= csrf_field() ?>
+                            <input type="hidden" name="action" value="mark_all_read">
+                            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-sm transition-colors">
+                                <i class="fas fa-check-double mr-1"></i>
+                                Alle (System)
+                            </button>
+                        </form>
+                        
+                        <form method="POST" onsubmit="return markMyNotificationsRead(event)">
+                            <?= csrf_field() ?>
+                            <input type="hidden" name="action" value="mark_my_read">
+                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm transition-colors">
+                                <i class="fas fa-check mr-1"></i>
+                                Meine eigenen
+                            </button>
+                        </form>
+                    </div>
                 </div>
 
                 <!-- Delete Old -->
@@ -474,52 +521,101 @@ include __DIR__ . '/../includes/header.php';
                     
                     <div class="divide-y divide-gray-200">
                         <?php foreach ($notifications as $notification): ?>
-                            <div class="p-6 hover:bg-gray-50 transition-colors">
-                                <div class="flex items-start gap-4">
+                            <?php
+                            // Define notification styling based on type
+                            $notificationStyles = [
+                                'system' => [
+                                    'border' => 'border-l-4 border-blue-500',
+                                    'bg' => 'bg-blue-50',
+                                    'icon' => 'fas fa-cog',
+                                    'iconColor' => 'text-blue-600',
+                                    'iconBg' => 'bg-blue-100',
+                                    'badge' => 'bg-blue-100 text-blue-800'
+                                ],
+                                'announcement' => [
+                                    'border' => 'border-l-4 border-green-500',
+                                    'bg' => 'bg-green-50',
+                                    'icon' => 'fas fa-bullhorn',
+                                    'iconColor' => 'text-green-600',
+                                    'iconBg' => 'bg-green-100',
+                                    'badge' => 'bg-green-100 text-green-800'
+                                ],
+                                'maintenance' => [
+                                    'border' => 'border-l-4 border-yellow-500',
+                                    'bg' => 'bg-yellow-50',
+                                    'icon' => 'fas fa-tools',
+                                    'iconColor' => 'text-yellow-600',
+                                    'iconBg' => 'bg-yellow-100',
+                                    'badge' => 'bg-yellow-100 text-yellow-800'
+                                ],
+                                'new_recipe' => [
+                                    'border' => 'border-l-4 border-purple-500',
+                                    'bg' => 'bg-purple-50',
+                                    'icon' => 'fas fa-utensils',
+                                    'iconColor' => 'text-purple-600',
+                                    'iconBg' => 'bg-purple-100',
+                                    'badge' => 'bg-purple-100 text-purple-800'
+                                ]
+                            ];
+                            
+                            $style = $notificationStyles[$notification['type']] ?? [
+                                'border' => 'border-l-4 border-gray-500',
+                                'bg' => 'bg-gray-50',
+                                'icon' => 'fas fa-bell',
+                                'iconColor' => 'text-gray-600',
+                                'iconBg' => 'bg-gray-100',
+                                'badge' => 'bg-gray-100 text-gray-800'
+                            ];
+                            ?>
+                            <div class="p-6 hover:bg-gray-50 transition-colors <?= $style['border'] ?> <?= $style['bg'] ?> relative">
+                                <!-- Background Icon -->
+                                <div class="absolute top-4 right-4 opacity-10">
+                                    <i class="<?= $style['icon'] ?> text-6xl <?= $style['iconColor'] ?>"></i>
+                                </div>
+                                
+                                <div class="flex items-start gap-4 relative z-10">
                                     <input type="checkbox" name="selected_notifications[]" value="<?= $notification['id'] ?>" 
                                            class="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                    
+                                    <!-- Type Icon -->
+                                    <div class="flex-shrink-0 w-10 h-10 <?= $style['iconBg'] ?> rounded-full flex items-center justify-center mt-1">
+                                        <i class="<?= $style['icon'] ?> <?= $style['iconColor'] ?>"></i>
+                                    </div>
                                     
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-start justify-between">
                                             <div class="flex-1">
                                                 <div class="flex items-center gap-2 mb-2">
-                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                        <?php
-                                                        switch ($notification['type']) {
-                                                            case 'system': echo 'bg-blue-100 text-blue-800'; break;
-                                                            case 'announcement': echo 'bg-green-100 text-green-800'; break;
-                                                            case 'maintenance': echo 'bg-yellow-100 text-yellow-800'; break;
-                                                            case 'new_recipe': echo 'bg-purple-100 text-purple-800'; break;
-                                                            default: echo 'bg-gray-100 text-gray-800';
-                                                        }
-                                                        ?>">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?= $style['badge'] ?>">
+                                                        <i class="<?= $style['icon'] ?> mr-1"></i>
                                                         <?= htmlspecialchars(ucfirst($notification['type'])) ?>
                                                     </span>
                                                     
                                                     <?php if (!$notification['is_read']): ?>
                                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                                            <i class="fas fa-circle mr-1 text-orange-500" style="font-size: 6px;"></i>
                                                             Ungelesen
                                                         </span>
                                                     <?php endif; ?>
                                                 </div>
                                                 
-                                                <p class="text-gray-900 <?= !$notification['is_read'] ? 'font-medium' : '' ?>">
+                                                <p class="text-gray-900 <?= !$notification['is_read'] ? 'font-medium' : '' ?> mb-2">
                                                     <?= htmlspecialchars($notification['message']) ?>
                                                 </p>
                                                 
-                                                <div class="mt-2 flex items-center gap-4 text-sm text-gray-500">
-                                                    <span>
+                                                <div class="flex items-center gap-4 text-sm text-gray-500">
+                                                    <span class="flex items-center">
                                                         <i class="fas fa-user mr-1"></i>
-                                                        <?= htmlspecialchars($notification['user_name'] ?? 'Unbekannt') ?>
+                                                        <?= htmlspecialchars($notification['user_name'] ?? 'System') ?>
                                                     </span>
-                                                    <span>
+                                                    <span class="flex items-center">
                                                         <i class="fas fa-clock mr-1"></i>
                                                         <?= date('d.m.Y H:i', strtotime($notification['created_at'])) ?>
                                                     </span>
                                                     <?php if ($notification['entity_id']): ?>
-                                                        <span>
+                                                        <span class="flex items-center">
                                                             <i class="fas fa-link mr-1"></i>
-                                                            Entity ID: <?= $notification['entity_id'] ?>
+                                                            ID: <?= $notification['entity_id'] ?>
                                                         </span>
                                                     <?php endif; ?>
                                                 </div>
@@ -530,7 +626,7 @@ include __DIR__ . '/../includes/header.php';
                                                     <?= csrf_field() ?>
                                                     <input type="hidden" name="action" value="delete_notification">
                                                     <input type="hidden" name="notification_id" value="<?= $notification['id'] ?>">
-                                                    <button type="submit" class="text-red-600 hover:text-red-800 p-1" title="Löschen">
+                                                    <button type="submit" class="text-red-600 hover:text-red-800 p-2 rounded-lg hover:bg-red-50 transition-colors" title="Löschen">
                                                         <i class="fas fa-trash text-sm"></i>
                                                     </button>
                                                 </form>
@@ -582,12 +678,166 @@ include __DIR__ . '/../includes/header.php';
 </div>
 
 <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const bulkActionSelect = document.getElementById('bulk-action');
-            const applyBulkBtn = document.getElementById('apply-bulk');
-            const bulkForm = document.getElementById('bulk-form');
-            const bulkActionInput = document.getElementById('bulk-action-input');
+    // ===== NOTIFICATION BADGE MANAGEMENT =====
+    
+    /**
+     * Use the global badge management system from header.php
+     * This ensures ALL badges across the website are updated synchronously
+     */
+    function updateNotificationBadges(count) {
+        if (window.NotificationBadgeManager) {
+            console.log('[Admin] Using global badge manager');
+            window.NotificationBadgeManager.updateAllBadges(count);
+        } else {
+            console.warn('[Admin] Global badge manager not available, using fallback');
+            // Fallback for compatibility
+            const badges = document.querySelectorAll('.notification-badge');
+            badges.forEach(badge => {
+                if (count > 0) {
+                    badge.textContent = count;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.opacity = '0';
+                    setTimeout(() => badge.remove(), 300);
+                }
+            });
+        }
+    }
+    
+    /**
+     * Fetch current unread notification count from server
+     */
+    function fetchNotificationCount() {
+        if (window.NotificationBadgeManager) {
+            console.log('[Admin] Using global fetch method');
+            return window.NotificationBadgeManager.fetchAndUpdate();
+        } else {
+            console.warn('[Admin] Global badge manager not available, using fallback');
+            // Fallback method
+            return fetch('/api/get_unread_count.php')
+                .then(response => response.json())
+                .then(data => {
+                    updateNotificationBadges(data.count);
+                    return data.count;
+                })
+                .catch(error => {
+                    console.error('Error fetching notification count:', error);
+                    return 0;
+                });
+        }
+    }
+    
+    /**
+     * AJAX function to mark own notifications as read
+     */
+    function markMyNotificationsRead(event) {
+        event.preventDefault();
+        
+        if (!confirm('Ihre eigenen Benachrichtigungen als gelesen markieren?')) {
+            return false;
+        }
+        
+        const form = event.target;
+        const formData = new FormData(form);
+        
+        fetch('/admin/notifications.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.text();
+        })
+        .then(() => {
+            // Update badges immediately
+            fetchNotificationCount();
+            
+            // Show success message
+            showMessage('Ihre Benachrichtigungen wurden als gelesen markiert', 'success');
+            
+            // Reload page to show updated list
+            setTimeout(() => location.reload(), 1000);
+        })
+        .catch(error => {
+            console.error('Error marking notifications as read:', error);
+            showMessage('Fehler beim Markieren der Benachrichtigungen', 'error');
+        });
+        
+        return false;
+    }
+    
+    /**
+     * AJAX function to mark ALL notifications as read (system-wide)
+     */
+    function markAllNotificationsRead(event) {
+        event.preventDefault();
+        
+        if (!confirm('Alle Benachrichtigungen aller Benutzer als gelesen markieren?')) {
+            return false;
+        }
+        
+        const form = event.target;
+        const formData = new FormData(form);
+        
+        fetch('/admin/notifications.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.text();
+        })
+        .then(() => {
+            // Update badges immediately (will remove them since all are read)
+            fetchNotificationCount();
+            
+            // Show success message
+            showMessage('Alle Benachrichtigungen wurden systemweit als gelesen markiert', 'success');
+            
+            // Reload page to show updated list
+            setTimeout(() => location.reload(), 1000);
+        })
+        .catch(error => {
+            console.error('Error marking all notifications as read:', error);
+            showMessage('Fehler beim Markieren der Benachrichtigungen', 'error');
+        });
+        
+        return false;
+    }
+    
+    /**
+     * Simple message display function
+     */
+    function showMessage(text, type) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `mb-6 px-4 py-3 rounded-lg ${type === 'success' ? 'bg-green-50 border border-green-200 text-green-700' : 'bg-red-50 border border-red-200 text-red-700'}`;
+        messageDiv.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} mr-2"></i>${text}`;
+        
+        const container = document.querySelector('.container');
+        const firstChild = container.firstElementChild;
+        container.insertBefore(messageDiv, firstChild.nextSibling);
+        
+        // Remove message after 3 seconds
+        setTimeout(() => messageDiv.remove(), 3000);
+    }
+    
+    // ===== BULK ACTIONS & UI MANAGEMENT =====
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initial badge update
+        fetchNotificationCount();
+        
+        // Bulk action functionality
+        const bulkActionSelect = document.getElementById('bulk-action');
+        const applyBulkBtn = document.getElementById('apply-bulk');
+        const bulkForm = document.getElementById('bulk-form');
+        const bulkActionInput = document.getElementById('bulk-action-input');
 
+        if (applyBulkBtn) {
             applyBulkBtn.addEventListener('click', function() {
                 const selectedAction = bulkActionSelect.value;
                 const checkboxes = document.querySelectorAll('input[name="selected_notifications[]"]:checked');
@@ -613,18 +863,20 @@ include __DIR__ . '/../includes/header.php';
                     bulkForm.submit();
                 }
             });
+        }
 
-            // Select all checkbox functionality
-            const selectAllBtn = document.createElement('button');
-            selectAllBtn.type = 'button';
-            selectAllBtn.className = 'text-blue-600 hover:text-blue-800 text-sm';
-            selectAllBtn.innerHTML = '<i class="fas fa-check-square mr-1"></i>Alle auswählen';
-            
-            const bulkActionsDiv = document.querySelector('.flex.items-center.gap-2');
-            if (bulkActionsDiv) {
-                bulkActionsDiv.insertBefore(selectAllBtn, bulkActionsDiv.firstChild);
-            }
-            
+        // Select all checkbox functionality
+        const selectAllBtn = document.createElement('button');
+        selectAllBtn.type = 'button';
+        selectAllBtn.className = 'text-blue-600 hover:text-blue-800 text-sm';
+        selectAllBtn.innerHTML = '<i class="fas fa-check-square mr-1"></i>Alle auswählen';
+        
+        const bulkActionsDiv = document.querySelector('.flex.items-center.gap-2');
+        if (bulkActionsDiv) {
+            bulkActionsDiv.insertBefore(selectAllBtn, bulkActionsDiv.firstChild);
+        }
+        
+        if (selectAllBtn) {
             selectAllBtn.addEventListener('click', function() {
                 const checkboxes = document.querySelectorAll('input[name="selected_notifications[]"]');
                 const allChecked = Array.from(checkboxes).every(cb => cb.checked);
@@ -634,7 +886,8 @@ include __DIR__ . '/../includes/header.php';
                     ? '<i class="fas fa-check-square mr-1"></i>Alle auswählen'
                     : '<i class="fas fa-square mr-1"></i>Alle abwählen';
             });
-        });
-    </script>
+        }
+    });
+</script>
 
 <?php include __DIR__ . '/../includes/footer.php'; ?>
