@@ -99,7 +99,7 @@ $seo = [
     <div class="w-full h-[6px] bg-gradient-to-r from-[#2d7ef7] to-fuchsia-400 fixed top-0 z-[99999]"></div>
 
     <!-- Mobile Header (≤1024px) -->
-    <header id="mobile-header" class="mobile-header hidden lg:hidden items-center justify-between px-4 py-3">
+    <header id="mobile-header" class="mobile-header hidden lg:hidden items-center justify-between px-4 py-3 z-[9999]">
         <!-- Logo -->
         <div class="flex items-center">
             <a href="/" class="flex items-center">
@@ -116,12 +116,6 @@ $seo = [
             <button id="mobile-theme-toggle" class="p-2 rounded-lg transition-colors" style="color: var(--rh-text);"
                 aria-label="Theme wechseln">
                 <i class="fas fa-moon text-lg"></i>
-            </button>
-
-            <!-- Search -->
-            <button popovertarget="search-popover" class="p-2 rounded-lg transition-colors"
-                style="color: var(--rh-text);" aria-label="Suchen">
-                <i class="fas fa-magnifying-glass text-lg"></i>
             </button>
 
             <!-- Card Magnet Toggle -->
@@ -159,7 +153,7 @@ $seo = [
 
     <!-- Desktop Header -->
     <header
-        class="flex lg:sticky lg:top-0 fixed bottom-0 left-0 right-0 z-10 container-fluid min-h-[80px] mx-auto justify-between items-center z-[40] backdrop-blur-sm boder border-b border-[var(--rh-border)]">
+        class="flex lg:sticky lg:top-0 fixed bottom-0 left-0 right-0 z-10 container-fluid lg:min-h-[80px] mx-auto justify-between items-center z-[40] backdrop-blur-sm boder border-b border-[var(--rh-border)]">
         <!-- Logo -->
         <div class="lg:flex hidden content-start relative">
             <a href="/" class="flex items-center z-[9999] origin-left pl-4 group">
@@ -172,39 +166,37 @@ $seo = [
         </div>
 
         <!-- Navigation -->
-        <nav class="flex items-center justify-between lg:justify-end h-[75px] w-full">
+        <nav class="flex items-center justify-around lg:justify-end lg:h-[75px] w-full">
             <div class="flex lg:justify-end justify-between w-full items-center gap-x-0 lg:gap-x-5 text-[16px]">
-                <!-- Link group -->
                 <!-- Home -->
                 <a href="/" data-nav-link
                     class=" lg:px-4 lg:py-2 p-4 lg:rounded-xl rounded-none transition-all duration-200 ">
-                    <i class="fa-solid fa-house lg:text-base text-2xl"></i>
+                    <i class="fa-solid fa-house lg:text-base text-1xl"></i>
                 </a>
                 <!-- Search -->
                 <button popovertarget="search-popover"
                     class=" lg:px-4 lg:py-2 p-4 lg:rounded-xl rounded-none transition-all duration-200 ">
-                    <i class="fas fa-magnifying-glass lg:text-base text-2xl"></i>
+                    <i class="fas fa-magnifying-glass lg:text-base text-1xl"></i>
                 </button>
                 <!-- Categories -->
                 <a href="/categories.php" data-nav-link
                     class=" lg:block hidden lg:px-4 lg:py-2 p-4 lg:rounded-xl rounded-none transition-all duration-200 ">
-                    <i class="fa-solid fa-tags lg:text-base text-2xl"></i>
+                    <i class="fa-solid fa-tags lg:text-base text-1xl"></i>
                 </a>
 
                 <!-- Theme Toggle Button -->
                 <button id="theme-toggle"
-                    class=" lg:px-4 lg:py-2 p-4 lg:rounded-xl rounded-none transition-all duration-200 "
+                    class="lg:inline hidden lg:px-4 lg:py-2 p-4 lg:rounded-xl rounded-none transition-all duration-200 "
                     aria-label="Theme wechseln" title="Theme wechseln">
-                    <i class="fas fa-moon lg:text-base text-2xl"></i>
+                    <i class="fas fa-moon lg:text-base text-1xl"></i>
                     <span class="hidden lg:inline ml-2 font-medium">Dark</span>
                 </button>
 
                 <?php if (isset($user) && $user): ?>
                     <!-- New Recipe Button -->
                     <a href="/recipe_new.php" data-nav-link
-                        class=" lg:px-4 lg:py-2 p-4 lg:rounded-xl rounded-none transition-all duration-200 "
-                        style="background: linear-gradient(135deg, var(--rh-primary), #10b981); color: white; box-shadow: 0 4px 6px rgba(45, 126, 247, 0.25);">
-                        <i class="fa-solid fa-feather lg:text-base text-2xl lg:mr-2"></i>
+                        class=" lg:px-4 lg:py-2 p-4 lg:rounded-xl rounded-none transition-all duration-200 ">
+                        <i class="fa-solid fa-feather lg:text-base text-1xl lg:mr-2"></i>
                         <span class="lg:inline hidden font-medium">Neues Rezept</span>
                     </a>
                     <!-- Notifications -->
@@ -217,7 +209,7 @@ $seo = [
                     ?>
                     <button popovertarget="notification-bell"
                         class=" lg:p-3 p-4 lg:rounded-xl rounded-none transition-all duration-200  relative">
-                        <i class="fa-solid fa-bell lg:text-lg text-2xl"></i>
+                        <i class="fa-solid fa-bell lg:text-lg text-1xl"></i>
                         <?php if ($unreadCount > 0): ?>
                             <span id="notification-badge"
                                 class="absolute -top-1 -right-1 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center text-white animate-pulse"
@@ -237,16 +229,16 @@ $seo = [
                                 <img src="<?php echo htmlspecialchars(isset($user['avatar_path']) && $user['avatar_path'] ? absolute_url_from_path((string) $user['avatar_path']) : '/images/default_avatar.png'); ?>"
                                     class="h-10 w-10 rounded-full object-cover" alt="Avatar" />
                             </div>
-                            <span class="ml-3 text-sm font-medium hidden lg:inline" style="color: var(--rh-text);">
+                       <!--     <span class="ml-3 text-sm font-medium hidden lg:inline" style="color: var(--rh-text);">
                                 <?php echo htmlspecialchars($user['name']); ?>
-                            </span>
+                            </span> -->
                             <i class="fas fa-chevron-down ml-2 text-xs hidden lg:inline"
                                 style="color: var(--rh-muted);"></i>
                         </button>
 
                         <!-- Dropdown - Modern styling -->
                         <div id="userMenuDropdown"
-                            class="hidden absolute right-0 w-56 rounded-xl z-50 transform transition-all duration-200 ease-out"
+                            class="hidden absolute right-0 w-56 rounded-xl z-[9999999] transform transition-all duration-200 ease-out"
                             style="background: var(--rh-card-bg); border: 1px solid var(--rh-border); box-shadow: 0 10px 25px -5px var(--rh-shadow); backdrop-filter: blur(20px);">
                             <div class="p-2">
                                 <a href="<?php echo htmlspecialchars(profile_url(['id' => $user['id'], 'name' => $user['name']])); ?>"
@@ -283,14 +275,14 @@ $seo = [
                     <a href="/login.php" data-nav-link
                         class="w-auto flex items-center lg:px-4 lg:py-2 p-4 lg:rounded-xl rounded-none transition-all duration-200 "
                         style="background: linear-gradient(135deg, var(--rh-primary), #8b5cf6); color: white; box-shadow: 0 4px 6px rgba(45, 126, 247, 0.25);">
-                        <i class="fa-solid fa-arrow-right-from-bracket lg:text-base text-2xl lg:mr-2"></i>
+                        <i class="fa-solid fa-arrow-right-from-bracket lg:text-base text-1xl lg:mr-2"></i>
                         <span class="lg:inline hidden font-medium">Log In</span>
                     </a>
 
                     <a href="/register.php" data-nav-link
                         class=" flex items-center lg:px-4 lg:py-2 p-4 lg:rounded-xl rounded-none transition-all duration-200  relative overflow-hidden">
                         <span class="lg:inline hidden font-medium mr-2">Registrieren</span>
-                        <i class="fa-solid fa-pencil lg:text-base text-2xl"></i>
+                        <i class="fa-solid fa-pencil lg:text-base text-1xl"></i>
                         <div class="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 transition-all duration-300 w-0 hover:w-full">
                         </div>
                     </a>
