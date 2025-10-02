@@ -284,7 +284,9 @@ include __DIR__ . '/../includes/header.php';
                             <i class="fas fa-user-plus text-blue-600"></i>
                         </div>
                     </div>
-                    <canvas id="registrationsChart" width="400" height="200"></canvas>
+                    <div style="height: 200px;">
+                        <canvas id="registrationsChart"></canvas>
+                    </div>
                 </div>
                 
                 <!-- Rezepte Chart -->
@@ -295,7 +297,9 @@ include __DIR__ . '/../includes/header.php';
                             <i class="fas fa-utensils text-green-600"></i>
                         </div>
                     </div>
-                    <canvas id="recipesChart" width="400" height="200"></canvas>
+                    <div style="height: 200px;">
+                        <canvas id="recipesChart"></canvas>
+                    </div>
                 </div>
                 
                 <!-- Kommentare Chart -->
@@ -306,7 +310,9 @@ include __DIR__ . '/../includes/header.php';
                             <i class="fas fa-comments text-purple-600"></i>
                         </div>
                     </div>
-                    <canvas id="commentsChart" width="400" height="200"></canvas>
+                    <div style="height: 200px;">
+                        <canvas id="commentsChart"></canvas>
+                    </div>
                 </div>
                 
                 <!-- Seitenaufrufe Chart -->
@@ -317,7 +323,9 @@ include __DIR__ . '/../includes/header.php';
                             <i class="fas fa-eye text-orange-600"></i>
                         </div>
                     </div>
-                    <canvas id="pageViewsChart" width="400" height="200"></canvas>
+                    <div style="height: 200px;">
+                        <canvas id="pageViewsChart"></canvas>
+                    </div>
                 </div>
             </div>
 
@@ -347,13 +355,17 @@ include __DIR__ . '/../includes/header.php';
                 <!-- Schwierigkeitsgrade -->
                 <div class="bg-white rounded-xl shadow-lg p-6 border border-slate-200">
                     <h3 class="text-lg font-semibold text-slate-800 mb-6">Schwierigkeitsgrade</h3>
-                    <canvas id="difficultyChart" width="300" height="300"></canvas>
+                    <div style="height: 250px;">
+                        <canvas id="difficultyChart"></canvas>
+                    </div>
                 </div>
                 
                 <!-- Browser-Statistiken -->
                 <div class="bg-white rounded-xl shadow-lg p-6 border border-slate-200">
                     <h3 class="text-lg font-semibold text-slate-800 mb-6">Browser (7 Tage)</h3>
-                    <canvas id="browserChart" width="300" height="300"></canvas>
+                    <div style="height: 250px;">
+                        <canvas id="browserChart"></canvas>
+                    </div>
                 </div>
             </div>
 
